@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.PublicMohVoiceMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.PublicMohVoice" >
+<mapper namespace="com.tinet.ctilink.conf.model.PublicMohVoiceMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.PublicMohVoice" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="moh_id" property="mohId" jdbcType="INTEGER" />
     <result column="voice_id" property="voiceId" jdbcType="INTEGER" />
@@ -20,13 +20,13 @@
     delete from cti_link_public_moh_voice
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.PublicMohVoice" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.PublicMohVoice" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_public_moh_voice (moh_id, voice_id, create_time
       )
     values (#{mohId,jdbcType=INTEGER}, #{voiceId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.PublicMohVoice" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.PublicMohVoice" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_public_moh_voice
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="mohId != null" >
@@ -51,7 +51,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.PublicMohVoice" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.PublicMohVoice" >
     update cti_link_public_moh_voice
     <set >
       <if test="mohId != null" >
@@ -66,7 +66,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.PublicMohVoice" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.PublicMohVoice" >
     update cti_link_public_moh_voice
     set moh_id = #{mohId,jdbcType=INTEGER},
       voice_id = #{voiceId,jdbcType=INTEGER},

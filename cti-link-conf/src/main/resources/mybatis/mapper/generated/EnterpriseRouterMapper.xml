@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.EnterpriseRouterMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.EnterpriseRouter" >
+<mapper namespace="com.tinet.ctilink.conf.model.EnterpriseRouterMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.EnterpriseRouter" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
     <result column="ib_router_right" property="ibRouterRight" jdbcType="INTEGER" />
@@ -22,13 +22,13 @@
     delete from cti_link_enterprise_router
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.EnterpriseRouter" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.EnterpriseRouter" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_enterprise_router (enterprise_id, ib_router_right, ob_router_left, 
       ob_router_right, create_time)
     values (#{enterpriseId,jdbcType=INTEGER}, #{ibRouterRight,jdbcType=INTEGER}, #{obRouterLeft,jdbcType=INTEGER}, 
       #{obRouterRight,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseRouter" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.EnterpriseRouter" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_enterprise_router
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="enterpriseId != null" >
@@ -65,7 +65,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseRouter" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.EnterpriseRouter" >
     update cti_link_enterprise_router
     <set >
       <if test="enterpriseId != null" >
@@ -86,7 +86,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.EnterpriseRouter" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.EnterpriseRouter" >
     update cti_link_enterprise_router
     set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
       ib_router_right = #{ibRouterRight,jdbcType=INTEGER},

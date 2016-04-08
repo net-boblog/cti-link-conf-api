@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.AreaCodeMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.AreaCode" >
+<mapper namespace="com.tinet.ctilink.conf.model.AreaCodeMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.AreaCode" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="province" property="province" jdbcType="VARCHAR" />
     <result column="prefix" property="prefix" jdbcType="VARCHAR" />
@@ -21,13 +21,13 @@
     delete from cti_link_area_code
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.AreaCode" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.AreaCode" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_area_code (province, prefix, area_code, 
       city)
     values (#{province,jdbcType=VARCHAR}, #{prefix,jdbcType=VARCHAR}, #{areaCode,jdbcType=VARCHAR}, 
       #{city,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.AreaCode" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.AreaCode" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_area_code
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="province != null" >
@@ -58,7 +58,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.AreaCode" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.AreaCode" >
     update cti_link_area_code
     <set >
       <if test="province != null" >
@@ -76,7 +76,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.AreaCode" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.AreaCode" >
     update cti_link_area_code
     set province = #{province,jdbcType=VARCHAR},
       prefix = #{prefix,jdbcType=VARCHAR},

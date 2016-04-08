@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.SipMediaServerMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.SipMediaServer" >
+<mapper namespace="com.tinet.ctilink.conf.model.SipMediaServerMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.SipMediaServer" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="ip_addr" property="ipAddr" jdbcType="VARCHAR" />
@@ -24,7 +24,7 @@
     delete from cti_link_sip_media_server
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.SipMediaServer" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.SipMediaServer" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_sip_media_server (name, ip_addr, port, 
       description, status, active, 
       create_time)
@@ -32,7 +32,7 @@
       #{description,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{active,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.SipMediaServer" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.SipMediaServer" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_sip_media_server
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="name != null" >
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.SipMediaServer" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.SipMediaServer" >
     update cti_link_sip_media_server
     <set >
       <if test="name != null" >
@@ -108,7 +108,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.SipMediaServer" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.SipMediaServer" >
     update cti_link_sip_media_server
     set name = #{name,jdbcType=VARCHAR},
       ip_addr = #{ipAddr,jdbcType=VARCHAR},

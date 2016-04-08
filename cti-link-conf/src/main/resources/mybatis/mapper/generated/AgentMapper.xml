@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.AgentMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.Agent" >
+<mapper namespace="com.tinet.ctilink.conf.model.AgentMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.Agent" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
     <result column="cno" property="cno" jdbcType="VARCHAR" />
@@ -31,7 +31,7 @@
     delete from cti_link_agent
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.Agent" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.Agent" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_agent (enterprise_id, cno, crm_id, 
       active, wrapup, area_code, 
       name, call_power, agent_type, 
@@ -43,7 +43,7 @@
       #{isOb,jdbcType=INTEGER}, #{ibRecord,jdbcType=INTEGER}, #{obRecord,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.Agent" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.Agent" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_agent
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="enterpriseId != null" >
@@ -128,7 +128,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.Agent" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.Agent" >
     update cti_link_agent
     <set >
       <if test="enterpriseId != null" >
@@ -173,7 +173,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.Agent" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.Agent" >
     update cti_link_agent
     set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
       cno = #{cno,jdbcType=VARCHAR},

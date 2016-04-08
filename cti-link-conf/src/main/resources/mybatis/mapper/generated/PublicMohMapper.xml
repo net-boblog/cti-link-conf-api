@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.PublicMohMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.PublicMoh" >
+<mapper namespace="com.tinet.ctilink.conf.model.PublicMohMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.PublicMoh" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="directory" property="directory" jdbcType="VARCHAR" />
@@ -25,7 +25,7 @@
     delete from cti_link_public_moh
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.PublicMoh" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.PublicMoh" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_public_moh (name, directory, application, 
       mode, digit, sort, 
       format, create_time)
@@ -33,7 +33,7 @@
       #{mode,jdbcType=VARCHAR}, #{digit,jdbcType=VARCHAR}, #{sort,jdbcType=VARCHAR}, 
       #{format,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.PublicMoh" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.PublicMoh" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_public_moh
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="name != null" >
@@ -88,7 +88,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.PublicMoh" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.PublicMoh" >
     update cti_link_public_moh
     <set >
       <if test="name != null" >
@@ -118,7 +118,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.PublicMoh" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.PublicMoh" >
     update cti_link_public_moh
     set name = #{name,jdbcType=VARCHAR},
       directory = #{directory,jdbcType=VARCHAR},

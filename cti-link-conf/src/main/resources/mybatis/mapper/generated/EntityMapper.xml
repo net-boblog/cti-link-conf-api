@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.EntityMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.Entity" >
+<mapper namespace="com.tinet.ctilink.conf.model.EntityMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.Entity" >
     <id column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
     <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />
     <result column="entity_type" property="entityType" jdbcType="INTEGER" />
@@ -22,7 +22,7 @@
     delete from cti_link_entity
     where enterprise_id = #{enterpriseId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.Entity" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.Entity" >
     insert into cti_link_entity (enterprise_id, enterprise_name, entity_type, 
       area_code, status, create_time
       )
@@ -30,7 +30,7 @@
       #{areaCode,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.Entity" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.Entity" >
     insert into cti_link_entity
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="enterpriseId != null" >
@@ -73,7 +73,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.Entity" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.Entity" >
     update cti_link_entity
     <set >
       <if test="enterpriseName != null" >
@@ -94,7 +94,7 @@
     </set>
     where enterprise_id = #{enterpriseId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.Entity" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.Entity" >
     update cti_link_entity
     set enterprise_name = #{enterpriseName,jdbcType=VARCHAR},
       entity_type = #{entityType,jdbcType=INTEGER},

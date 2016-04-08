@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tinet.ctilink.biz.model.AgentCrontabMapper" >
-  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.AgentCrontab" >
+<mapper namespace="com.tinet.ctilink.conf.model.AgentCrontabMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.AgentCrontab" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
     <result column="agent_id" property="agentId" jdbcType="INTEGER" />
@@ -24,7 +24,7 @@
     delete from cti_link_agent_crontab
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.AgentCrontab" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.tinet.ctilink.conf.model.AgentCrontab" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_agent_crontab (enterprise_id, agent_id, cron_type, 
       day_of_week, start_time, agent_tel_id, 
       create_time)
@@ -32,7 +32,7 @@
       #{dayOfWeek,jdbcType=VARCHAR}, #{startTime,jdbcType=VARCHAR}, #{agentTelId,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.AgentCrontab" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.conf.model.AgentCrontab" useGeneratedKeys="true" keyProperty="id" >
     insert into cti_link_agent_crontab
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="enterpriseId != null" >
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.AgentCrontab" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.conf.model.AgentCrontab" >
     update cti_link_agent_crontab
     <set >
       <if test="enterpriseId != null" >
@@ -108,7 +108,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.AgentCrontab" >
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.conf.model.AgentCrontab" >
     update cti_link_agent_crontab
     set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
       agent_id = #{agentId,jdbcType=INTEGER},

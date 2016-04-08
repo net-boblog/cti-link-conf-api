@@ -13,7 +13,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 
     <!-- 命名空间别名 -->
     <typeAliases>
-         <!--<typeAlias alias="Account" type="com.tinet.bossapi.model.Account"/> -->
     </typeAliases>
     
     <!-- 注册拦截器,实现postgresql数据库的物理分页 -->

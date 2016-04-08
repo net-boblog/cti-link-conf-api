@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.biz.model.EnterpriseClidMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.EnterpriseClid" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="ib_clid_right_type" property="ibClidRightType" jdbcType="INTEGER" />
+    <result column="ib_clid_right_number" property="ibClidRightNumber" jdbcType="VARCHAR" />
+    <result column="ob_clid_left_type" property="obClidLeftType" jdbcType="INTEGER" />
+    <result column="ob_clid_left_number" property="obClidLeftNumber" jdbcType="VARCHAR" />
+    <result column="ob_clid_right_type" property="obClidRightType" jdbcType="INTEGER" />
+    <result column="ob_clid_right_number" property="obClidRightNumber" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, ib_clid_right_type, ib_clid_right_number, ob_clid_left_type, ob_clid_left_number, 
+    ob_clid_right_type, ob_clid_right_number, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cti_link_enterprise_clid
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cti_link_enterprise_clid
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.EnterpriseClid" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_clid (enterprise_id, ib_clid_right_type, ib_clid_right_number, 
+      ob_clid_left_type, ob_clid_left_number, ob_clid_right_type, 
+      ob_clid_right_number, create_time)
+    values (#{enterpriseId,jdbcType=INTEGER}, #{ibClidRightType,jdbcType=INTEGER}, #{ibClidRightNumber,jdbcType=VARCHAR}, 
+      #{obClidLeftType,jdbcType=INTEGER}, #{obClidLeftNumber,jdbcType=VARCHAR}, #{obClidRightType,jdbcType=INTEGER}, 
+      #{obClidRightNumber,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseClid" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_clid
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="ibClidRightType != null" >
+        ib_clid_right_type,
+      </if>
+      <if test="ibClidRightNumber != null" >
+        ib_clid_right_number,
+      </if>
+      <if test="obClidLeftType != null" >
+        ob_clid_left_type,
+      </if>
+      <if test="obClidLeftNumber != null" >
+        ob_clid_left_number,
+      </if>
+      <if test="obClidRightType != null" >
+        ob_clid_right_type,
+      </if>
+      <if test="obClidRightNumber != null" >
+        ob_clid_right_number,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="ibClidRightType != null" >
+        #{ibClidRightType,jdbcType=INTEGER},
+      </if>
+      <if test="ibClidRightNumber != null" >
+        #{ibClidRightNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="obClidLeftType != null" >
+        #{obClidLeftType,jdbcType=INTEGER},
+      </if>
+      <if test="obClidLeftNumber != null" >
+        #{obClidLeftNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="obClidRightType != null" >
+        #{obClidRightType,jdbcType=INTEGER},
+      </if>
+      <if test="obClidRightNumber != null" >
+        #{obClidRightNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseClid" >
+    update cti_link_enterprise_clid
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="ibClidRightType != null" >
+        ib_clid_right_type = #{ibClidRightType,jdbcType=INTEGER},
+      </if>
+      <if test="ibClidRightNumber != null" >
+        ib_clid_right_number = #{ibClidRightNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="obClidLeftType != null" >
+        ob_clid_left_type = #{obClidLeftType,jdbcType=INTEGER},
+      </if>
+      <if test="obClidLeftNumber != null" >
+        ob_clid_left_number = #{obClidLeftNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="obClidRightType != null" >
+        ob_clid_right_type = #{obClidRightType,jdbcType=INTEGER},
+      </if>
+      <if test="obClidRightNumber != null" >
+        ob_clid_right_number = #{obClidRightNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.EnterpriseClid" >
+    update cti_link_enterprise_clid
+    set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      ib_clid_right_type = #{ibClidRightType,jdbcType=INTEGER},
+      ib_clid_right_number = #{ibClidRightNumber,jdbcType=VARCHAR},
+      ob_clid_left_type = #{obClidLeftType,jdbcType=INTEGER},
+      ob_clid_left_number = #{obClidLeftNumber,jdbcType=VARCHAR},
+      ob_clid_right_type = #{obClidRightType,jdbcType=INTEGER},
+      ob_clid_right_number = #{obClidRightNumber,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="PostgresqlPaging" >
+    <if test="page != null" >
+      limit #{page.size} offset #{page.start}
+    </if>
+  </sql>
+  <sql id="tableNameSql" >
+     cti_link_enterprise_clid 
+  </sql>
+  <select id="searchListByCondition" resultMap="BaseResultMap" parameterType="com.tinet.ctilink.core.util.Condition" >
+    select 
+    <include refid="Base_Column_List" />
+    from  
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+    <if test="sortBuilder != null and sortBuilder != ''" >
+      order by ${sortBuilder} 
+    </if>
+  </select>
+  <select id="getCountByCondition" resultType="INTEGER" parameterType="com.tinet.ctilink.core.util.Condition" >
+    SELECT COUNT(*) FROM 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </select>
+  <delete id="deleteByCondition" parameterType="com.tinet.ctilink.core.util.Condition" >
+    delete from 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </delete>
+  <sql id="varSqlByCondition" >
+    <where >
+      <foreach collection="conditions" item="item" >
+        and ${item.name} 
+        <choose >
+          <when test="item.relation == 'like' or item.relation == 'not like'" >
+            ${item.relation} '%${item.value}%' 
+          </when>
+          <when test="item.relation == 'in' or item.relation == 'not in' " >
+            ${item.relation} (${item.value}) 
+          </when>
+          <when test="item.relation == 'is' or item.relation == 'is not'  " >
+            ${item.relation} ${item.value} 
+          </when>
+          <otherwise >
+            ${item.relation} #{item.value} 
+          </otherwise>
+        </choose>
+      </foreach>
+    </where>
+  </sql>
+</mapper>

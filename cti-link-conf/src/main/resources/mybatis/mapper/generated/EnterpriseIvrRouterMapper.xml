@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.biz.model.EnterpriseIvrRouterMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.EnterpriseIvrRouter" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="active" property="active" jdbcType="INTEGER" />
+    <result column="router_type" property="routerType" jdbcType="INTEGER" />
+    <result column="router_property" property="routerProperty" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="priority" property="priority" jdbcType="INTEGER" />
+    <result column="rule_time_property" property="ruleTimeProperty" jdbcType="VARCHAR" />
+    <result column="rule_area_property" property="ruleAreaProperty" jdbcType="VARCHAR" />
+    <result column="rule_trunk_property" property="ruleTrunkProperty" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, active, router_type, router_property, description, priority, rule_time_property, 
+    rule_area_property, rule_trunk_property, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cti_link_enterprise_ivr_router
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cti_link_enterprise_ivr_router
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.EnterpriseIvrRouter" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_ivr_router (enterprise_id, active, router_type, 
+      router_property, description, priority, 
+      rule_time_property, rule_area_property, rule_trunk_property, 
+      create_time)
+    values (#{enterpriseId,jdbcType=INTEGER}, #{active,jdbcType=INTEGER}, #{routerType,jdbcType=INTEGER}, 
+      #{routerProperty,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{priority,jdbcType=INTEGER}, 
+      #{ruleTimeProperty,jdbcType=VARCHAR}, #{ruleAreaProperty,jdbcType=VARCHAR}, #{ruleTrunkProperty,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseIvrRouter" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_ivr_router
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="active != null" >
+        active,
+      </if>
+      <if test="routerType != null" >
+        router_type,
+      </if>
+      <if test="routerProperty != null" >
+        router_property,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="priority != null" >
+        priority,
+      </if>
+      <if test="ruleTimeProperty != null" >
+        rule_time_property,
+      </if>
+      <if test="ruleAreaProperty != null" >
+        rule_area_property,
+      </if>
+      <if test="ruleTrunkProperty != null" >
+        rule_trunk_property,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="active != null" >
+        #{active,jdbcType=INTEGER},
+      </if>
+      <if test="routerType != null" >
+        #{routerType,jdbcType=INTEGER},
+      </if>
+      <if test="routerProperty != null" >
+        #{routerProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="priority != null" >
+        #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="ruleTimeProperty != null" >
+        #{ruleTimeProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleAreaProperty != null" >
+        #{ruleAreaProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleTrunkProperty != null" >
+        #{ruleTrunkProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseIvrRouter" >
+    update cti_link_enterprise_ivr_router
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="active != null" >
+        active = #{active,jdbcType=INTEGER},
+      </if>
+      <if test="routerType != null" >
+        router_type = #{routerType,jdbcType=INTEGER},
+      </if>
+      <if test="routerProperty != null" >
+        router_property = #{routerProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="priority != null" >
+        priority = #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="ruleTimeProperty != null" >
+        rule_time_property = #{ruleTimeProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleAreaProperty != null" >
+        rule_area_property = #{ruleAreaProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleTrunkProperty != null" >
+        rule_trunk_property = #{ruleTrunkProperty,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.EnterpriseIvrRouter" >
+    update cti_link_enterprise_ivr_router
+    set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      active = #{active,jdbcType=INTEGER},
+      router_type = #{routerType,jdbcType=INTEGER},
+      router_property = #{routerProperty,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      priority = #{priority,jdbcType=INTEGER},
+      rule_time_property = #{ruleTimeProperty,jdbcType=VARCHAR},
+      rule_area_property = #{ruleAreaProperty,jdbcType=VARCHAR},
+      rule_trunk_property = #{ruleTrunkProperty,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="PostgresqlPaging" >
+    <if test="page != null" >
+      limit #{page.size} offset #{page.start}
+    </if>
+  </sql>
+  <sql id="tableNameSql" >
+     cti_link_enterprise_ivr_router 
+  </sql>
+  <select id="searchListByCondition" resultMap="BaseResultMap" parameterType="com.tinet.ctilink.core.util.Condition" >
+    select 
+    <include refid="Base_Column_List" />
+    from  
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+    <if test="sortBuilder != null and sortBuilder != ''" >
+      order by ${sortBuilder} 
+    </if>
+  </select>
+  <select id="getCountByCondition" resultType="INTEGER" parameterType="com.tinet.ctilink.core.util.Condition" >
+    SELECT COUNT(*) FROM 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </select>
+  <delete id="deleteByCondition" parameterType="com.tinet.ctilink.core.util.Condition" >
+    delete from 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </delete>
+  <sql id="varSqlByCondition" >
+    <where >
+      <foreach collection="conditions" item="item" >
+        and ${item.name} 
+        <choose >
+          <when test="item.relation == 'like' or item.relation == 'not like'" >
+            ${item.relation} '%${item.value}%' 
+          </when>
+          <when test="item.relation == 'in' or item.relation == 'not in' " >
+            ${item.relation} (${item.value}) 
+          </when>
+          <when test="item.relation == 'is' or item.relation == 'is not'  " >
+            ${item.relation} ${item.value} 
+          </when>
+          <otherwise >
+            ${item.relation} #{item.value} 
+          </otherwise>
+        </choose>
+      </foreach>
+    </where>
+  </sql>
+</mapper>

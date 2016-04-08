@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.biz.model.EnterpriseHangupSetMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.EnterpriseHangupSet" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="variable_name" property="variableName" jdbcType="VARCHAR" />
+    <result column="variable_value" property="variableValue" jdbcType="VARCHAR" />
+    <result column="variable_value_type" property="variableValueType" jdbcType="INTEGER" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, type, variable_name, variable_value, variable_value_type, sort, 
+    create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cti_link_enterprise_hangup_set
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cti_link_enterprise_hangup_set
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupSet" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_hangup_set (enterprise_id, type, variable_name, 
+      variable_value, variable_value_type, sort, 
+      create_time)
+    values (#{enterpriseId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{variableName,jdbcType=VARCHAR}, 
+      #{variableValue,jdbcType=VARCHAR}, #{variableValueType,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupSet" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_hangup_set
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="variableName != null" >
+        variable_name,
+      </if>
+      <if test="variableValue != null" >
+        variable_value,
+      </if>
+      <if test="variableValueType != null" >
+        variable_value_type,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="variableName != null" >
+        #{variableName,jdbcType=VARCHAR},
+      </if>
+      <if test="variableValue != null" >
+        #{variableValue,jdbcType=VARCHAR},
+      </if>
+      <if test="variableValueType != null" >
+        #{variableValueType,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupSet" >
+    update cti_link_enterprise_hangup_set
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="variableName != null" >
+        variable_name = #{variableName,jdbcType=VARCHAR},
+      </if>
+      <if test="variableValue != null" >
+        variable_value = #{variableValue,jdbcType=VARCHAR},
+      </if>
+      <if test="variableValueType != null" >
+        variable_value_type = #{variableValueType,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupSet" >
+    update cti_link_enterprise_hangup_set
+    set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      variable_name = #{variableName,jdbcType=VARCHAR},
+      variable_value = #{variableValue,jdbcType=VARCHAR},
+      variable_value_type = #{variableValueType,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="PostgresqlPaging" >
+    <if test="page != null" >
+      limit #{page.size} offset #{page.start}
+    </if>
+  </sql>
+  <sql id="tableNameSql" >
+     cti_link_enterprise_hangup_set 
+  </sql>
+  <select id="searchListByCondition" resultMap="BaseResultMap" parameterType="com.tinet.ctilink.core.util.Condition" >
+    select 
+    <include refid="Base_Column_List" />
+    from  
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+    <if test="sortBuilder != null and sortBuilder != ''" >
+      order by ${sortBuilder} 
+    </if>
+  </select>
+  <select id="getCountByCondition" resultType="INTEGER" parameterType="com.tinet.ctilink.core.util.Condition" >
+    SELECT COUNT(*) FROM 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </select>
+  <delete id="deleteByCondition" parameterType="com.tinet.ctilink.core.util.Condition" >
+    delete from 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </delete>
+  <sql id="varSqlByCondition" >
+    <where >
+      <foreach collection="conditions" item="item" >
+        and ${item.name} 
+        <choose >
+          <when test="item.relation == 'like' or item.relation == 'not like'" >
+            ${item.relation} '%${item.value}%' 
+          </when>
+          <when test="item.relation == 'in' or item.relation == 'not in' " >
+            ${item.relation} (${item.value}) 
+          </when>
+          <when test="item.relation == 'is' or item.relation == 'is not'  " >
+            ${item.relation} ${item.value} 
+          </when>
+          <otherwise >
+            ${item.relation} #{item.value} 
+          </otherwise>
+        </choose>
+      </foreach>
+    </where>
+  </sql>
+</mapper>

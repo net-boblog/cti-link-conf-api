@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.biz.model.EnterpriseHangupActionMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.EnterpriseHangupAction" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="param_name" property="paramName" jdbcType="VARCHAR" />
+    <result column="param_variable" property="paramVariable" jdbcType="VARCHAR" />
+    <result column="timeout" property="timeout" jdbcType="INTEGER" />
+    <result column="retry" property="retry" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="interval_time" property="intervalTime" jdbcType="INTEGER" />
+    <result column="method" property="method" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, url, param_name, param_variable, timeout, retry, create_time, 
+    type, interval_time, method
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cti_link_enterprise_hangup_action
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cti_link_enterprise_hangup_action
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupAction" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_hangup_action (enterprise_id, url, param_name, 
+      param_variable, timeout, retry, 
+      create_time, type, interval_time, 
+      method)
+    values (#{enterpriseId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{paramName,jdbcType=VARCHAR}, 
+      #{paramVariable,jdbcType=VARCHAR}, #{timeout,jdbcType=INTEGER}, #{retry,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{intervalTime,jdbcType=INTEGER}, 
+      #{method,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupAction" useGeneratedKeys="true" keyProperty="id" >
+    insert into cti_link_enterprise_hangup_action
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="paramName != null" >
+        param_name,
+      </if>
+      <if test="paramVariable != null" >
+        param_variable,
+      </if>
+      <if test="timeout != null" >
+        timeout,
+      </if>
+      <if test="retry != null" >
+        retry,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="intervalTime != null" >
+        interval_time,
+      </if>
+      <if test="method != null" >
+        method,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="paramName != null" >
+        #{paramName,jdbcType=VARCHAR},
+      </if>
+      <if test="paramVariable != null" >
+        #{paramVariable,jdbcType=VARCHAR},
+      </if>
+      <if test="timeout != null" >
+        #{timeout,jdbcType=INTEGER},
+      </if>
+      <if test="retry != null" >
+        #{retry,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="intervalTime != null" >
+        #{intervalTime,jdbcType=INTEGER},
+      </if>
+      <if test="method != null" >
+        #{method,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupAction" >
+    update cti_link_enterprise_hangup_action
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="paramName != null" >
+        param_name = #{paramName,jdbcType=VARCHAR},
+      </if>
+      <if test="paramVariable != null" >
+        param_variable = #{paramVariable,jdbcType=VARCHAR},
+      </if>
+      <if test="timeout != null" >
+        timeout = #{timeout,jdbcType=INTEGER},
+      </if>
+      <if test="retry != null" >
+        retry = #{retry,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="intervalTime != null" >
+        interval_time = #{intervalTime,jdbcType=INTEGER},
+      </if>
+      <if test="method != null" >
+        method = #{method,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.EnterpriseHangupAction" >
+    update cti_link_enterprise_hangup_action
+    set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      param_name = #{paramName,jdbcType=VARCHAR},
+      param_variable = #{paramVariable,jdbcType=VARCHAR},
+      timeout = #{timeout,jdbcType=INTEGER},
+      retry = #{retry,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      interval_time = #{intervalTime,jdbcType=INTEGER},
+      method = #{method,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="PostgresqlPaging" >
+    <if test="page != null" >
+      limit #{page.size} offset #{page.start}
+    </if>
+  </sql>
+  <sql id="tableNameSql" >
+     cti_link_enterprise_hangup_action 
+  </sql>
+  <select id="searchListByCondition" resultMap="BaseResultMap" parameterType="com.tinet.ctilink.core.util.Condition" >
+    select 
+    <include refid="Base_Column_List" />
+    from  
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+    <if test="sortBuilder != null and sortBuilder != ''" >
+      order by ${sortBuilder} 
+    </if>
+  </select>
+  <select id="getCountByCondition" resultType="INTEGER" parameterType="com.tinet.ctilink.core.util.Condition" >
+    SELECT COUNT(*) FROM 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </select>
+  <delete id="deleteByCondition" parameterType="com.tinet.ctilink.core.util.Condition" >
+    delete from 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </delete>
+  <sql id="varSqlByCondition" >
+    <where >
+      <foreach collection="conditions" item="item" >
+        and ${item.name} 
+        <choose >
+          <when test="item.relation == 'like' or item.relation == 'not like'" >
+            ${item.relation} '%${item.value}%' 
+          </when>
+          <when test="item.relation == 'in' or item.relation == 'not in' " >
+            ${item.relation} (${item.value}) 
+          </when>
+          <when test="item.relation == 'is' or item.relation == 'is not'  " >
+            ${item.relation} ${item.value} 
+          </when>
+          <otherwise >
+            ${item.relation} #{item.value} 
+          </otherwise>
+        </choose>
+      </foreach>
+    </where>
+  </sql>
+</mapper>

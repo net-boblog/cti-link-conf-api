@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.biz.model.EntityMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.biz.model.Entity" >
+    <id column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />
+    <result column="entity_type" property="entityType" jdbcType="INTEGER" />
+    <result column="area_code" property="areaCode" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    enterprise_id, enterprise_name, entity_type, area_code, status, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cti_link_entity
+    where enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cti_link_entity
+    where enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tinet.ctilink.biz.model.Entity" >
+    insert into cti_link_entity (enterprise_id, enterprise_name, entity_type, 
+      area_code, status, create_time
+      )
+    values (#{enterpriseId,jdbcType=INTEGER}, #{enterpriseName,jdbcType=VARCHAR}, #{entityType,jdbcType=INTEGER}, 
+      #{areaCode,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.tinet.ctilink.biz.model.Entity" >
+    insert into cti_link_entity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="enterpriseName != null" >
+        enterprise_name,
+      </if>
+      <if test="entityType != null" >
+        entity_type,
+      </if>
+      <if test="areaCode != null" >
+        area_code,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=INTEGER},
+      </if>
+      <if test="enterpriseName != null" >
+        #{enterpriseName,jdbcType=VARCHAR},
+      </if>
+      <if test="entityType != null" >
+        #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="areaCode != null" >
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tinet.ctilink.biz.model.Entity" >
+    update cti_link_entity
+    <set >
+      <if test="enterpriseName != null" >
+        enterprise_name = #{enterpriseName,jdbcType=VARCHAR},
+      </if>
+      <if test="entityType != null" >
+        entity_type = #{entityType,jdbcType=INTEGER},
+      </if>
+      <if test="areaCode != null" >
+        area_code = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tinet.ctilink.biz.model.Entity" >
+    update cti_link_entity
+    set enterprise_name = #{enterpriseName,jdbcType=VARCHAR},
+      entity_type = #{entityType,jdbcType=INTEGER},
+      area_code = #{areaCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+  </update>
+  <sql id="PostgresqlPaging" >
+    <if test="page != null" >
+      limit #{page.size} offset #{page.start}
+    </if>
+  </sql>
+  <sql id="tableNameSql" >
+     cti_link_entity 
+  </sql>
+  <select id="searchListByCondition" resultMap="BaseResultMap" parameterType="com.tinet.ctilink.core.util.Condition" >
+    select 
+    <include refid="Base_Column_List" />
+    from  
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+    <if test="sortBuilder != null and sortBuilder != ''" >
+      order by ${sortBuilder} 
+    </if>
+  </select>
+  <select id="getCountByCondition" resultType="INTEGER" parameterType="com.tinet.ctilink.core.util.Condition" >
+    SELECT COUNT(*) FROM 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </select>
+  <delete id="deleteByCondition" parameterType="com.tinet.ctilink.core.util.Condition" >
+    delete from 
+    <include refid="tableNameSql" />
+    <include refid="varSqlByCondition" />
+  </delete>
+  <sql id="varSqlByCondition" >
+    <where >
+      <foreach collection="conditions" item="item" >
+        and ${item.name} 
+        <choose >
+          <when test="item.relation == 'like' or item.relation == 'not like'" >
+            ${item.relation} '%${item.value}%' 
+          </when>
+          <when test="item.relation == 'in' or item.relation == 'not in' " >
+            ${item.relation} (${item.value}) 
+          </when>
+          <when test="item.relation == 'is' or item.relation == 'is not'  " >
+            ${item.relation} ${item.value} 
+          </when>
+          <otherwise >
+            ${item.relation} #{item.value} 
+          </otherwise>
+        </choose>
+      </foreach>
+    </where>
+  </sql>
+</mapper>

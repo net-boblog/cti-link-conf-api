@@ -8,7 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author fengwei //
- * @date 16/4/8 16:18
+ * @date 16/4/6 17:09
  */
 public class Application {
     private static Logger logger = LoggerFactory.getLogger(Application.class);
@@ -16,7 +16,7 @@ public class Application {
     public static void main(String[] args) {
         // 记录未捕获的异常
         Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
+
             public void uncaughtException(Thread t, Throwable e) {
                 logger.error(t.toString(), e);
             }
@@ -34,4 +34,6 @@ public class Application {
             }
         }
     }
+
 }
+

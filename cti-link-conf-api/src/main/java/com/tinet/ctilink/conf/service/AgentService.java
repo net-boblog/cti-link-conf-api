@@ -1,4 +1,4 @@
-package com.tinet.ctilink.service;
+package com.tinet.ctilink.conf.service;
 
 
 import javax.ws.rs.Path;

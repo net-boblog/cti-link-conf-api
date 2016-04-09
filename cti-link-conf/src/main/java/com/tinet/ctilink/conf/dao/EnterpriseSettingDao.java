@@ -9,5 +9,5 @@ import com.tinet.ctilink.core.dao.IBaseGenericDAO;
  */
 public interface EnterpriseSettingDao extends IBaseGenericDAO<EnterpriseSetting, Long> {
 
-    EnterpriseSetting selectByName(Integer enterpriseId, String name);
+    EnterpriseSetting selectByName(int enterpriseId, String name);
 }

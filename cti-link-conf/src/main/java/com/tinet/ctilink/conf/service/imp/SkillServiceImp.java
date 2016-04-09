@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.imp;
 
-import com.tinet.ctilink.service.SkillService;
+import com.tinet.ctilink.conf.service.SkillService;
 
 /**
  * @author fengwei //

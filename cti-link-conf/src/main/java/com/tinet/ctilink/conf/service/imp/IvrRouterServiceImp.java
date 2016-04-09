@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.imp;
 
-import com.tinet.ctilink.service.IvrRouterService;
+import com.tinet.ctilink.conf.service.IvrRouterService;
 
 /**
  * @author fengwei //

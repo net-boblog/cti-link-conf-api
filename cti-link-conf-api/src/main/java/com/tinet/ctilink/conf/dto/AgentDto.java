@@ -1,4 +1,4 @@
-package com.tinet.ctilink.dto;
+package com.tinet.ctilink.conf.dto;
 
 /**
  * @author fengwei //

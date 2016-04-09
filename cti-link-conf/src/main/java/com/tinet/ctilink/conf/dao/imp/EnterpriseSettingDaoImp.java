@@ -26,7 +26,7 @@ public class EnterpriseSettingDaoImp extends MybatisBaseGenericDAOImpl<Enterpris
     }
 
     @Override
-    public EnterpriseSetting selectByName(Integer enterpriseId, String name) {
+    public EnterpriseSetting selectByName(int enterpriseId, String name) {
         Map<String, Object> filter = new HashMap<>();
         filter.put("enterpriseId", enterpriseId);
         filter.put("name", name);

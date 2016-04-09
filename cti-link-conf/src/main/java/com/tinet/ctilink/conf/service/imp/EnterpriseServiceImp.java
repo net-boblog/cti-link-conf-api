@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.tinet.ctilink.service.EnterpriseService;
+import com.tinet.ctilink.conf.service.EnterpriseService;
 
 /**
  * @author fengwei //

@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.imp;
 
-import com.tinet.ctilink.service.EnterpriseVoiceService;
+import com.tinet.ctilink.conf.service.EnterpriseVoiceService;
 
 /**
  * @author fengwei //

@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.imp;
 
 
-import com.tinet.ctilink.service.IvrAreaService;
+import com.tinet.ctilink.conf.service.IvrAreaService;
 
 /**
  * @author fengwei //

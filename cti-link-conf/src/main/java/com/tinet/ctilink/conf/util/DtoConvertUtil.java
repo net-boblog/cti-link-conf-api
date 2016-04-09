@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.util;
 
 import com.tinet.ctilink.conf.model.EnterpriseSetting;
-import com.tinet.ctilink.dto.EnterpriseSettingDto;
+import com.tinet.ctilink.conf.dto.EnterpriseSettingDto;
 
 /**
  * @author fengwei //

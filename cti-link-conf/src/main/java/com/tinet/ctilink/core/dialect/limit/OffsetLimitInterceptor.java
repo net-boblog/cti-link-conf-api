@@ -2,6 +2,8 @@ package com.tinet.ctilink.core.dialect.limit;
 
 import java.util.Properties;
 
+import com.tinet.ctilink.core.dialect.DefaultDialectManager;
+import com.tinet.ctilink.core.dialect.IDialect;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -17,8 +19,6 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Component;
 
-import com.tinet.ctilink.core.dialect.DefaultDialectManager;
-import com.tinet.ctilink.core.dialect.IDialect;
 import com.tinet.ctilink.core.dialect.IDialectManager;
 
 @Component

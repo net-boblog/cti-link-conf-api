@@ -1,28 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- 读取属性文件 -->
-    <bean id="propertyConfigurer" class="com.tinet.ctilink.inc.Macro">
+    <bean id="propertyConfigurer" class="com.tinet.ctilink.util.PropertyUtil">
         <property name="locations">
             <list>
                 <value>classpath*:app.properties</value>
-            </list>
-        </property>
-    </bean>
-
-    <!-- 加载国际化资源文件 -->
-    <bean scope="singleton" id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basenames">
-            <list>
-                <value>i18n/messages</value>
-                <value>i18n/errors</value>
             </list>
         </property>
     </bean>
@@ -99,30 +87,61 @@
         <property name="logAbandoned" value="true" />
     </bean>
 
-    <!-- mybatis文件配置，扫描所有mapper文件 -->
-    <bean id="sqlSessionFactory"
-          class="org.mybatis.spring.SqlSessionFactoryBean"
-          p:dataSource-ref="dataSource"
-          p:configLocation="classpath:mybatis/mybatis-config.xml"
-          p:mapperLocations="classpath*:mybatis/mapper/*/*.xml"/>
+    <!-- 定义MyBatis -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations">
+            <array>
+                <value>classpath*:com/tinet/ctilink/**/*Mapper.xml</value>
+            </array>
+        </property>
+        <property name="typeAliasesPackage" value="com.tinet.ctilink.model" />
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper" />
+            </array>
+        </property>
+        <property name="configurationProperties">
+            <props>
+                <prop key="cacheEnabled">false</prop>
+                <prop key="lazyLoadingEnabled">false</prop>
+            </props>
+        </property>
+    </bean>
 
+    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.tinet.ctilink.mapper" />
+        <property name="markerInterface" value="com.tinet.ctilink.mapper.BaseMapper" />
+        <property name="properties">
+            <value>
+                mappers=com.tinet.ctilink.mapper.BaseMapper
+            </value>
+        </property>
+    </bean>
 
-    <!-- 配置 NamedParameterJdbcTemplate, 该对象可以使用具名参数, 其没有无参数的构造器, 所以必须为其构造器指定参数 -->
-    <bean id="namedParameterJdbcTemplate"
-          class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-        <constructor-arg ref="dataSource"></constructor-arg>
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
     </bean>
 
     <!-- 配置事务管理器 -->
-    <bean id="transactionManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"></property>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <!-- 启用事务注解 -->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- 通过注解的方式管理事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
 
-    <!-- 注入Spring上下文 -->
-    <bean id="contextUtil" class="com.tinet.ctilink.core.util.ContextUtil" />
+    <!-- JMX监控输出 -->
+    <context:mbean-export />
+    <bean id="dubboMonitor" class="com.tinet.ctilink.monitor.DubboMonitor" />
+    <bean id="druidMonitor" class="com.tinet.ctilink.monitor.DruidMonitor" />
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="beans">
+            <map>
+                <entry key="Clink:type=DubboMonitor,app=demo-dubbo" value-ref="dubboMonitor" />
+                <entry key="Clink:type=DruidMonitor,app=demo-dubbo" value-ref="druidMonitor" />
+            </map>
+        </property>
+    </bean>
 
 </beans>

@@ -7,7 +7,7 @@ import java.util.Date;
 @Table(name = "cti_link_agent")
 public class Agent {
     @Id
-    private Long id;
+    private Integer id;
 
     private Integer enterpriseId;
 
@@ -35,11 +35,11 @@ public class Agent {
 
     private Date createTime;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

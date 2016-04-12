@@ -1,3 +1,293 @@
+------ common
+-- Table: cti_link_sip_media_server
+
+-- DROP TABLE cti_link_sip_media_server;
+
+CREATE TABLE cti_link_sip_media_server
+(
+  id serial NOT NULL, -- 流水号
+  name character varying, -- 名字 唯一
+  ip_addr character varying, -- IP地址
+  port integer DEFAULT 5060, -- sip信令端口
+  description character varying, -- 说明
+  status integer, -- sip media server的状态，比如正常和不正常
+  active integer DEFAULT 1, -- 是否激活 1激活 0暂停
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_sip_media_server_pkey PRIMARY KEY (id)
+)
+WITHOUT OIDS;
+ALTER TABLE cti_link_sip_media_server OWNER TO postgres;
+COMMENT ON TABLE cti_link_sip_media_server IS '网关列表';
+COMMENT ON COLUMN cti_link_sip_media_server.id IS 'id标识';
+COMMENT ON COLUMN cti_link_sip_media_server.name IS '名字 唯一';
+COMMENT ON COLUMN cti_link_sip_media_server.ip_addr IS 'IP地址';
+COMMENT ON COLUMN cti_link_sip_media_server.port IS 'sip信令端口';
+COMMENT ON COLUMN cti_link_sip_media_server.description IS '说明';
+COMMENT ON COLUMN cti_link_sip_media_server.status IS 'sip media server的状态，比如正常和不正常';
+COMMENT ON COLUMN cti_link_sip_media_server.active IS '是否激活 1激活 0暂停';
+COMMENT ON COLUMN cti_link_sip_media_server.create_time IS '记录创建时间';
+
+
+-- Table: cti_link_sip_proxy
+
+-- DROP TABLE cti_link_sip_proxy;
+-- cti_link_sip_proxy存储sip proxy信息
+CREATE TABLE cti_link_sip_proxy
+(
+  id serial NOT NULL, -- 流水号
+  name character varying, -- 名字 唯一
+  ip_addr character varying, -- IP地址
+  port integer DEFAULT 5060, -- sip信令端口
+  description character varying, -- 说明
+  active integer DEFAULT 1, -- 是否激活 1激活 0暂停
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_sip_proxy_pkey PRIMARY KEY (id)
+)
+WITHOUT OIDS;
+ALTER TABLE cti_link_sip_proxy OWNER TO postgres;
+COMMENT ON TABLE cti_link_sip_proxy IS '网关列表';
+COMMENT ON COLUMN cti_link_sip_proxy.id IS 'id标识';
+COMMENT ON COLUMN cti_link_sip_proxy.name IS '名字 唯一';
+COMMENT ON COLUMN cti_link_sip_proxy.ip_addr IS 'IP地址';
+COMMENT ON COLUMN cti_link_sip_proxy.port IS 'sip信令端口';
+COMMENT ON COLUMN cti_link_sip_proxy.description IS '说明';
+COMMENT ON COLUMN cti_link_sip_proxy.active IS '是否激活 1激活 0暂停';
+COMMENT ON COLUMN cti_link_sip_proxy.create_time IS '记录创建时间';
+
+-- Table: cti_link_gateway
+
+-- DROP TABLE cti_link_gateway;
+
+CREATE TABLE cti_link_gateway
+(
+  id serial NOT NULL, -- 流水号
+  name character varying, -- 名字 唯一
+  prefix character varying, -- 号码前缀
+  ip_addr character varying, -- IP地址
+  port integer DEFAULT 5060, -- sip信令端口
+  area_code character varying, -- 网关默认区号
+  description character varying, -- 说明
+  call_limit integer default 300, -- 网关吞吐能力
+  disallow character varying DEFAULT 'all'::character varying, -- 网关codec选择disallow
+  allow character varying DEFAULT 'alaw,ulaw,g729,gsm'::character varying, -- 网关codec选择allow
+  dtmf_mode character varying DEFAULT 'rfc2833'::character varying, -- 网关的dtmf设置 rfc2833/info/auto/inband
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_gateway_pkey PRIMARY KEY (id),
+  CONSTRAINT cti_link_gateway_name_unique UNIQUE (name)
+)
+WITHOUT OIDS;
+ALTER TABLE cti_link_gateway OWNER TO postgres;
+COMMENT ON TABLE cti_link_gateway IS '网关列表';
+COMMENT ON COLUMN cti_link_gateway.id IS 'id标识';
+COMMENT ON COLUMN cti_link_gateway.prefix IS '号码前缀';
+COMMENT ON COLUMN cti_link_gateway.name IS '名字 唯一';
+COMMENT ON COLUMN cti_link_gateway.ip_addr IS 'IP地址';
+COMMENT ON COLUMN cti_link_gateway.port IS 'sip信令端口';
+COMMENT ON COLUMN cti_link_gateway.area_code IS '网关默认区号';
+COMMENT ON COLUMN cti_link_gateway.description IS '说明';
+COMMENT ON COLUMN cti_link_gateway.call_limit IS '网关吞吐能力';
+COMMENT ON COLUMN cti_link_gateway.disallow IS '网关codec选择disallow';
+COMMENT ON COLUMN cti_link_gateway.allow IS '网关codec选择allow';
+COMMENT ON COLUMN cti_link_gateway.dtmf_mode IS '网关的dtmf设置 rfc2833/info/auto/inband';
+COMMENT ON COLUMN cti_link_gateway.create_time IS '记录创建时间';
+
+
+-- Table: cti_link_routerset
+
+-- DROP TABLE cti_link_routerset;
+
+CREATE TABLE cti_link_routerset
+(
+  id serial NOT NULL, -- 流水号
+  "name" character varying, -- 路由组名称
+  description character varying, -- 描述
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_routerset_pkey PRIMARY KEY (id)
+)
+WITHOUT OIDS;
+ALTER TABLE cti_link_routerset OWNER TO postgres;
+COMMENT ON TABLE cti_link_routerset IS '路由组列表';
+COMMENT ON COLUMN cti_link_routerset.id IS 'id标识';
+COMMENT ON COLUMN cti_link_routerset."name" IS '路由组名称';
+COMMENT ON COLUMN cti_link_routerset.description IS '描述';
+COMMENT ON COLUMN cti_link_routerset.create_time IS '记录创建时间';
+
+-- Table: cti_link_router
+
+-- DROP TABLE cti_link_router;
+
+CREATE TABLE cti_link_router
+(
+  id serial NOT NULL, -- 流水号
+  routerset_id integer NOT NULL, -- 对应路由组id
+  prefix character varying, -- 号码前缀
+  gateway_id integer NOT NULL, -- 对应网关id
+  priority integer NOT NULL DEFAULT 1, -- 路由优先级 数字越小越优先
+  description character varying, -- 说明
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_router_pkey PRIMARY KEY (id),
+  CONSTRAINT cti_link_router_routerset_id_fkey FOREIGN KEY (routerset_id)
+    REFERENCES cti_link_routerset (id) MATCH SIMPLE,  
+  CONSTRAINT cti_link_router_gateway_id_fkey FOREIGN KEY (gateway_id)
+    REFERENCES cti_link_gateway (id) MATCH SIMPLE
+)
+WITHOUT OIDS;
+ALTER TABLE cti_link_router OWNER TO postgres;
+COMMENT ON TABLE cti_link_router IS '号码路由表';
+COMMENT ON COLUMN cti_link_router.id IS 'id标识';
+COMMENT ON COLUMN cti_link_router.prefix IS '号码前缀';
+COMMENT ON COLUMN cti_link_router.routerset_id IS '对应路由组id';
+COMMENT ON COLUMN cti_link_router.gateway_id IS '对应网关id';
+COMMENT ON COLUMN cti_link_router.priority IS '路由优先级 路由优先级 数字越小越优先';
+COMMENT ON COLUMN cti_link_router.description IS '说明';
+COMMENT ON COLUMN cti_link_router.create_time IS '记录创建时间';
+
+-- Table: cti_link_area_code
+
+-- DROP TABLE cti_link_area_code;
+
+CREATE TABLE cti_link_area_code
+(
+  id serial NOT NULL, -- id标识
+  province character varying(20), -- 省份
+  prefix character varying(10), -- 万号
+  area_code character varying(10), -- 区号
+  city character varying(20), -- 城市
+  CONSTRAINT cti_link_area_code_pkey PRIMARY KEY (id )
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cti_link_area_code
+  OWNER TO postgres;
+GRANT ALL ON TABLE cti_link_area_code TO postgres;
+GRANT ALL ON TABLE cti_link_area_code TO public;
+COMMENT ON TABLE cti_link_area_code
+  IS '手机号码库';
+COMMENT ON COLUMN cti_link_area_code.id IS 'id标识';
+COMMENT ON COLUMN cti_link_area_code.province IS '省份';
+COMMENT ON COLUMN cti_link_area_code.prefix IS '万号';
+COMMENT ON COLUMN cti_link_area_code.area_code IS '区号';
+COMMENT ON COLUMN cti_link_area_code.city IS '城市';
+
+-- Index: cti_link_area_code_prefix_index
+
+-- DROP INDEX cti_link_area_code_prefix_index;
+
+CREATE INDEX cti_link_area_code_prefix_index
+  ON cti_link_area_code
+  USING btree
+  (prefix );
+
+
+
+-- Table: cti_link_public_voice
+
+-- DROP TABLE cti_link_public_voice;
+
+CREATE TABLE cti_link_public_voice
+(
+  id serial NOT NULL,
+  voice_name character varying,
+  path character varying,
+  description character varying, 
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_public_voice_pkey PRIMARY KEY (id)
+) 
+WITHOUT OIDS;
+ALTER TABLE cti_link_public_voice OWNER TO postgres;
+COMMENT ON TABLE cti_link_public_voice IS '公共语音库';
+COMMENT ON COLUMN cti_link_public_voice.id IS '流水号';
+COMMENT ON COLUMN cti_link_public_voice.voice_name IS '语音文件名';
+COMMENT ON COLUMN cti_link_public_voice.path IS '语音文件路径';
+COMMENT ON COLUMN cti_link_public_voice.description IS '描述';
+COMMENT ON COLUMN cti_link_public_voice.create_time IS '记录创建时间';
+
+-- Table: cti_link_public_moh
+
+-- DROP TABLE cti_link_public_moh;
+
+CREATE TABLE cti_link_public_moh
+(
+  id serial NOT NULL, -- 流水号
+  name character varying NOT NULL, -- 类名 格式：企业号+类名
+  directory character varying NOT NULL, -- 音频文件的路径
+  application character varying NOT NULL default '',
+  mode character varying NOT NULL default '',
+  digit character varying NOT NULL default '',
+  sort character varying NOT NULL default '',
+  format character varying NOT NULL default '',
+  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
+  CONSTRAINT cti_link_public_moh_id PRIMARY KEY (id)
+) 
+WITHOUT OIDS;
+ALTER TABLE cti_link_public_moh OWNER TO postgres;
+COMMENT ON TABLE cti_link_public_moh IS '保存music_on_hold文件路径信息';
+COMMENT ON COLUMN cti_link_public_moh.id IS 'id号';
+COMMENT ON COLUMN cti_link_public_moh.name IS '类名 格式：企业号+类名';
+COMMENT ON COLUMN cti_link_public_moh.directory IS '音频文件的路径';
+COMMENT ON COLUMN cti_link_public_moh.application IS '应用程序';
+COMMENT ON COLUMN cti_link_public_moh.mode IS '模式';
+COMMENT ON COLUMN cti_link_public_moh.digit IS '按键';
+COMMENT ON COLUMN cti_link_public_moh.sort IS '排序方式';
+COMMENT ON COLUMN cti_link_public_moh.format IS '格式';
+COMMENT ON COLUMN cti_link_public_moh.create_time IS '记录创建时间';
+
+-- Index: cti_link_public_moh_name_idex
+
+-- DROP INDEX cti_link_public_moh_name_idex;
+
+CREATE INDEX cti_link_public_moh_name_idex
+  ON cti_link_public_moh
+  USING btree
+  (name);
+
+-- Table: cti_link_public_moh_voice
+
+-- DROP TABLE cti_link_public_moh_voice;
+
+CREATE TABLE cti_link_public_moh_voice
+(
+  id serial NOT NULL, 
+  moh_id integer NOT NULL,
+  voice_id integer NOT NULL,
+  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
+  CONSTRAINT cti_link_public_moh_voice_id PRIMARY KEY (id),
+  CONSTRAINT cti_link_public_moh_voice_moh_id_fkey FOREIGN KEY (moh_id)
+    REFERENCES cti_link_public_moh (id) MATCH SIMPLE,
+  CONSTRAINT cti_link_public_moh_voice_voice_id_fkey FOREIGN KEY (voice_id)
+    REFERENCES cti_link_public_voice (id) MATCH SIMPLE
+) 
+WITHOUT OIDS;
+ALTER TABLE cti_link_public_moh_voice OWNER TO postgres;
+COMMENT ON TABLE cti_link_public_moh_voice IS 'music_on_hold中语音文件';
+COMMENT ON COLUMN cti_link_public_moh_voice.id IS 'id标识';
+COMMENT ON COLUMN cti_link_public_moh_voice.moh_id IS 'moh类id';
+COMMENT ON COLUMN cti_link_public_moh_voice.voice_id IS '语音文件id';
+COMMENT ON COLUMN cti_link_public_moh_voice.create_time IS '记录创建时间';
+
+-- Table: cti_link_system_setting
+
+-- DROP TABLE cti_link_system_setting;
+
+CREATE TABLE cti_link_system_setting
+(
+  id serial NOT NULL, -- id标识
+  name character varying, -- name-value对
+  value character varying, -- name-value对
+  property character varying, -- 属性
+  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
+  CONSTRAINT cti_link_system_setting_pkey PRIMARY KEY (id)
+) 
+WITHOUT OIDS;
+ALTER TABLE cti_link_system_setting OWNER TO postgres;
+COMMENT ON TABLE cti_link_system_setting IS '系统设置表';
+COMMENT ON COLUMN cti_link_system_setting.id IS 'id标识';
+COMMENT ON COLUMN cti_link_system_setting.name IS 'name-value对';
+COMMENT ON COLUMN cti_link_system_setting.value IS 'name-value对';
+COMMENT ON COLUMN cti_link_system_setting.property IS '属性';
+COMMENT ON COLUMN cti_link_system_setting.create_time IS '记录创建时间';
+
 -- Table: cti_link_entity
 
 -- DROP TABLE cti_link_entity;
@@ -872,10 +1162,6 @@ COMMENT ON COLUMN cti_link_agent.is_ob IS '是否可以外呼，0:不允许，1�
 COMMENT ON COLUMN cti_link_agent.ib_record IS '呼入是否录音，0:不录音，1：录音';
 COMMENT ON COLUMN cti_link_agent.ob_record IS '外呼是否录，0:不录音，1：录音';
 COMMENT ON COLUMN cti_link_agent.create_time IS '记录创建时间';
-COMMENT ON COLUMN cti_link_agent.ob_clid_left_rule IS '0-随机,1-轮选,2-座席指定,3-按区号';
-COMMENT ON COLUMN cti_link_agent.ob_clid_left_recurrentselection_name IS 'day:按天轮选,time:按次轮选';
-COMMENT ON COLUMN cti_link_agent.ob_clid_left_recurrentselection_value IS '轮选取值1-30';
-COMMENT ON COLUMN cti_link_agent.ob_clid_left_assign_value IS '座席指定透传号，多条用逗号分隔';
 
 create index cti_link_agent_enterprise_id_index on cti_link_agent using btree(enterprise_id);
 
@@ -1168,294 +1454,3 @@ COMMENT ON COLUMN cti_link_order_call_back.area IS '地区';
 
 
 -- 分机配置表  webrtc软电话
-
-
------- common
--- Table: cti_link_sip_media_server
-
--- DROP TABLE cti_link_sip_media_server;
-
-CREATE TABLE cti_link_sip_media_server
-(
-  id serial NOT NULL, -- 流水号
-  name character varying, -- 名字 唯一
-  ip_addr character varying, -- IP地址
-  port integer DEFAULT 5060, -- sip信令端口
-  description character varying, -- 说明
-  status integer, -- sip media server的状态，比如正常和不正常
-  active integer DEFAULT 1, -- 是否激活 1激活 0暂停
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_sip_media_server_pkey PRIMARY KEY (id)
-)
-WITHOUT OIDS;
-ALTER TABLE cti_link_sip_media_server OWNER TO postgres;
-COMMENT ON TABLE cti_link_sip_media_server IS '网关列表';
-COMMENT ON COLUMN cti_link_sip_media_server.id IS 'id标识';
-COMMENT ON COLUMN cti_link_sip_media_server.name IS '名字 唯一';
-COMMENT ON COLUMN cti_link_sip_media_server.ip_addr IS 'IP地址';
-COMMENT ON COLUMN cti_link_sip_media_server.port IS 'sip信令端口';
-COMMENT ON COLUMN cti_link_sip_media_server.description IS '说明';
-COMMENT ON COLUMN cti_link_sip_media_server.status IS 'sip media server的状态，比如正常和不正常';
-COMMENT ON COLUMN cti_link_sip_media_server.active IS '是否激活 1激活 0暂停';
-COMMENT ON COLUMN cti_link_sip_media_server.create_time IS '记录创建时间';
-
-
--- Table: cti_link_sip_proxy
-
--- DROP TABLE cti_link_sip_proxy;
--- cti_link_sip_proxy存储sip proxy信息
-CREATE TABLE cti_link_sip_proxy
-(
-  id serial NOT NULL, -- 流水号
-  name character varying, -- 名字 唯一
-  ip_addr character varying, -- IP地址
-  port integer DEFAULT 5060, -- sip信令端口
-  description character varying, -- 说明
-  active integer DEFAULT 1, -- 是否激活 1激活 0暂停
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_sip_proxy_pkey PRIMARY KEY (id)
-)
-WITHOUT OIDS;
-ALTER TABLE cti_link_sip_proxy OWNER TO postgres;
-COMMENT ON TABLE cti_link_sip_proxy IS '网关列表';
-COMMENT ON COLUMN cti_link_sip_proxy.id IS 'id标识';
-COMMENT ON COLUMN cti_link_sip_proxy.name IS '名字 唯一';
-COMMENT ON COLUMN cti_link_sip_proxy.ip_addr IS 'IP地址';
-COMMENT ON COLUMN cti_link_sip_proxy.port IS 'sip信令端口';
-COMMENT ON COLUMN cti_link_sip_proxy.description IS '说明';
-COMMENT ON COLUMN cti_link_sip_proxy.active IS '是否激活 1激活 0暂停';
-COMMENT ON COLUMN cti_link_sip_proxy.create_time IS '记录创建时间';
-
--- Table: cti_link_gateway
-
--- DROP TABLE cti_link_gateway;
-
-CREATE TABLE cti_link_gateway
-(
-  id serial NOT NULL, -- 流水号
-  name character varying, -- 名字 唯一
-  prefix character varying, -- 号码前缀
-  ip_addr character varying, -- IP地址
-  port integer DEFAULT 5060, -- sip信令端口
-  area_code character varying, -- 网关默认区号
-  description character varying, -- 说明
-  call_limit integer default 300, -- 网关吞吐能力
-  disallow character varying DEFAULT 'all'::character varying, -- 网关codec选择disallow
-  allow character varying DEFAULT 'alaw,ulaw,g729,gsm'::character varying, -- 网关codec选择allow
-  dtmf_mode character varying DEFAULT 'rfc2833'::character varying, -- 网关的dtmf设置 rfc2833/info/auto/inband
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_gateway_pkey PRIMARY KEY (id),
-  CONSTRAINT cti_link_gateway_name_unique UNIQUE (name)
-)
-WITHOUT OIDS;
-ALTER TABLE cti_link_gateway OWNER TO postgres;
-COMMENT ON TABLE cti_link_gateway IS '网关列表';
-COMMENT ON COLUMN cti_link_gateway.id IS 'id标识';
-COMMENT ON COLUMN cti_link_gateway.prefix IS '号码前缀';
-COMMENT ON COLUMN cti_link_gateway.name IS '名字 唯一';
-COMMENT ON COLUMN cti_link_gateway.ip_addr IS 'IP地址';
-COMMENT ON COLUMN cti_link_gateway.port IS 'sip信令端口';
-COMMENT ON COLUMN cti_link_gateway.area_code IS '网关默认区号';
-COMMENT ON COLUMN cti_link_gateway.description IS '说明';
-COMMENT ON COLUMN cti_link_gateway.call_limit IS '网关吞吐能力';
-COMMENT ON COLUMN cti_link_gateway.disallow IS '网关codec选择disallow';
-COMMENT ON COLUMN cti_link_gateway.allow IS '网关codec选择allow';
-COMMENT ON COLUMN cti_link_gateway.dtmf_mode IS '网关的dtmf设置 rfc2833/info/auto/inband';
-COMMENT ON COLUMN cti_link_gateway.create_time IS '记录创建时间';
-
-
--- Table: cti_link_routerset
-
--- DROP TABLE cti_link_routerset;
-
-CREATE TABLE cti_link_routerset
-(
-  id serial NOT NULL, -- 流水号
-  "name" character varying, -- 路由组名称
-  description character varying, -- 描述
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_routerset_pkey PRIMARY KEY (id)
-)
-WITHOUT OIDS;
-ALTER TABLE cti_link_routerset OWNER TO postgres;
-COMMENT ON TABLE cti_link_routerset IS '路由组列表';
-COMMENT ON COLUMN cti_link_routerset.id IS 'id标识';
-COMMENT ON COLUMN cti_link_routerset."name" IS '路由组名称';
-COMMENT ON COLUMN cti_link_routerset.description IS '描述';
-COMMENT ON COLUMN cti_link_routerset.create_time IS '记录创建时间';
-
--- Table: cti_link_router
-
--- DROP TABLE cti_link_router;
-
-CREATE TABLE cti_link_router
-(
-  id serial NOT NULL, -- 流水号
-  routerset_id integer NOT NULL, -- 对应路由组id
-  prefix character varying, -- 号码前缀
-  gateway_id integer NOT NULL, -- 对应网关id
-  priority integer NOT NULL DEFAULT 1, -- 路由优先级 数字越小越优先
-  description character varying, -- 说明
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_router_pkey PRIMARY KEY (id),
-  CONSTRAINT cti_link_router_routerset_id_fkey FOREIGN KEY (routerset_id)
-    REFERENCES cti_link_routerset (id) MATCH SIMPLE,  
-  CONSTRAINT cti_link_router_gateway_id_fkey FOREIGN KEY (gateway_id)
-    REFERENCES cti_link_gateway (id) MATCH SIMPLE
-)
-WITHOUT OIDS;
-ALTER TABLE cti_link_router OWNER TO postgres;
-COMMENT ON TABLE cti_link_router IS '号码路由表';
-COMMENT ON COLUMN cti_link_router.id IS 'id标识';
-COMMENT ON COLUMN cti_link_router.prefix IS '号码前缀';
-COMMENT ON COLUMN cti_link_router.routerset_id IS '对应路由组id';
-COMMENT ON COLUMN cti_link_router.gateway_id IS '对应网关id';
-COMMENT ON COLUMN cti_link_router.priority IS '路由优先级 路由优先级 数字越小越优先';
-COMMENT ON COLUMN cti_link_router.description IS '说明';
-COMMENT ON COLUMN cti_link_router.create_time IS '记录创建时间';
-
--- Table: cti_link_area_code
-
--- DROP TABLE cti_link_area_code;
-
-CREATE TABLE cti_link_area_code
-(
-  id serial NOT NULL, -- id标识
-  province character varying(20), -- 省份
-  prefix character varying(10), -- 万号
-  area_code character varying(10), -- 区号
-  city character varying(20), -- 城市
-  CONSTRAINT cti_link_area_code_pkey PRIMARY KEY (id )
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE cti_link_area_code
-  OWNER TO postgres;
-GRANT ALL ON TABLE cti_link_area_code TO postgres;
-GRANT ALL ON TABLE cti_link_area_code TO public;
-COMMENT ON TABLE cti_link_area_code
-  IS '手机号码库';
-COMMENT ON COLUMN cti_link_area_code.id IS 'id标识';
-COMMENT ON COLUMN cti_link_area_code.province IS '省份';
-COMMENT ON COLUMN cti_link_area_code.prefix IS '万号';
-COMMENT ON COLUMN cti_link_area_code.area_code IS '区号';
-COMMENT ON COLUMN cti_link_area_code.city IS '城市';
-
--- Index: cti_link_area_code_prefix_index
-
--- DROP INDEX cti_link_area_code_prefix_index;
-
-CREATE INDEX cti_link_area_code_prefix_index
-  ON cti_link_area_code
-  USING btree
-  (prefix );
-
-
-
--- Table: cti_link_public_voice
-
--- DROP TABLE cti_link_public_voice;
-
-CREATE TABLE cti_link_public_voice
-(
-  id serial NOT NULL,
-  voice_name character varying,
-  path character varying,
-  description character varying, 
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_public_voice_pkey PRIMARY KEY (id)
-) 
-WITHOUT OIDS;
-ALTER TABLE cti_link_public_voice OWNER TO postgres;
-COMMENT ON TABLE cti_link_public_voice IS '公共语音库';
-COMMENT ON COLUMN cti_link_public_voice.id IS '流水号';
-COMMENT ON COLUMN cti_link_public_voice.voice_name IS '语音文件名';
-COMMENT ON COLUMN cti_link_public_voice.path IS '语音文件路径';
-COMMENT ON COLUMN cti_link_public_voice.description IS '描述';
-COMMENT ON COLUMN cti_link_public_voice.create_time IS '记录创建时间';
-
--- Table: cti_link_public_moh
-
--- DROP TABLE cti_link_public_moh;
-
-CREATE TABLE cti_link_public_moh
-(
-  id serial NOT NULL, -- 流水号
-  name character varying NOT NULL, -- 类名 格式：企业号+类名
-  directory character varying NOT NULL, -- 音频文件的路径
-  application character varying NOT NULL default '',
-  mode character varying NOT NULL default '',
-  digit character varying NOT NULL default '',
-  sort character varying NOT NULL default '',
-  format character varying NOT NULL default '',
-  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
-  CONSTRAINT cti_link_public_moh_id PRIMARY KEY (id)
-) 
-WITHOUT OIDS;
-ALTER TABLE cti_link_public_moh OWNER TO postgres;
-COMMENT ON TABLE cti_link_public_moh IS '保存music_on_hold文件路径信息';
-COMMENT ON COLUMN cti_link_public_moh.id IS 'id号';
-COMMENT ON COLUMN cti_link_public_moh.name IS '类名 格式：企业号+类名';
-COMMENT ON COLUMN cti_link_public_moh.directory IS '音频文件的路径';
-COMMENT ON COLUMN cti_link_public_moh.application IS '应用程序';
-COMMENT ON COLUMN cti_link_public_moh.mode IS '模式';
-COMMENT ON COLUMN cti_link_public_moh.digit IS '按键';
-COMMENT ON COLUMN cti_link_public_moh.sort IS '排序方式';
-COMMENT ON COLUMN cti_link_public_moh.format IS '格式';
-COMMENT ON COLUMN cti_link_public_moh.create_time IS '记录创建时间';
-
--- Index: cti_link_public_moh_name_idex
-
--- DROP INDEX cti_link_public_moh_name_idex;
-
-CREATE INDEX cti_link_public_moh_name_idex
-  ON cti_link_public_moh
-  USING btree
-  (name);
-
--- Table: cti_link_public_moh_voice
-
--- DROP TABLE cti_link_public_moh_voice;
-
-CREATE TABLE cti_link_public_moh_voice
-(
-  id serial NOT NULL, 
-  moh_id integer NOT NULL,
-  voice_id integer NOT NULL,
-  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
-  CONSTRAINT cti_link_public_moh_voice_id PRIMARY KEY (id),
-  CONSTRAINT cti_link_public_moh_voice_moh_id_fkey FOREIGN KEY (moh_id)
-    REFERENCES cti_link_public_moh (id) MATCH SIMPLE,
-  CONSTRAINT cti_link_public_moh_voice_voice_id_fkey FOREIGN KEY (voice_id)
-    REFERENCES cti_link_public_voice (id) MATCH SIMPLE
-) 
-WITHOUT OIDS;
-ALTER TABLE cti_link_public_moh_voice OWNER TO postgres;
-COMMENT ON TABLE cti_link_public_moh_voice IS 'music_on_hold中语音文件';
-COMMENT ON COLUMN cti_link_public_moh_voice.id IS 'id标识';
-COMMENT ON COLUMN cti_link_public_moh_voice.moh_id IS 'moh类id';
-COMMENT ON COLUMN cti_link_public_moh_voice.voice_id IS '语音文件id';
-COMMENT ON COLUMN cti_link_public_moh_voice.create_time IS '记录创建时间';
-
--- Table: cti_link_system_setting
-
--- DROP TABLE cti_link_system_setting;
-
-CREATE TABLE cti_link_system_setting
-(
-  id serial NOT NULL, -- id标识
-  name character varying, -- name-value对
-  value character varying, -- name-value对
-  property character varying, -- 属性
-  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
-  CONSTRAINT cti_link_system_setting_pkey PRIMARY KEY (id)
-) 
-WITHOUT OIDS;
-ALTER TABLE cti_link_system_setting OWNER TO postgres;
-COMMENT ON TABLE cti_link_system_setting IS '系统设置表';
-COMMENT ON COLUMN cti_link_system_setting.id IS 'id标识';
-COMMENT ON COLUMN cti_link_system_setting.name IS 'name-value对';
-COMMENT ON COLUMN cti_link_system_setting.value IS 'name-value对';
-COMMENT ON COLUMN cti_link_system_setting.property IS '属性';
-COMMENT ON COLUMN cti_link_system_setting.create_time IS '记录创建时间';

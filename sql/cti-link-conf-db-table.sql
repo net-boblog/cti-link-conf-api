@@ -1,4 +1,24 @@
 ------ common
+-- Table: cti_link_sip_group
+
+-- DROP TABLE cti_link_sip_group;
+
+CREATE TABLE cti_link_sip_group
+(
+  id serial NOT NULL, -- sip media server组id，用于灰度升级
+  percent integer, -- 流量百分比
+  description character varying, -- 说明
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+  CONSTRAINT cti_link_sip_group_pkey PRIMARY KEY (id)
+)
+WITHOUT OIDS;
+ALTER TABLE cti_link_sip_group OWNER TO postgres;
+COMMENT ON TABLE cti_link_sip_group IS 'sip media server组，用于灰度升级';
+COMMENT ON COLUMN cti_link_sip_group.id IS 'sip media server组id';
+COMMENT ON COLUMN cti_link_sip_group.percent IS '流量百分比';
+COMMENT ON COLUMN cti_link_sip_group.description IS '说明';
+COMMENT ON COLUMN cti_link_sip_group.create_time IS '记录创建时间';
+
 -- Table: cti_link_sip_media_server
 
 -- DROP TABLE cti_link_sip_media_server;
@@ -6,6 +26,7 @@
 CREATE TABLE cti_link_sip_media_server
 (
   id serial NOT NULL, -- 流水号
+  group_id integer NOT NULL, -- sip media server组id
   name character varying, -- 名字 唯一
   ip_addr character varying, -- IP地址
   port integer DEFAULT 5060, -- sip信令端口
@@ -13,12 +34,15 @@ CREATE TABLE cti_link_sip_media_server
   status integer, -- sip media server的状态，比如正常和不正常
   active integer DEFAULT 1, -- 是否激活 1激活 0暂停
   create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
-  CONSTRAINT cti_link_sip_media_server_pkey PRIMARY KEY (id)
+  CONSTRAINT cti_link_sip_media_server_pkey PRIMARY KEY (id),
+  CONSTRAINT cti_link_sip_media_server_group_id_fkey FOREIGN KEY (group_id)
+    REFERENCES cti_link_sip_group (id) MATCH SIMPLE
 )
 WITHOUT OIDS;
 ALTER TABLE cti_link_sip_media_server OWNER TO postgres;
 COMMENT ON TABLE cti_link_sip_media_server IS '网关列表';
 COMMENT ON COLUMN cti_link_sip_media_server.id IS 'id标识';
+COMMENT ON COLUMN cti_link_sip_media_server.group_id IS 'sip media server组id';
 COMMENT ON COLUMN cti_link_sip_media_server.name IS '名字 唯一';
 COMMENT ON COLUMN cti_link_sip_media_server.ip_addr IS 'IP地址';
 COMMENT ON COLUMN cti_link_sip_media_server.port IS 'sip信令端口';
@@ -26,7 +50,6 @@ COMMENT ON COLUMN cti_link_sip_media_server.description IS '说明';
 COMMENT ON COLUMN cti_link_sip_media_server.status IS 'sip media server的状态，比如正常和不正常';
 COMMENT ON COLUMN cti_link_sip_media_server.active IS '是否激活 1激活 0暂停';
 COMMENT ON COLUMN cti_link_sip_media_server.create_time IS '记录创建时间';
-
 
 -- Table: cti_link_sip_proxy
 
@@ -311,6 +334,33 @@ COMMENT ON COLUMN cti_link_entity.entity_type IS '实体级别 3=客户';
 COMMENT ON COLUMN cti_link_entity.area_code IS '所属区号';
 COMMENT ON COLUMN cti_link_entity.create_time IS '创建时间';
 
+-- Table: cti_link_ab_test
+
+-- DROP TABLE cti_link_ab_test;
+
+CREATE TABLE cti_link_ab_test
+(
+  id serial NOT NULL,
+  enterprise_id integer NOT NULL,
+  sip_group_id integer default -1,
+  comment character varying,
+  create_time timestamp with time zone DEFAULT now(), 
+  CONSTRAINT cti_link_ab_test_pkey PRIMARY KEY (id),
+  CONSTRAINT cti_link_trunk_enterprise_id_fkey FOREIGN KEY (enterprise_id)
+    REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
+) 
+WITHOUT OIDS;
+ALTER TABLE cti_link_ab_test OWNER TO postgres;
+COMMENT ON TABLE cti_link_trunk IS '企业的中继号码表';
+COMMENT ON COLUMN cti_link_trunk.id IS 'id标识';
+COMMENT ON COLUMN cti_link_trunk.enterprise_id IS '企业id';
+COMMENT ON COLUMN cti_link_trunk.sip_group_id IS 'sip media server的组id，-1表示不指定id，用于按企业级灰度升级';
+COMMENT ON COLUMN cti_link_trunk.number_trunk IS '中继号码';
+COMMENT ON COLUMN cti_link_trunk.area_code IS '目的码所在地区区号';
+COMMENT ON COLUMN cti_link_trunk.type IS '目的码类型：0--未绑定400或1010号码 1--绑定400或1010号码  2--手机虚拟号码';
+COMMENT ON COLUMN cti_link_trunk.comment IS '备注';
+COMMENT ON COLUMN cti_link_trunk.create_time IS '记录创建时间';
+
 -- Table: cti_link_trunk
 
 -- DROP TABLE cti_link_trunk;
@@ -319,6 +369,7 @@ CREATE TABLE cti_link_trunk
 (
   id serial NOT NULL,
   enterprise_id integer NOT NULL,
+  sip_group_id integer default -1,
   number_trunk character varying,
   area_code character varying, 
   type integer NOT NULL,
@@ -333,6 +384,7 @@ ALTER TABLE cti_link_trunk OWNER TO postgres;
 COMMENT ON TABLE cti_link_trunk IS '企业的中继号码表';
 COMMENT ON COLUMN cti_link_trunk.id IS 'id标识';
 COMMENT ON COLUMN cti_link_trunk.enterprise_id IS '企业id';
+COMMENT ON COLUMN cti_link_trunk.sip_group_id IS 'sip media server的组id，-1表示不指定id，用于按企业级灰度升级';
 COMMENT ON COLUMN cti_link_trunk.number_trunk IS '中继号码';
 COMMENT ON COLUMN cti_link_trunk.area_code IS '目的码所在地区区号';
 COMMENT ON COLUMN cti_link_trunk.type IS '目的码类型：0--未绑定400或1010号码 1--绑定400或1010号码  2--手机虚拟号码';

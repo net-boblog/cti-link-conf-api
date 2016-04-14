@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
@@ -92,7 +93,7 @@
         <property name="dataSource" ref="dataSource" />
         <property name="mapperLocations">
             <array>
-                <value>classpath*:com/tinet/ctilink/**/*Mapper.xml</value>
+                <value>classpath*:mybatis/*Mapper.xml</value>
             </array>
         </property>
         <property name="typeAliasesPackage" value="com.tinet.ctilink.model" />
@@ -129,7 +130,23 @@
     </bean>
 
     <!-- 通过注解的方式管理事务 -->
-    <tx:annotation-driven transaction-manager="transactionManager" />
+    <!--<tx:annotation-driven transaction-manager="transactionManager" />-->
+
+    <!-- 以AspectJ方式 定义 AOP -->
+    <aop:config>
+        <aop:advisor pointcut="execution(* com.tinet.ctilink..*Service.*(..))" advice-ref="txAdvice"/>
+    </aop:config>
+
+    <!-- 基本事务定义,使用transactionManager作事务管理 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="list*" read-only="true" propagation="SUPPORTS"/>
+            <tx:method name="create*"/>
+            <tx:method name="update*"/>
+            <tx:method name="delete*"/>
+        </tx:attributes>
+    </tx:advice>
 
     <!-- JMX监控输出 -->
     <context:mbean-export />

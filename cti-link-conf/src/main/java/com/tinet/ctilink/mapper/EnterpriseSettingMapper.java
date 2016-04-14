@@ -4,7 +4,7 @@ import com.tinet.ctilink.model.EnterpriseSetting;
 
 /**
  * @author fengwei //
- * @date 16/4/11 14:10
+ * @date 16/4/13 15:06
  */
 public interface EnterpriseSettingMapper extends BaseMapper<EnterpriseSetting> {
 }

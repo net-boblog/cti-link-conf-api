@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Table(name = "cti_link_entity")
 public class Entity {
-    @Id
+
     private Integer enterpriseId;
 
     private String enterpriseName;

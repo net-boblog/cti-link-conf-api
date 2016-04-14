@@ -20,14 +20,15 @@ public class ApiResult<T> implements Serializable {
 
     private T data;
 
-    /**
-     * 默认成功
-     */
     public ApiResult() {
-        this.result = SUCCESS_RESULT;
-        this.description = SUCCESS_DESCRIPTION;
+
     }
 
+    public ApiResult(int result) {
+        this.result = result;
+    }
+
+    //有data一定是成功的
     public ApiResult(T data) {
         this.result = SUCCESS_RESULT;
         this.description = SUCCESS_DESCRIPTION;
@@ -48,6 +49,9 @@ public class ApiResult<T> implements Serializable {
 
     public void setResult(int result) {
         this.result = result;
+        if (result == SUCCESS_RESULT) {
+            this.description = SUCCESS_DESCRIPTION;
+        }
     }
 
     public String getDescription() {
@@ -72,10 +76,4 @@ public class ApiResult<T> implements Serializable {
         return super.toString();
     }
 
-
-    public ApiResult<T> getFailResult(String description) {
-        this.result = FAIL_RESULT;
-        this.description = description;
-        return this;
-    }
 }

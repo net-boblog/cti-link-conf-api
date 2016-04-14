@@ -1,5 +1,6 @@
 package com.tinet.ctilink.model;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -7,9 +8,12 @@ import java.util.Date;
 @Table(name = "cti_link_trunk")
 public class Trunk {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     private Integer enterpriseId;
+
+    private Integer sipGroupId;
 
     private String numberTrunk;
 
@@ -35,6 +39,14 @@ public class Trunk {
 
     public void setEnterpriseId(Integer enterpriseId) {
         this.enterpriseId = enterpriseId;
+    }
+
+    public Integer getSipGroupId() {
+        return sipGroupId;
+    }
+
+    public void setSipGroupId(Integer sipGroupId) {
+        this.sipGroupId = sipGroupId;
     }
 
     public String getNumberTrunk() {

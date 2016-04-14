@@ -2,6 +2,7 @@ package com.tinet.ctilink.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,9 +17,9 @@ import java.util.Set;
  * @date 16/4/12 13:11
  */
 @Service
-public class CacheService<T> {
+public class RedisService<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CacheService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RedisService.class);
 
     private ObjectMapper mapper = new ObjectMapper();
 

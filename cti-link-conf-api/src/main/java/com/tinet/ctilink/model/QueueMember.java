@@ -6,6 +6,7 @@ import java.util.Date;
 @Table(name = "cti_link_queue_member")
 public class QueueMember {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     private Integer enterpriseId;

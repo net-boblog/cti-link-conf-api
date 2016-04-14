@@ -3,8 +3,6 @@ package com.tinet.ctilink.filter;
 import com.alibaba.dubbo.rpc.*;
 import com.tinet.ctilink.ApiResult;
 
-import java.lang.reflect.Method;
-
 /**
  * @author fengwei //
  * @date 16/4/9 12:02
@@ -28,8 +26,6 @@ public class ServiceFilter implements Filter {
                 || invocation.getMethodName().startsWith("delete")) {
             System.out.println("need refresh cache");
         }
-
-        Class clazz = invoker.getInterface();
 
         System.out.println("after dubbo filter");
         // after filter ...

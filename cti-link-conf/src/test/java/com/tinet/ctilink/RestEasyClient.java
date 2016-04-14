@@ -15,18 +15,19 @@ public class RestEasyClient {
 
     public static void main(String[] args) {
 
-        EnterpriseSetting es = new EnterpriseSetting();
-        es.setEnterpriseId(50000001);
-        es.setName("test1");
+        com.tinet.ctilink.model.Entity entity = new com.tinet.ctilink.model.Entity();
+        entity.setEnterpriseId(60000002);
+        entity.setEnterpriseName("test");
+
 
         try {
             ResteasyClient client = new ResteasyClientBuilder().build();
 
             ResteasyWebTarget target = client
-                    .target("http://localhost:8089/v1/enterpriseSetting/get");
+                    .target("http://localhost:8089/v1/entity/create");
 
             Response response = target.request().post(
-                    Entity.entity(es, "application/json"));
+                    Entity.entity(entity, "application/json"));
 
             if (response.getStatus() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : "

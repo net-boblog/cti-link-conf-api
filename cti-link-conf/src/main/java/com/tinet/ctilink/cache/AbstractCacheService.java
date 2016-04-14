@@ -14,10 +14,10 @@ import java.util.Set;
  * @author fengwei //
  * @date 16/4/12 15:59
  */
-public abstract class AbstractCacheBaseService<T> extends BaseService<T> {
+public abstract class AbstractCacheService<T> extends BaseService<T> {
 
     @Autowired
-    CacheService<T> cacheService;
+    RedisService<T> redisService;
 
     @Autowired
     EntityService entityService;
@@ -34,42 +34,41 @@ public abstract class AbstractCacheBaseService<T> extends BaseService<T> {
     public boolean loadCache(Integer enterpriseId) {
         List<T> list = selectByEnterpriseId(enterpriseId);
         for (T t : list) {
-            cacheService.set(getCacheKey(t), t);
+            redisService.set(getCacheKey(t), t);
         }
         return true;
     }
 
-    public boolean cleanCache() {
-        Set<String> existKeySet = cacheService.keys(getCleanCacheKeyPrefix());
-        ApiResult<List<Entity>> result = entityService.list();
+    public boolean cleanCache(List<Entity> entityList) {
+        Set<String> existKeySet = redisService.keys(getCleanCacheKeyPrefix());
         Set<String> dbKeySet = new HashSet<>();
-        for (Entity entity : result.getData()) {
+        for (Entity entity : entityList) {
             List<T> list = selectByEnterpriseId(entity.getEnterpriseId());
             list.stream().forEach(t-> dbKeySet.add(getCacheKey(t)));
         }
 
         existKeySet.removeAll(dbKeySet);
         if (existKeySet.size() > 0) {
-            cacheService.delete(existKeySet);
+            redisService.delete(existKeySet);
         }
 
         return true;
     }
 
     public boolean refreshCache(Integer enterpriseId) {
-        Set<String> existKeySet = cacheService.keys(getRefreshCacheKeyPrefix(enterpriseId));
+        Set<String> existKeySet = redisService.keys(getRefreshCacheKeyPrefix(enterpriseId));
 
         Set<String> dbKeySet = new HashSet<>();
         List<T> list = selectByEnterpriseId(enterpriseId);
         for (T t : list) {
             String key = getCacheKey(t);
-            cacheService.set(key, t);
+            redisService.set(key, t);
             dbKeySet.add(key);
         }
 
         existKeySet.removeAll(dbKeySet);
         if (existKeySet.size() > 0) {
-            cacheService.delete(existKeySet);
+            redisService.delete(existKeySet);
         }
 
         return true;

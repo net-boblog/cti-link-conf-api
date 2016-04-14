@@ -1,12 +1,12 @@
 package com.tinet.ctilink.model;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "cti_link_enterprise_setting")
 public class EnterpriseSetting {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     private Integer enterpriseId;
@@ -18,6 +18,10 @@ public class EnterpriseSetting {
     private String property;
 
     private Date createTime;
+
+    public EnterpriseSetting() {
+        this.createTime = new Date();
+    }
 
     public Integer getId() {
         return id;

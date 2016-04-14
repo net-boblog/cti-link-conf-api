@@ -1,5 +1,6 @@
 package com.tinet.ctilink.model;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -7,7 +8,10 @@ import java.util.Date;
 @Table(name = "cti_link_sip_media_server")
 public class SipMediaServer {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
+
+    private Integer groupId;
 
     private String name;
 
@@ -29,6 +33,14 @@ public class SipMediaServer {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 
     public String getName() {

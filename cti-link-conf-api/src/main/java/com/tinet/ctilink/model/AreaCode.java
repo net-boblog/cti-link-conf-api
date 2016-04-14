@@ -1,11 +1,13 @@
 package com.tinet.ctilink.model;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "cti_link_area_code")
 public class AreaCode {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     private String province;

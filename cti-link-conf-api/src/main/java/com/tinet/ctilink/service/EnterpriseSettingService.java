@@ -11,7 +11,7 @@ import java.util.List;
  * @author fengwei //
  * @date 16/4/7 17:40
  *
- * wiki: https://github.com/ti-net/cti-link-conf-api/wiki/conf-api%E4%BC%81%E4%B8%9A%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3-v1
+ * https://github.com/ti-net/cti-link-conf-api/wiki/conf-api%E4%BC%81%E4%B8%9A%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3-v1
  */
 @Path("v1/enterpriseSetting")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -20,7 +20,7 @@ public interface EnterpriseSettingService {
 
     @POST
     @Path("create")
-    ApiResult create(EnterpriseSetting enterpriseSetting);
+    ApiResult<EnterpriseSetting> create(EnterpriseSetting enterpriseSetting);
 
     @POST
     @Path("update")

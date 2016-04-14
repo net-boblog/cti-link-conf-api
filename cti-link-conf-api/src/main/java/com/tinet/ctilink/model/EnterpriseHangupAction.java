@@ -1,5 +1,6 @@
 package com.tinet.ctilink.model;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.Date;
 @Table(name = "cti_link_enterprise_hangup_action")
 public class EnterpriseHangupAction {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     private Integer enterpriseId;

@@ -1,12 +1,14 @@
 package com.tinet.ctilink.model;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
-@Table(name = "cti_link_enterprise_voice_mail")
-public class EnterpriseVoiceMail {
+@Table(name = "cti_link_enterprise_voicemail")
+public class EnterpriseVoicemail {
     @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     private Integer enterpriseId;

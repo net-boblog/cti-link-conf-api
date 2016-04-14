@@ -25,6 +25,7 @@ public class Application {
         // 加载Spring容器
         ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/*.xml");
 
+        // 使主线程等待以持续提供服务
         synchronized (Main.class) {
             while (true) {
                 try {

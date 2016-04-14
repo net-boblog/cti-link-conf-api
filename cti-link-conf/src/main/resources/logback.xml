@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<contextName>clink-biz</contextName>
-	<property name="contextName" value="clink-biz" />
+	<property name="contextName" value="cti-link-conf" />
 	<property name="logHome" value="/var/log/cti-link" />
 	<jmxConfigurator />
 

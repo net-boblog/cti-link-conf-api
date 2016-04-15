@@ -1,1 +1,1 @@
-serviceFilter=com.tinet.ctilink.filter.ServiceFilter
+provider=com.tinet.ctilink.filter.ProviderFilter

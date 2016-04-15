@@ -1,10 +1,12 @@
-package com.tinet.ctilink.service;
+package com.tinet.ctilink.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.ApiResult;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.model.Entity;
+import com.tinet.ctilink.service.BaseService;
+import com.tinet.ctilink.service.EntityService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
@@ -17,7 +19,7 @@ import java.util.List;
  */
 @Service
 public class EntityServiceImp extends BaseService<Entity>
-        implements EntityService, InitializingBean {
+        implements EntityService {
 
     @Autowired
     RedisService redisService;
@@ -37,28 +39,4 @@ public class EntityServiceImp extends BaseService<Entity>
         return null;
     }
 
-    @Override
-    public ApiResult<Entity> create(Entity entity) {
-
-        insertSelective(entity);
-        redisService.set("cache_test1", "create");
-        return new ApiResult<>(entity);
-    }
-
-    @Override
-    public ApiResult<Entity> createWithSleep(Entity entity) {
-        insertSelective(entity);
-        try {
-            Thread.sleep(10000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        redisService.set("cache_test2", "createWithSleep");
-        return new ApiResult<>(entity);
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
-    }
 }

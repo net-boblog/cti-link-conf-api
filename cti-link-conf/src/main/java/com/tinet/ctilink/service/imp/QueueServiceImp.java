@@ -1,7 +1,9 @@
-package com.tinet.ctilink.service;
+package com.tinet.ctilink.service.imp;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.ApiResult;
 import com.tinet.ctilink.model.Queue;
+import com.tinet.ctilink.service.QueueService;
 
 import java.util.List;
 
@@ -9,6 +11,7 @@ import java.util.List;
  * @author fengwei //
  * @date 16/4/7 17:17
  */
+@Service
 public class QueueServiceImp implements QueueService {
 
     @Override

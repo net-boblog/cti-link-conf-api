@@ -1,18 +1,15 @@
-package com.tinet.ctilink.service;
+package com.tinet.ctilink.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.ApiResult;
-import com.tinet.ctilink.cache.AbstractCacheService;
-import com.tinet.ctilink.dao.EntityDao;
 import com.tinet.ctilink.model.EnterpriseSetting;
+import com.tinet.ctilink.service.AbstractService;
+import com.tinet.ctilink.service.EnterpriseSettingService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,13 +17,14 @@ import java.util.List;
  * @date 16/4/7 17:20
  */
 @Service
-public class EnterpriseSettingServiceImp extends AbstractCacheService<EnterpriseSetting>
+public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetting>
         implements EnterpriseSettingService {
 
     private final static Logger logger = LoggerFactory.getLogger(EnterpriseSettingServiceImp.class);
 
     private final static String CACHE_KEY_PREFIX = "cti-link.enterprise_setting.";
     private final static String CACHE_KEY = CACHE_KEY_PREFIX + "%d.name.%s";
+    private final static String METHOD_REFRESH_CACHE = "refreshCache";
 
 
     public ApiResult<EnterpriseSetting> create(EnterpriseSetting enterpriseSetting) {
@@ -58,9 +56,6 @@ public class EnterpriseSettingServiceImp extends AbstractCacheService<Enterprise
         } else {
             result.setResult(ApiResult.SUCCESS_RESULT);
             result.setData(enterpriseSetting);
-
-            //refresh cache
-            refreshCache(enterpriseId);
         }
         return result;
     }
@@ -96,9 +91,7 @@ public class EnterpriseSettingServiceImp extends AbstractCacheService<Enterprise
         } else {
             result.setResult(ApiResult.SUCCESS_RESULT);
             result.setDescription(ApiResult.SUCCESS_DESCRIPTION);
-
-            //refresh cache
-            refreshCache(enterpriseId);
+            setAfterReturningMethod(enterpriseId);
         }
         return result;
     }

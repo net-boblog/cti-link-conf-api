@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author fengwei //
@@ -31,5 +32,9 @@ public interface QueueSkillService {
     @POST
     @Path("update")
     ApiResult<QueueSkill> update(QueueSkill queueSkill);
+
+    @POST
+    @Path("list")
+    ApiResult<List<QueueSkill>> list(QueueSkill queueSkill);
 
 }

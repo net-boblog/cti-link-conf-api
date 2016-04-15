@@ -1,4 +1,6 @@
-package com.tinet.ctilink.service;
+package com.tinet.ctilink.service.imp;
+
+import com.tinet.ctilink.service.TelsetService;
 
 /**
  * @author fengwei //

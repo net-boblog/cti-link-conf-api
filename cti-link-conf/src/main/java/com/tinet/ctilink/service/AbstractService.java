@@ -1,9 +1,10 @@
-package com.tinet.ctilink.cache;
+package com.tinet.ctilink.service;
 
 import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.cache.AfterReturningMethod;
+import com.tinet.ctilink.cache.CacheAspect;
+import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.model.Entity;
-import com.tinet.ctilink.service.BaseService;
-import com.tinet.ctilink.service.EntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -13,8 +14,10 @@ import java.util.Set;
 /**
  * @author fengwei //
  * @date 16/4/12 15:59
+ *
+ * 在BaseService基础上增加了缓存操作的通用方法, 其他service实现abstract方法即可
  */
-public abstract class AbstractCacheService<T> extends BaseService<T> {
+public abstract class AbstractService<T> extends BaseService<T> {
 
     @Autowired
     RedisService<T> redisService;
@@ -71,6 +74,17 @@ public abstract class AbstractCacheService<T> extends BaseService<T> {
             redisService.delete(existKeySet);
         }
 
+        return true;
+    }
+
+    public boolean setAfterReturningMethod(Integer enterpriseId) {
+        try {
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(this.getClass().getMethod("refreshCache", Integer.class)
+                    , this, enterpriseId);
+            CacheAspect.methodThreadLocal.set(afterReturningMethod);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 

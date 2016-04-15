@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author fengwei //
@@ -31,4 +32,8 @@ public interface AgentTelService {
     @POST
     @Path("update")
     ApiResult<AgentTel> update(AgentTel agentTel);
+
+    @POST
+    @Path("list")
+    ApiResult<List<AgentTel>> list(AgentTel agentTel);
 }

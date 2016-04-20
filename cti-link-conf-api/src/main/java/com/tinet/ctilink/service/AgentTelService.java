@@ -23,17 +23,17 @@ public interface AgentTelService {
 
     @POST
     @Path("create")
-    ApiResult<AgentTel> create(AgentTel agentTel);
+    ApiResult<AgentTel> createAgentTel(AgentTel agentTel);
 
     @POST
     @Path("delete")
-    ApiResult delete(AgentTel agentTel);
+    ApiResult deleteAgentTel(AgentTel agentTel);
 
     @POST
     @Path("update")
-    ApiResult<AgentTel> update(AgentTel agentTel);
+    ApiResult<AgentTel> updateAgentTel(AgentTel agentTel);
 
     @POST
     @Path("list")
-    ApiResult<List<AgentTel>> list(AgentTel agentTel);
+    ApiResult<List<AgentTel>> listAgentTel(AgentTel agentTel);
 }

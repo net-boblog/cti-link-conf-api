@@ -1,11 +1,12 @@
 package com.tinet.ctilink.service;
 
 import com.tinet.ctilink.ApiResult;
-import com.tinet.ctilink.cache.AfterReturningMethod;
-import com.tinet.ctilink.cache.CacheAspect;
+import com.tinet.ctilink.filter.AfterReturningMethod;
 import com.tinet.ctilink.cache.RedisService;
+import com.tinet.ctilink.filter.ProviderFilter;
 import com.tinet.ctilink.model.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.Set;
 public abstract class AbstractService<T> extends BaseService<T> {
 
     @Autowired
-    RedisService<T> redisService;
+    RedisService redisService;
 
     @Autowired
     EntityService entityService;
@@ -52,7 +53,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
 
         existKeySet.removeAll(dbKeySet);
         if (existKeySet.size() > 0) {
-            redisService.delete(existKeySet);
+            redisService.deleteByKeySet(existKeySet);
         }
 
         return true;
@@ -71,7 +72,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
 
         existKeySet.removeAll(dbKeySet);
         if (existKeySet.size() > 0) {
-            redisService.delete(existKeySet);
+            redisService.deleteByKeySet(existKeySet);
         }
 
         return true;
@@ -81,7 +82,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
         try {
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(this.getClass().getMethod("refreshCache", Integer.class)
                     , this, enterpriseId);
-            CacheAspect.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
         } catch (Exception e) {
             e.printStackTrace();
         }

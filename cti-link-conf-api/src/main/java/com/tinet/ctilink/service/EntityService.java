@@ -28,5 +28,4 @@ public interface EntityService {
     @Path("get")
     ApiResult<Entity> get(Entity entity);
 
-
 }

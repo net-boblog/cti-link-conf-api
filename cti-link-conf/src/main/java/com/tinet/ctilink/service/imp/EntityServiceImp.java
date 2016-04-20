@@ -7,7 +7,6 @@ import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.model.Entity;
 import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.service.EntityService;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -20,9 +19,6 @@ import java.util.List;
 @Service
 public class EntityServiceImp extends BaseService<Entity>
         implements EntityService {
-
-    @Autowired
-    RedisService redisService;
 
     @Override
     public ApiResult<List<Entity>> list() {
@@ -38,5 +34,7 @@ public class EntityServiceImp extends BaseService<Entity>
     public ApiResult<Entity> get(Entity entity) {
         return null;
     }
+
+
 
 }

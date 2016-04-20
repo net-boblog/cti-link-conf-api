@@ -28,22 +28,22 @@ public interface AgentService {
 
     @POST
     @Path("create")
-    ApiResult<Agent> create(Agent agent);
+    ApiResult<Agent> createAgent(Agent agent);
 
     @POST
     @Path("delete")
-    ApiResult deleteById(Agent agent);
+    ApiResult deleteAgent(Agent agent);
 
     @POST
     @Path("update")
-    ApiResult<Agent> update(Agent agent);
+    ApiResult<Agent> updateAgent(Agent agent);
 
     @POST
     @Path("list")
-    ApiResult<List<Agent>> list(AgentListRequest agent);
+    ApiResult<List<Agent>> listAgent(AgentListRequest agent);
 
     @POST
     @Path("get")
-    ApiResult<Agent> get(Agent agent);
+    ApiResult<Agent> getAgent(Agent agent);
 }
 

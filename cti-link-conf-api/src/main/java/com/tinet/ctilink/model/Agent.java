@@ -37,18 +37,6 @@ public class Agent {
 
     private Date createTime;
 
-    public Agent() {
-        this.crmId = "";
-        this.active = 1;
-        this.agentType = 1;
-        this.callPower = 0;
-        this.wrapup = 10;
-        this.isOb = 1;
-        this.ibRecord = 1;
-        this.obRecord = 1;
-        this.createTime = new Date();
-    }
-
     public Integer getId() {
         return id;
     }

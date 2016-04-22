@@ -8,33 +8,50 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
- * @author fengwei //
- * @date 16/4/15 16:56
- *
- * https://github.com/ti-net/cti-link-conf-api/wiki/conf-api%E6%97%B6%E9%97%B4%E6%9D%A1%E4%BB%B6%E8%AE%BE%E7%BD%AE%E6%8E%A5%E5%8F%A3-v1
+ * @author  huangbin
+ * @date 2016/4/18
  */
+
 @Path("v1/enterpriseTime")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface EnterpriseTimeService {
-
+    /**
+     * 新增时间条件
+     * @param enterpriseTime
+     * @return
+     */
     @POST
     @Path("create")
-    ApiResult<EnterpriseTime> create(EnterpriseTime enterpriseTime);
+    ApiResult createEnterpriseTime(EnterpriseTime enterpriseTime);
 
+    /**
+     * 根据时间条件id和企业编号enterpriseId删除时间条件
+     * @param enterpriseTime
+     * @return
+     */
     @POST
     @Path("delete")
-    ApiResult delete(EnterpriseTime enterpriseTime);
+    ApiResult deleteEnterpriseTime(EnterpriseTime enterpriseTime);
 
+    /**
+     * 更新时间条件
+     * @param enterpriseTime
+     * @return
+     */
     @POST
     @Path("update")
-    ApiResult<EnterpriseTime> update(EnterpriseTime enterpriseTime);
+    ApiResult updateEnterpriseTime(EnterpriseTime enterpriseTime);
 
+    /**
+     * 根据企业编号enterpriseId获取时间条件列表
+     * @param enterpriseTime
+     * @return
+     */
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseTime>> list(EnterpriseTime enterpriseTime);
+    ApiResult getListEnterpriseTime(EnterpriseTime enterpriseTime);
 
 }

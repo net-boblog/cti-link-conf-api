@@ -28,12 +28,4 @@ public interface EntityService {
     @Path("get")
     ApiResult<Entity> get(Entity entity);
 
-
-    @POST
-    @Path("create")
-    ApiResult<Entity> create(Entity entity);
-
-    @POST
-    @Path("create/test")
-    ApiResult<Entity> createWithSleep(Entity entity);
 }

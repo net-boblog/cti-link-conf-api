@@ -23,10 +23,10 @@ public interface SystemSettingService {
 
     @POST
     @Path("update")
-    ApiResult<SystemSetting> update(SystemSetting systemSetting);
+    ApiResult<SystemSetting> updateSystemSetting(SystemSetting systemSetting);
 
     @POST
     @Path("list")
-    ApiResult<List<SystemSetting>> list();
+    ApiResult<List<SystemSetting>> listSystemSetting();
 
 }

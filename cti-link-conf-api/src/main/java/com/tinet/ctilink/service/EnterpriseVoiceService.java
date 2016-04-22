@@ -27,24 +27,24 @@ public interface EnterpriseVoiceService {
     @POST
     @Path("create")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    ApiResult<EnterpriseVoice> create(MultipartFormDataInput input);
+    ApiResult<EnterpriseVoice> createEnterpriseVoice(MultipartFormDataInput input);
 
     //dubbo接口
-    ApiResult<EnterpriseVoice> create(File file, EnterpriseVoice enterpriseVoice);
+    ApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
 
     @POST
     @Path("delete")
-    ApiResult delete(EnterpriseVoice enterpriseVoice);
+    ApiResult deleteEnterpriseVoice(EnterpriseVoice enterpriseVoice);
 
     @POST
     @Path("update")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    ApiResult<EnterpriseVoice> update(MultipartFormDataInput input);
+    ApiResult<EnterpriseVoice> updateEnterpriseVoice(MultipartFormDataInput input);
 
-    ApiResult<EnterpriseVoice> update(File file, EnterpriseVoice enterpriseVoice);
+    ApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
 
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseVoice>> list(EnterpriseVoice enterpriseVoice);
+    ApiResult<List<EnterpriseVoice>> listEnterpriseVoice(EnterpriseVoice enterpriseVoice);
 
 }

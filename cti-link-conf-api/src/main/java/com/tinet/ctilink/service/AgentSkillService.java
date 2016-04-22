@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author fengwei //
@@ -22,13 +23,18 @@ public interface AgentSkillService {
 
     @POST
     @Path("create")
-    ApiResult<AgentSkill> create(AgentSkill agentSkill);
+    ApiResult<AgentSkill> createAgentSkill(AgentSkill agentSkill);
 
     @POST
     @Path("delete")
-    ApiResult delete(AgentSkill agentSkill);
+    ApiResult deleteAgentSkill(AgentSkill agentSkill);
 
     @POST
     @Path("update")
-    ApiResult<AgentSkill> update(AgentSkill agentSkill);
+    ApiResult<AgentSkill> updateAgentSkill(AgentSkill agentSkill);
+
+    @POST
+    @Path("list")
+    ApiResult<List<AgentSkill>> listAgentSkill(AgentSkill agentSkill);
+
 }

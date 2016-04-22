@@ -23,17 +23,17 @@ public interface SkillService {
 
     @POST
     @Path("create")
-    ApiResult<Skill> create(Skill skill);
+    ApiResult<Skill> createSkill(Skill skill);
 
     @POST
     @Path("delete")
-    ApiResult delete(Skill skill);
+    ApiResult deleteSkill(Skill skill);
 
     @POST
     @Path("update")
-    ApiResult<Skill> update(Skill skill);
+    ApiResult<Skill> updateSkill(Skill skill);
 
     @POST
     @Path("list")
-    ApiResult<List<Skill>> list(Skill skill);
+    ApiResult<List<Skill>> listSkill(Skill skill);
 }

@@ -26,6 +26,9 @@ public class ApiResult<T> implements Serializable {
 
     public ApiResult(int result) {
         this.result = result;
+        if (result == SUCCESS_RESULT) {
+            this.description = SUCCESS_DESCRIPTION;
+        }
     }
 
     //有data一定是成功的

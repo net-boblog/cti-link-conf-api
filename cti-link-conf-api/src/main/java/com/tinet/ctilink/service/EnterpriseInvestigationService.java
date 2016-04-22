@@ -22,6 +22,23 @@ import java.util.List;
 public interface EnterpriseInvestigationService {
 
     @POST
-    @Path("set")
-    ApiResult set(List<EnterpriseInvestigation> enterpriseInvestigationList);
+    @Path("create")
+    ApiResult<EnterpriseInvestigation> create(EnterpriseInvestigation enterpriseInvestigation);
+
+    @POST
+    @Path("delete")
+    ApiResult<EnterpriseInvestigation> delete(EnterpriseInvestigation enterpriseInvestigation);
+
+    @POST
+    @Path("update")
+    ApiResult<EnterpriseInvestigation> update(EnterpriseInvestigation enterpriseInvestigation);
+
+    @POST
+    @Path("list")
+    ApiResult<List<EnterpriseInvestigation>> list(EnterpriseInvestigation enterpriseInvestigation);
+
+    @POST
+    @Path("get")
+    ApiResult<EnterpriseInvestigation> get(EnterpriseInvestigation enterpriseInvestigation);
+
 }

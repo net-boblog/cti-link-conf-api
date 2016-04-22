@@ -23,22 +23,22 @@ public interface QueueService {
 
     @POST
     @Path("create")
-    ApiResult<Queue> create(Queue queue);
+    ApiResult<Queue> createQueue(Queue queue);
 
     @POST
     @Path("delete")
-    ApiResult delete(Queue queue);
+    ApiResult deleteQueue(Queue queue);
 
     @POST
     @Path("update")
-    ApiResult<Queue> update(Queue queue);
+    ApiResult<Queue> updateQueue(Queue queue);
 
     @POST
     @Path("list")
-    ApiResult<List<Queue>> list(Queue queue);
+    ApiResult<List<Queue>> listQueue(Queue queue);
 
     @POST
     @Path("get")
-    ApiResult<Queue> get(Queue queue);
+    ApiResult<Queue> getQueue(Queue queue);
 
 }

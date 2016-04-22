@@ -23,18 +23,18 @@ public interface QueueSkillService {
 
     @POST
     @Path("create")
-    ApiResult<QueueSkill> create(QueueSkill queueSkill);
+    ApiResult<QueueSkill> createQueueSkill(QueueSkill queueSkill);
 
     @POST
     @Path("delete")
-    ApiResult<QueueSkill> delete(QueueSkill queueSkill);
+    ApiResult<QueueSkill> deleteQueueSkill(QueueSkill queueSkill);
 
     @POST
     @Path("update")
-    ApiResult<QueueSkill> update(QueueSkill queueSkill);
+    ApiResult<QueueSkill> updateQueueSkill(QueueSkill queueSkill);
 
     @POST
     @Path("list")
-    ApiResult<List<QueueSkill>> list(QueueSkill queueSkill);
+    ApiResult<List<QueueSkill>> listQueueSkill(QueueSkill queueSkill);
 
 }

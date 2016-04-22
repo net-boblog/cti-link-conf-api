@@ -20,13 +20,13 @@ public class ProviderFilter implements Filter {
         //IP控制 + 限流
 
         Result result = null;
+        String m = "";
         try {
-            System.out.println("before returning method invoke...");
             result = invoker.invoke(invocation);
-            System.out.println("after returning method invoke...");
             try {
                 AfterReturningMethod method = methodThreadLocal.get();
                 if (method != null) {
+                    m = "ClassName:" + method.getObj().getClass().getName() + ", MethodName:" + method.getMethod().getName();
                     method.invoke();
                 }
             } catch (Exception e) {
@@ -35,6 +35,10 @@ public class ProviderFilter implements Filter {
 
         } finally {
             //线程可能重用, 每次调用必须remove
+            if (!m.equals("")) {
+                System.out.println("AfterReturningMethod remove," + m);
+            }
+            //待改进, 每个接口都会执行
             methodThreadLocal.remove();
         }
 

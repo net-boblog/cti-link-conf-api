@@ -22,11 +22,6 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
 
     private final static Logger logger = LoggerFactory.getLogger(EnterpriseSettingServiceImp.class);
 
-    private final static String CACHE_KEY_PREFIX = "cti-link.enterprise_setting.";
-    private final static String CACHE_KEY = CACHE_KEY_PREFIX + "%d.name.%s";
-    private final static String METHOD_REFRESH_CACHE = "refreshCache";
-
-
     public ApiResult<EnterpriseSetting> create(EnterpriseSetting enterpriseSetting) {
         ApiResult result = new ApiResult(ApiResult.FAIL_RESULT);
         //validate
@@ -91,7 +86,7 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
         } else {
             result.setResult(ApiResult.SUCCESS_RESULT);
             result.setDescription(ApiResult.SUCCESS_DESCRIPTION);
-            setAfterReturningMethod(enterpriseId);
+            setCacheMethod("refreshCache", new Class[]{Integer.class}, new Object[]{enterpriseId});
         }
         return result;
     }
@@ -165,16 +160,23 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
         return null;
     }
 
-    public String getCacheKey(EnterpriseSetting enterpriseSetting) {
-        return String.format(CACHE_KEY, enterpriseSetting.getEnterpriseId(), enterpriseSetting.getName());
+    @Override
+    protected List<EnterpriseSetting> select(Integer enterpriseId) {
+        return null;
     }
 
-    public String getCleanCacheKeyPrefix() {
-        return CACHE_KEY_PREFIX + "*";
+    @Override
+    protected String getKey(EnterpriseSetting enterpriseSetting) {
+        return null;
     }
 
-    public String getRefreshCacheKeyPrefix(Integer enterpriseId) {
-        return CACHE_KEY_PREFIX + enterpriseId + "*";
+    @Override
+    protected String getCleanKeyPrefix() {
+        return null;
     }
 
+    @Override
+    protected String getRefreshKeyPrefix(Integer enterpriseId) {
+        return null;
+    }
 }

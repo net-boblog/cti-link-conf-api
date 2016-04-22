@@ -2,28 +2,36 @@ package com.tinet.ctilink.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.cache.CacheKey;
+import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.dao.AgentDao;
 import com.tinet.ctilink.dao.AgentTelDao;
 import com.tinet.ctilink.dao.EntityDao;
+import com.tinet.ctilink.filter.AfterReturningMethod;
+import com.tinet.ctilink.filter.ProviderFilter;
 import com.tinet.ctilink.inc.Const;
+import com.tinet.ctilink.model.Agent;
 import com.tinet.ctilink.model.AgentTel;
 import com.tinet.ctilink.service.AbstractService;
 import com.tinet.ctilink.service.AgentTelService;
+import com.tinet.ctilink.service.BaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author fengwei //
  * @date 16/4/19 17:44
  */
 @Service
-public class AgentTelServiceImp extends AbstractService<AgentTel> implements AgentTelService {
+public class AgentTelServiceImp extends BaseService<AgentTel> implements AgentTelService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -35,6 +43,9 @@ public class AgentTelServiceImp extends AbstractService<AgentTel> implements Age
 
     @Autowired
     private AgentDao agentDao;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public ApiResult<AgentTel> createAgentTel(AgentTel agentTel) {
@@ -66,6 +77,7 @@ public class AgentTelServiceImp extends AbstractService<AgentTel> implements Age
         }
 
         //如果不是绑定电话, 只新增就可以
+        setRefreshCacheMethod(agentTel);
         return new ApiResult<>(agentTel);
     }
 
@@ -94,6 +106,7 @@ public class AgentTelServiceImp extends AbstractService<AgentTel> implements Age
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
 
+        setRefreshCacheMethod(agentTel);
         return new ApiResult(ApiResult.SUCCESS_RESULT);
     }
 
@@ -137,6 +150,7 @@ public class AgentTelServiceImp extends AbstractService<AgentTel> implements Age
             dbAgentTel.setIsBind(Const.AGENT_TEL_IS_BIND_NO);
             updateByPrimaryKey(dbAgentTel);
         }
+        setRefreshCacheMethod(agentTel);
 
         return null;
     }
@@ -237,24 +251,33 @@ public class AgentTelServiceImp extends AbstractService<AgentTel> implements Age
         return true;
     }
 
-    @Override
-    protected List<AgentTel> selectByEnterpriseId(Integer enterpriseId) {
-        return null;
+    //cache
+    public void setCache(AgentTel agentTel) {
+        //座席
+        Agent agent = agentDao.selectByPrimaryKey(agentTel.getAgentId());
+        //座席电话，第一个是绑定的电话
+        Condition condition = new Condition(AgentTel.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("enterpriseId", agentTel.getEnterpriseId());
+        criteria.andEqualTo("agentId", agentTel.getAgentId());
+        condition.setOrderByClause("is_bind desc, id");
+        List<AgentTel> list = selectByCondition(condition);
+        if (list != null && list.size() > 0) {
+            redisService.set(String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agentTel.getEnterpriseId(), agent.getCno())
+                    , list);
+        } else {
+            redisService.delete(String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agentTel.getEnterpriseId(), agent.getCno()));
+        }
     }
 
-    @Override
-    protected String getCacheKey(AgentTel agentTel) {
-        return null;
+    private void setRefreshCacheMethod(AgentTel agentTel) {
+        try {
+            Method method = this.getClass().getMethod("setCache", AgentTel.class);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, agentTel);
+            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+        } catch (Exception e) {
+            logger.error("AgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+                    "class=" + this.getClass().getName(), e);
+        }
     }
-
-    @Override
-    protected String getCleanCacheKeyPrefix() {
-        return null;
-    }
-
-    @Override
-    protected String getRefreshCacheKeyPrefix(Integer enterpriseId) {
-        return null;
-    }
-
 }

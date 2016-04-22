@@ -3,10 +3,14 @@ package com.tinet.ctilink.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.PageHelper;
 import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.cache.CacheKey;
+import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.dao.AgentSkillDao;
 import com.tinet.ctilink.dao.AgentTelDao;
 import com.tinet.ctilink.dao.EntityDao;
 import com.tinet.ctilink.dao.QueueMemberDao;
+import com.tinet.ctilink.filter.AfterReturningMethod;
+import com.tinet.ctilink.filter.ProviderFilter;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.model.Agent;
 import com.tinet.ctilink.model.AgentSkill;
@@ -15,6 +19,7 @@ import com.tinet.ctilink.model.QueueMember;
 import com.tinet.ctilink.request.AgentListRequest;
 import com.tinet.ctilink.service.AbstractService;
 import com.tinet.ctilink.service.AgentService;
+import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,15 +27,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author fengwei //
  * @date 16/4/7 16:49
  */
 @Service
-public class AgentServiceImp extends AbstractService<Agent> implements AgentService {
+public class AgentServiceImp extends BaseService<Agent> implements AgentService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,6 +53,9 @@ public class AgentServiceImp extends AbstractService<Agent> implements AgentServ
 
     @Autowired
     private QueueMemberDao queueMemberDao;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public ApiResult<Agent> createAgent(Agent agent) {
@@ -65,6 +76,7 @@ public class AgentServiceImp extends AbstractService<Agent> implements AgentServ
             logger.error("AgentServiceImp.createAgent error, " + agent + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
+            setRefreshCacheMethod("setCache", agent);
             return new ApiResult<>(agent);
         }
     }
@@ -110,7 +122,7 @@ public class AgentServiceImp extends AbstractService<Agent> implements AgentServ
             logger.error("AgentServiceImp.deleteAgent error, " + agent + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
-
+        setRefreshCacheMethod("deleteCache", agent);
         return new ApiResult(ApiResult.SUCCESS_RESULT);
     }
 
@@ -144,7 +156,7 @@ public class AgentServiceImp extends AbstractService<Agent> implements AgentServ
             logger.error("AgentServiceImp.updateAgent error, " + agent + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
-
+        setRefreshCacheMethod("setCache", agent);
         return new ApiResult<>(agent);
     }
 
@@ -317,23 +329,31 @@ public class AgentServiceImp extends AbstractService<Agent> implements AgentServ
         return false;
     }
 
-    @Override
-    protected List<Agent> selectByEnterpriseId(Integer enterpriseId) {
-        return null;
+    //cache
+    public void setCache(Agent agent) {
+        redisService.set(getKey(agent), agent);
     }
 
-    @Override
-    protected String getCacheKey(Agent agent) {
-        return null;
+    public void deleteCache(Agent agent) {
+        //agent
+        redisService.delete(getKey(agent));
+        //agent_tel
+        redisService.delete(String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agent.getEnterpriseId(), agent.getCno()));
     }
 
-    @Override
-    protected String getCleanCacheKeyPrefix() {
-        return null;
+    private String getKey(Agent agent) {
+        return String.format(CacheKey.AGENT_ENTERPRISE_ID_CNO, agent.getEnterpriseId(), agent.getCno());
     }
 
-    @Override
-    protected String getRefreshCacheKeyPrefix(Integer enterpriseId) {
-        return null;
+    private void setRefreshCacheMethod(String methodName, Agent agent) {
+        try {
+            Method method = this.getClass().getMethod(methodName, Agent.class);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, agent);
+            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+        } catch (Exception e) {
+            logger.error("AgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+                    "class=" + this.getClass().getName(), e);
+        }
     }
+
 }

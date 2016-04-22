@@ -8,8 +8,8 @@ import com.tinet.ctilink.dao.SkillDao;
 import com.tinet.ctilink.model.Agent;
 import com.tinet.ctilink.model.AgentSkill;
 import com.tinet.ctilink.model.Skill;
-import com.tinet.ctilink.service.AbstractService;
 import com.tinet.ctilink.service.AgentSkillService;
+import com.tinet.ctilink.service.BaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.List;
  * @date 16/4/19 17:47
  */
 @Service
-public class AgentSkillServiceImp extends AbstractService<AgentSkill> implements AgentSkillService {
+public class AgentSkillServiceImp extends BaseService<AgentSkill> implements AgentSkillService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -136,7 +136,6 @@ public class AgentSkillServiceImp extends AbstractService<AgentSkill> implements
 
         //只有技能值可以更新
         dbAgentSkill.setSkillLevel(agentSkill.getSkillLevel());
-
         int count = updateByPrimaryKey(dbAgentSkill);
         if (count != 1) {
             logger.error("AgentSkillServiceImp.updateAgentSkill error, " + dbAgentSkill + ", count=" + count);
@@ -166,24 +165,4 @@ public class AgentSkillServiceImp extends AbstractService<AgentSkill> implements
         return new ApiResult<>(list);
     }
 
-
-    @Override
-    protected List<AgentSkill> selectByEnterpriseId(Integer enterpriseId) {
-        return null;
-    }
-
-    @Override
-    protected String getCacheKey(AgentSkill agentSkill) {
-        return null;
-    }
-
-    @Override
-    protected String getCleanCacheKeyPrefix() {
-        return null;
-    }
-
-    @Override
-    protected String getRefreshCacheKeyPrefix(Integer enterpriseId) {
-        return null;
-    }
 }

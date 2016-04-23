@@ -1130,11 +1130,13 @@ CREATE TABLE cti_link_queue
   weight integer DEFAULT 0,
   vip_support integer DEFAULT 0,
   join_empty character varying DEFAULT ''::character varying,
-  announce_youarenext integer DEFAULT 0,
-  announce_less_then integer DEFAULT 0, -- 少余n个时播报，0表示不起作用
-  announce_large_then integer DEFAULT 0, -- 多余n个时播报，0表示不起作用
-  announce_thankyou character varying, -- 定时播报的语音文件名
-  announce_frequency integer,
+  announce_sound integer DEFAULT 0, -- 播报固定语音 0关闭 1打开
+  announce_sound_frequency integer DEFAULT 0, -- 播报固定语音周期
+  announce_sound_file character varying, -- 固定语音文件
+  announce_position integer DEFAULT 0, -- 位置播报 0关闭 1大于announce_position_param时播放 2小于等于announce_position_param时播放
+  announce_position_youarenext integer DEFAULT 0, -- 位置报告时播报下一位 0关闭 1打开
+  announce_position_frequency integer DEFAULT 0, -- 位置播报周期
+  announce_position_param integer DEFAULT 0, -- 多余少余n个时播报，0表示不起作用
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_queue_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_queue_name_unique UNIQUE (qno),
@@ -1161,11 +1163,13 @@ COMMENT ON COLUMN cti_link_queue.service_level IS '服务水平秒数，低于�
 COMMENT ON COLUMN cti_link_queue.weight IS '队列优先级';
 COMMENT ON COLUMN cti_link_queue.vip_support IS '队列是否支持vip级别 0:不支持 1:支持';
 COMMENT ON COLUMN cti_link_queue.join_empty IS '队列中为空时是否可以join';
-COMMENT ON COLUMN cti_link_queue.announce_youarenext IS '是否播放语音文件播放[您是下一个]';
-COMMENT ON COLUMN cti_link_queue.announce_less_then IS '是否播放语音文件播放[小于n个人在等待]';
-COMMENT ON COLUMN cti_link_queue.announce_large_then  IS '是否播放语音文件播放[多余n个人在等待]';
-COMMENT ON COLUMN cti_link_queue.announce_thankyou IS '定时播放的语音文件';
-COMMENT ON COLUMN cti_link_queue.announce_frequency IS '是否定时播放，播报周期 可以设置30-600秒之间，0表示不启用';
+COMMENT ON COLUMN cti_link_queue.announce_sound IS '播报固定语音 0关闭 1打开';
+COMMENT ON COLUMN cti_link_queue.announce_sound_frequency IS '播报固定语音周期';
+COMMENT ON COLUMN cti_link_queue.announce_sound_file IS '固定语音文件';
+COMMENT ON COLUMN cti_link_queue.announce_position IS '位置播报 0关闭 1大于announce_position_param时播放 2小于等于announce_position_param时播放';
+COMMENT ON COLUMN cti_link_queue.announce_position_youarenext IS '位置报告时播报下一位 0关闭 1打开';
+COMMENT ON COLUMN cti_link_queue.announce_position_frequency IS '位置播报周期';
+COMMENT ON COLUMN cti_link_queue.announce_position_param IS '多余/少余n个时播报，0表示不起作用';
 COMMENT ON COLUMN cti_link_queue.create_time IS '记录创建时间';
 
 -- Table: cti_link_agent

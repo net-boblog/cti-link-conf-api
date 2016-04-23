@@ -1,1 +1,1 @@
-dubboFilter=com.tinet.ctilink.conf.filter.DubboFilter
+provider=com.tinet.ctilink.filter.ProviderFilter

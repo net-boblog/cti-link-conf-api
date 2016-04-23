@@ -351,15 +351,12 @@ CREATE TABLE cti_link_ab_test
 ) 
 WITHOUT OIDS;
 ALTER TABLE cti_link_ab_test OWNER TO postgres;
-COMMENT ON TABLE cti_link_trunk IS '企业的中继号码表';
-COMMENT ON COLUMN cti_link_trunk.id IS 'id标识';
-COMMENT ON COLUMN cti_link_trunk.enterprise_id IS '企业id';
-COMMENT ON COLUMN cti_link_trunk.sip_group_id IS 'sip media server的组id，-1表示不指定id，用于按企业级灰度升级';
-COMMENT ON COLUMN cti_link_trunk.number_trunk IS '中继号码';
-COMMENT ON COLUMN cti_link_trunk.area_code IS '目的码所在地区区号';
-COMMENT ON COLUMN cti_link_trunk.type IS '目的码类型：0--未绑定400或1010号码 1--绑定400或1010号码  2--手机虚拟号码';
-COMMENT ON COLUMN cti_link_trunk.comment IS '备注';
-COMMENT ON COLUMN cti_link_trunk.create_time IS '记录创建时间';
+COMMENT ON TABLE cti_link_ab_test IS 'abtest灰度发布配置表';
+COMMENT ON COLUMN cti_link_ab_test.id IS 'id标识';
+COMMENT ON COLUMN cti_link_ab_test.enterprise_id IS '企业id';
+COMMENT ON COLUMN cti_link_ab_test.sip_group_id IS 'sip media server的组id，-1表示不指定id，用于按企业级灰度升级';
+COMMENT ON COLUMN cti_link_ab_test.comment IS '备注';
+COMMENT ON COLUMN cti_link_ab_test.create_time IS '记录创建时间';
 
 -- Table: cti_link_trunk
 

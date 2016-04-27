@@ -8,29 +8,41 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
- * @author fengwei //
- * @date 16/4/15 16:41
- *
- * https://github.com/ti-net/cti-link-conf-api/wiki/conf-api%E5%9C%B0%E5%8C%BA%E7%BB%84%E8%AE%BE%E7%BD%AE%E6%8E%A5%E5%8F%A3-v1
+ * @author  huangbin //
+ * @date 2016/4/18. //
  */
+
 @Path("v1/enterpriseArea")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface EnterpriseAreaService {
-
+    /**
+     * 地区组新增地区
+     * @param enterpriseArea
+     * @return
+     */
     @POST
     @Path("create")
-    ApiResult<EnterpriseArea> create(EnterpriseArea enterpriseArea);
+    ApiResult createEnterpriseArea(EnterpriseArea enterpriseArea);
 
+    /**
+     * 地区组根据根据企业编号enterpriseId和地区id删除地区
+     * @param enterpriseArea
+     * @return
+     */
     @POST
     @Path("delete")
-    ApiResult delete(EnterpriseArea enterpriseArea);
+    ApiResult deleteEnterpriseArea(EnterpriseArea enterpriseArea);
 
+    /**
+     * 地区组根据企业编号enterpriseId和地区组id获取地区列表
+     * @param enterpriseArea
+     * @return
+     */
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseArea>> list(EnterpriseArea enterpriseArea);
+    ApiResult getListEnterpriseArea(EnterpriseArea enterpriseArea);
 
 }

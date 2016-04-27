@@ -10,15 +10,8 @@
     </parent>
 
     <artifactId>cti-link-conf</artifactId>
-    <packaging>war</packaging>
+
     <dependencies>
-
-        <dependency>
-            <groupId>com.tinet</groupId>
-            <artifactId>cti-link-core</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-
         <dependency>
             <groupId>com.tinet</groupId>
             <artifactId>cti-link-conf-api</artifactId>

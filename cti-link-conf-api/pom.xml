@@ -12,6 +12,11 @@
     <artifactId>cti-link-conf-api</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.tinet</groupId>
+            <artifactId>cti-link-core</artifactId>
+            <version>0.0.1</version>
+        </dependency>
         <!-- dubbo -->
         <dependency>
             <groupId>com.alibaba</groupId>

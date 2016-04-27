@@ -2,7 +2,7 @@ package com.tinet.ctilink;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
-import com.tinet.ctilink.model.EnterpriseSetting;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -15,7 +15,7 @@ public class RestEasyClient {
 
     public static void main(String[] args) {
 
-        com.tinet.ctilink.model.Entity entity = new com.tinet.ctilink.model.Entity();
+        com.tinet.ctilink.conf.model.Entity entity = new com.tinet.ctilink.conf.model.Entity();
         entity.setEnterpriseId(60000002);
         entity.setEnterpriseName("test");
 

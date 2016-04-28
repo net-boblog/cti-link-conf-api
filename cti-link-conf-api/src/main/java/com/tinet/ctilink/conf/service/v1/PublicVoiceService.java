@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.PublicVoice;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 

@@ -1,14 +1,17 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
+import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.model.EnterpriseSetting;
 import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.service.v1.EnterpriseSettingService;
+import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.util.List;
@@ -21,85 +24,83 @@ import java.util.List;
 public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetting>
         implements EnterpriseSettingService {
 
-    private final static Logger logger = LoggerFactory.getLogger(EnterpriseSettingServiceImp.class);
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public ApiResult<EnterpriseSetting> create(EnterpriseSetting enterpriseSetting) {
-        ApiResult result = new ApiResult(ApiResult.FAIL_RESULT);
+    @Autowired
+    private EntityDao entityDao;
+
+    @Override
+    public ApiResult<EnterpriseSetting> createEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+        //验证enterpriseId
+        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+        }
         //validate
         enterpriseSetting.setId(null);
-        Integer enterpriseId = enterpriseSetting.getEnterpriseId();
-        if (enterpriseId == null || enterpriseId <= 0) {
-            result.setDescription("参数[enterpriseId]不正确");
-            return result;
-        }
         String name = enterpriseSetting.getName();
         if (StringUtils.isEmpty(name)) {
-            result.setDescription("参数[name]不正确");
-            return result;
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[name]不正确");
         }
+        enterpriseSetting.setName(SqlUtil.escapeSql(name));
+
         String value = enterpriseSetting.getValue();
         if (StringUtils.isEmpty(value)) {
-            result.setDescription("参数[value]不正确");
-            return result;
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[value]不正确");
         }
-
+        enterpriseSetting.setValue(SqlUtil.escapeSql(value));
+        enterpriseSetting.setProperty(SqlUtil.escapeSql(enterpriseSetting.getProperty()));
         //insert
         int count = insertSelective(enterpriseSetting);
-        System.out.println(enterpriseSetting.getId());
-        System.out.println(enterpriseSetting.getCreateTime());
         if (count != 1) {
-            result.setDescription("新增失败");
+            logger.error("EnterpriseSettingServiceImp.createAgent error, " + enterpriseSetting + ", count=" + count);
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
-            result.setResult(ApiResult.SUCCESS_RESULT);
-            result.setData(enterpriseSetting);
+            setRefreshCacheMethod(enterpriseSetting.getEnterpriseId());
+            return new ApiResult<>(enterpriseSetting);
         }
-        return result;
     }
 
-    public ApiResult update(EnterpriseSetting enterpriseSetting) {
-        ApiResult result = new ApiResult();
+    @Override
+    public ApiResult updateEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+        //验证enterpriseId
+        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+        }
         //validate
         Integer id = enterpriseSetting.getId();
         if (id == null || id <= 0) {
-            result.setDescription("参数[id]不正确");
-            return result;
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
         }
-        Integer enterpriseId = enterpriseSetting.getEnterpriseId();
-        if (enterpriseId == null || enterpriseId <= 0) {
-            result.setDescription("参数[enterpriseId]不正确");
-            return result;
-        }
-        String name = enterpriseSetting.getName();
-        if (StringUtils.isEmpty(name)) {
-            result.setDescription("参数[name]不正确");
-            return result;
-        }
+
         String value = enterpriseSetting.getValue();
-        if (StringUtils.isEmpty(value)) {
-            result.setDescription("参数[value]不正确");
-            return result;
+        if (value == null) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[value]不正确");
+        }
+        enterpriseSetting.setValue(SqlUtil.escapeSql(value));
+        enterpriseSetting.setProperty(SqlUtil.escapeSql(enterpriseSetting.getProperty()));
+
+        EnterpriseSetting dbSetting = selectByPrimaryKey(enterpriseSetting.getId());
+        if (dbSetting == null || !enterpriseSetting.getEnterpriseId().equals(dbSetting.getEnterpriseId())) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
         //update
-        int count = updateByPrimaryKeySelective(enterpriseSetting);
+        enterpriseSetting.setName(dbSetting.getName());
+        int count = updateByPrimaryKey(enterpriseSetting);
         if (count != 1) {
-            result.setDescription("更新失败");
-            return result;
-        } else {
-            result.setResult(ApiResult.SUCCESS_RESULT);
-            result.setDescription(ApiResult.SUCCESS_DESCRIPTION);
-            setCacheMethod("refreshCache", new Class[]{Integer.class}, new Object[]{enterpriseId});
+            logger.error("EnterpriseSettingServiceImp.update error, " + enterpriseSetting + ", count=" + count);
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
-        return result;
+        setRefreshCacheMethod(enterpriseSetting.getEnterpriseId());
+        return new ApiResult<>(enterpriseSetting);
     }
 
-    public ApiResult<List<EnterpriseSetting>> list(EnterpriseSetting enterpriseSetting) {
-        ApiResult<List<EnterpriseSetting>> result = new ApiResult<>();
-        //validate
-        Integer enterpriseId = enterpriseSetting.getEnterpriseId();
-        if (enterpriseId == null || enterpriseId <= 0) {
-            result.setDescription("参数[enterpriseId]不正确");
-            return result;
+    @Override
+    public ApiResult<List<EnterpriseSetting>> listEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+        //验证enterpriseId
+        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
+        ApiResult<List<EnterpriseSetting>> result = new ApiResult<>();
 
         List<EnterpriseSetting> list = select(enterpriseSetting.getEnterpriseId());
         if (list != null && list.size() > 0) {
@@ -111,14 +112,13 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
         return result;
     }
 
-    public ApiResult<EnterpriseSetting> get(EnterpriseSetting enterpriseSetting) {
-        ApiResult<EnterpriseSetting> result = new ApiResult<>();
-        //validate
-        Integer enterpriseId = enterpriseSetting.getEnterpriseId();
-        if (enterpriseId == null || enterpriseId <= 0) {
-            result.setDescription("参数[enterpriseId]不正确");
-            return result;
+    @Override
+    public ApiResult<EnterpriseSetting> getEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+        //验证enterpriseId
+        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
+        ApiResult<EnterpriseSetting> result = new ApiResult<>();
 
         Integer id = enterpriseSetting.getId();
         if (id == 0 || id <= 0) {
@@ -141,18 +141,6 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
         return result;
     }
 
-    private EnterpriseSetting getByName(Integer enterpriseId, String name) {
-        Condition condition = new Condition(EnterpriseSetting.class);
-        Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId", enterpriseId);
-        criteria.andEqualTo("name", name);
-        List<EnterpriseSetting> list = selectByCondition(condition);
-        if (list != null && list.size() > 0) {
-            return list.get(0);
-        }
-        return null;
-    }
-
     @Override
     protected List<EnterpriseSetting> select(Integer enterpriseId) {
         Condition condition = new Condition(EnterpriseSetting.class);
@@ -169,12 +157,12 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
 
     @Override
     protected String getCleanKeyPrefix() {
-        return CacheKey.ENTERPRISE_SETTING;
+        return CacheKey.ENTERPRISE_SETTING + ".*";
     }
 
     @Override
     protected String getRefreshKeyPrefix(Integer enterpriseId) {
-        return String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID, enterpriseId);
+        return String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID, enterpriseId) + ".*";
     }
 
 }

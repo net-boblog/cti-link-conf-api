@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.Gateway;
 
 import javax.ws.rs.Consumes;
@@ -23,18 +23,18 @@ public interface GatewayService {
 
     @POST
     @Path("create")
-    ApiResult<Gateway> create(Gateway gateway);
+    ApiResult<Gateway> createGateway(Gateway gateway);
 
     @POST
     @Path("delete")
-    ApiResult delete(Gateway gateway);
+    ApiResult deleteGateway(Gateway gateway);
 
     @POST
     @Path("update")
-    ApiResult<Gateway> update(Gateway gateway);
+    ApiResult<Gateway> updateGateway(Gateway gateway);
 
     @POST
     @Path("list")
-    ApiResult<List<Gateway>> list();
+    ApiResult<List<Gateway>> listGateway();
 
 }

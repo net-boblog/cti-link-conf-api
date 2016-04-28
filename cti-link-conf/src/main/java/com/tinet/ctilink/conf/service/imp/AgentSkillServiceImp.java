@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.dao.AgentDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.dao.SkillDao;

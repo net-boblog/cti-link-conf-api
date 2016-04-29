@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseAreaGroup;
 
 import javax.ws.rs.Consumes;
@@ -8,33 +8,50 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
- * @author fengwei //
- * @date 16/4/15 16:41
- *
- * https://github.com/ti-net/cti-link-conf-api/wiki/conf-api%E5%9C%B0%E5%8C%BA%E7%BB%84%E8%AE%BE%E7%BD%AE%E6%8E%A5%E5%8F%A3-v1
+ * @author  huangbin
+ * @date 2016/4/18.
  */
+
 @Path("v1/enterpriseAreaGroup")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface EnterpriseAreaGroupService {
 
+public interface EnterpriseAreaGroupService {
+    /**
+     * 新增地区组
+     * @param enterpriseAreaGroup
+     * @return
+     */
     @POST
     @Path("create")
-    ApiResult<EnterpriseAreaGroup> create(EnterpriseAreaGroup enterpriseAreaGroup);
+    ApiResult createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) ;
 
+    /**
+     * 根据地区组id和企业编号enterpriseId删除地区组
+     * @param enterpriseAreaGroup
+     * @return
+     */
     @POST
     @Path("delete")
-    ApiResult delete(EnterpriseAreaGroup enterpriseAreaGroup);
+    ApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 
+    /**
+     * 更新地区组
+     * @param enterpriseAreaGroup
+     * @return
+     */
     @POST
     @Path("update")
-    ApiResult<EnterpriseAreaGroup> update(EnterpriseAreaGroup enterpriseAreaGroup);
+    ApiResult updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 
+    /**
+     * 根据企业编号enterpriseId获取地区组列表
+     * @param enterpriseAreaGroup
+     * @return
+     */
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseAreaGroup>> list(EnterpriseAreaGroup enterpriseAreaGroup);
-
+    ApiResult getListEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 }

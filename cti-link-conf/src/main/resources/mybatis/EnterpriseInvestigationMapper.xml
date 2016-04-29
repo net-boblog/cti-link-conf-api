@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.conf.model.EnterpriseInvestigationMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.EnterpriseInvestigation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="path_name" property="pathName" jdbcType="VARCHAR" />
+    <result column="action" property="action" jdbcType="INTEGER" />
+    <result column="property" property="property" jdbcType="VARCHAR" />
+    <result column="anchor" property="anchor" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, path, path_name, action, property, anchor, parent_id, create_time
+  </sql>
+  <delete id="deleteBySql" parameterType="java.lang.Integer" >
+    delete from cti_link_enterprise_investigation where id in
+      (with RECURSIVE r as
+        (select * from cti_link_enterprise_investigation where id = #{id,jdbcType=INTEGER}
+        union all select cti_link_enterprise_investigation.* from cti_link_enterprise_investigation, r
+        where cti_link_enterprise_investigation.parent_id = r.id )
+      SELECT id FROM r ORDER BY id)
+  </delete>
+</mapper>

@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.PageHelper;
-import com.tinet.ctilink.ApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.dao.AgentSkillDao;
@@ -52,7 +52,7 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
     private QueueMemberDao queueMemberDao;
 
     @Autowired
-    RedisService redisService;
+    private RedisService redisService;
 
     @Override
     public ApiResult<Agent> createAgent(Agent agent) {

@@ -340,30 +340,6 @@ COMMENT ON COLUMN cti_link_entity.entity_type IS '实体级别 3=客户';
 COMMENT ON COLUMN cti_link_entity.area_code IS '所属区号';
 COMMENT ON COLUMN cti_link_entity.create_time IS '创建时间';
 
--- Table: cti_link_ab_test
-
--- DROP TABLE cti_link_ab_test;
-
-CREATE TABLE cti_link_ab_test
-(
-  id serial NOT NULL,
-  enterprise_id integer NOT NULL,
-  sip_group_id integer default -1,
-  comment character varying,
-  create_time timestamp with time zone DEFAULT now(), 
-  CONSTRAINT cti_link_ab_test_pkey PRIMARY KEY (id),
-  CONSTRAINT cti_link_trunk_enterprise_id_fkey FOREIGN KEY (enterprise_id)
-    REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
-WITHOUT OIDS;
-ALTER TABLE cti_link_ab_test OWNER TO postgres;
-COMMENT ON TABLE cti_link_ab_test IS 'abtest灰度发布配置表';
-COMMENT ON COLUMN cti_link_ab_test.id IS 'id标识';
-COMMENT ON COLUMN cti_link_ab_test.enterprise_id IS '企业id';
-COMMENT ON COLUMN cti_link_ab_test.sip_group_id IS 'sip media server的组id，-1表示不指定id，用于按企业级灰度升级';
-COMMENT ON COLUMN cti_link_ab_test.comment IS '备注';
-COMMENT ON COLUMN cti_link_ab_test.create_time IS '记录创建时间';
-
 -- Table: cti_link_trunk
 
 -- DROP TABLE cti_link_trunk;

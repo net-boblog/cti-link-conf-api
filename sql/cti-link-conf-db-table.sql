@@ -1126,7 +1126,7 @@ CREATE TABLE cti_link_queue
   service_level integer,
   weight integer DEFAULT 0,
   vip_support integer DEFAULT 0,
-  join_empty character varying DEFAULT ''::character varying,
+  join_empty integer DEFAULT 0,
   announce_sound integer DEFAULT 0, -- 播报固定语音 0关闭 1打开
   announce_sound_frequency integer DEFAULT 0, -- 播报固定语音周期
   announce_sound_file character varying, -- 固定语音文件

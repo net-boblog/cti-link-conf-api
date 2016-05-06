@@ -26,9 +26,12 @@ COMMENT ON COLUMN cti_link_sip_group.create_time IS '记录创建时间';
 CREATE TABLE cti_link_sip_media_server
 (
   id serial NOT NULL, -- 流水号
+  instance_id character varying, -- 实例唯一id
+  mac character varying, -- 实例mac地址
   group_id integer NOT NULL, -- sip media server组id
   name character varying, -- 名字 唯一
   ip_addr character varying, -- IP地址
+  external_ip_addr character varying, -- 实例公网ip地址
   port integer DEFAULT 5060, -- sip信令端口
   description character varying, -- 说明
   status integer, -- sip media server的状态，比如正常和不正常
@@ -42,9 +45,12 @@ WITHOUT OIDS;
 ALTER TABLE cti_link_sip_media_server OWNER TO postgres;
 COMMENT ON TABLE cti_link_sip_media_server IS '网关列表';
 COMMENT ON COLUMN cti_link_sip_media_server.id IS 'id标识';
+COMMENT ON COLUMN cti_link_sip_media_server.instance_id IS '实例唯一id';
+COMMENT ON COLUMN cti_link_sip_media_server.mac IS '实例mac地址';
 COMMENT ON COLUMN cti_link_sip_media_server.group_id IS 'sip media server组id';
 COMMENT ON COLUMN cti_link_sip_media_server.name IS '名字 唯一';
 COMMENT ON COLUMN cti_link_sip_media_server.ip_addr IS 'IP地址';
+COMMENT ON COLUMN cti_link_sip_media_server.external_ip_addr IS '实例公网ip地址';
 COMMENT ON COLUMN cti_link_sip_media_server.port IS 'sip信令端口';
 COMMENT ON COLUMN cti_link_sip_media_server.description IS '说明';
 COMMENT ON COLUMN cti_link_sip_media_server.status IS 'sip media server的状态，比如正常和不正常';

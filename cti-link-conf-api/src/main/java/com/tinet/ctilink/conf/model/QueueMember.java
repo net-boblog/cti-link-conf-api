@@ -25,6 +25,8 @@ public class QueueMember {
     private Date createTime;
 
     private Integer agentId;
+    
+    private String cno;
 
     public Integer getId() {
         return id;
@@ -97,4 +99,13 @@ public class QueueMember {
     public void setAgentId(Integer agentId) {
         this.agentId = agentId;
     }
+
+	public String getCno() {
+		return cno;
+	}
+
+	public void setCno(String cno) {
+		this.cno = cno;
+	}
+    
 }

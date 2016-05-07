@@ -2,6 +2,7 @@ package com.tinet.ctilink.conf.service;
 
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.RedisService;
+import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.inc.Const;
@@ -29,12 +30,12 @@ public abstract class AbstractService<T> extends BaseService<T> {
     private RedisService redisService;
 
     @Autowired
-    private EntityService entityService;
+    private EntityDao entityDao;
 
     //加载企业所有缓存
     protected boolean loadCache() {
-        ApiResult<List<Entity>> list = entityService.list();
-        for (Entity entity : list.getData()) {
+        List<Entity> list = entityDao.list();
+        for (Entity entity : list) {
             loadCache(entity.getEnterpriseId());
         }
         return true;
@@ -90,7 +91,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
         try {
             Method method = this.getClass().getMethod("refreshCache", Integer.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseId);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
             logger.error("AbstractService.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
@@ -107,7 +108,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
         try {
             Method method = this.getClass().getMethod(methodName, parameterTypes);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, parameters);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
             logger.error("AbstractService.setCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName() + " ,method=" + methodName, e);

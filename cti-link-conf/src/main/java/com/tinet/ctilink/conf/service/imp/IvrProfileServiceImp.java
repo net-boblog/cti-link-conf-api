@@ -9,11 +9,9 @@ import com.tinet.ctilink.conf.dao.EnterpriseIvrRouterDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
-import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.EnterpriseIvrRouter;
 import com.tinet.ctilink.conf.model.IvrProfile;
-import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.service.v1.IvrProfileService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
@@ -204,7 +202,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Ivr
         try {
             Method method = this.getClass().getMethod(methodName, IvrProfile.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, ivrProfile);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
             logger.error("IvrProfileServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);

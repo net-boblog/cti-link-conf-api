@@ -30,4 +30,12 @@ public class EntityDao extends BaseDao<Entity> {
 
         return true;
     }
+
+    public List<Entity> list() {
+        Condition condition = new Condition(Entity.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andNotEqualTo("status", Const.ENTITY_STATUS_CLOSE);
+        List<Entity> list = selectByCondition(condition);
+        return list;
+    }
 }

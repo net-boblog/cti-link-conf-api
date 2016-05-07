@@ -255,7 +255,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
         try {
             Method method = this.getClass().getMethod("refreshCache", Integer.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseId);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
             logger.error("EnterpriseInvestigationServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);

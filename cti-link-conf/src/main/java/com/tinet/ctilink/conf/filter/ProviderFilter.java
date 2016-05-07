@@ -13,7 +13,7 @@ public class ProviderFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(ProviderFilter.class);
 
     //一个请求使用一个线程, 缓存刷新方法放到ThreadLocal里面
-    public static ThreadLocal<AfterReturningMethod> methodThreadLocal = new ThreadLocal<>();
+    public static ThreadLocal<AfterReturningMethod> LOCAL_METHOD = new ThreadLocal<>();
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
@@ -24,7 +24,7 @@ public class ProviderFilter implements Filter {
         try {
             result = invoker.invoke(invocation);
             try {
-                AfterReturningMethod method = methodThreadLocal.get();
+                AfterReturningMethod method = LOCAL_METHOD.get();
                 if (method != null) {
                     m = "ClassName:" + method.getObj().getClass().getName() + ", MethodName:" + method.getMethod().getName();
                     method.invoke();
@@ -39,7 +39,7 @@ public class ProviderFilter implements Filter {
                 System.out.println("AfterReturningMethod remove," + m);
             }
             //待改进, 每个接口都会执行
-            methodThreadLocal.remove();
+            LOCAL_METHOD.remove();
         }
 
         return result;

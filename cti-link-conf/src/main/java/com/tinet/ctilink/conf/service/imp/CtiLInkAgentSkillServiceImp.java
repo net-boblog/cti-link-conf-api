@@ -8,7 +8,7 @@ import com.tinet.ctilink.conf.dao.SkillDao;
 import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.model.AgentSkill;
 import com.tinet.ctilink.conf.model.Skill;
-import com.tinet.ctilink.conf.service.v1.AgentSkillService;
+import com.tinet.ctilink.conf.service.v1.CtiLInkAgentSkillService;
 import com.tinet.ctilink.service.BaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ import java.util.List;
  * @date 16/4/19 17:47
  */
 @Service
-public class AgentSkillServiceImp extends BaseService<AgentSkill> implements AgentSkillService {
+public class CtiLInkAgentSkillServiceImp extends BaseService<AgentSkill> implements CtiLInkAgentSkillService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -85,7 +85,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Age
         count = insertSelective(agentSkill);
 
         if (count != 1) {  //新增失败
-            logger.error("AgentSkillServiceImp.createAgentSkill error, " + agentSkill + ", count=" + count);
+            logger.error("CtiLInkAgentSkillServiceImp.createAgentSkill error, " + agentSkill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         }
 
@@ -107,7 +107,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Age
         int count = deleteByCondition(condition);
 
         if (count != 1) {
-            logger.error("AgentSkillServiceImp.deleteAgentSkill error, " + agentSkill + ", count=" + count);
+            logger.error("CtiLInkAgentSkillServiceImp.deleteAgentSkill error, " + agentSkill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
 
@@ -138,7 +138,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Age
         dbAgentSkill.setSkillLevel(agentSkill.getSkillLevel());
         int count = updateByPrimaryKey(dbAgentSkill);
         if (count != 1) {
-            logger.error("AgentSkillServiceImp.updateAgentSkill error, " + dbAgentSkill + ", count=" + count);
+            logger.error("CtiLInkAgentSkillServiceImp.updateAgentSkill error, " + dbAgentSkill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
 

@@ -19,7 +19,7 @@ import java.util.List;
 @Path("v1/agentSkill")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface AgentSkillService {
+public interface CtiLInkAgentSkillService {
 
     @POST
     @Path("create")

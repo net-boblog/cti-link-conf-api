@@ -30,6 +30,8 @@ public interface EnterpriseVoiceService {
     ApiResult<EnterpriseVoice> createEnterpriseVoice(MultipartFormDataInput input);
 
     //dubbo接口
+    @POST
+    @Path("create/file")
     ApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
 
     @POST
@@ -41,6 +43,8 @@ public interface EnterpriseVoiceService {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     ApiResult<EnterpriseVoice> updateEnterpriseVoice(MultipartFormDataInput input);
 
+    @POST
+    @Path("update/file")
     ApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
 
     @POST

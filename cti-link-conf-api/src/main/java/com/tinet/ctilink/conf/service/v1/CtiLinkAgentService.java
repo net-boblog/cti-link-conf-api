@@ -1,6 +1,7 @@
 package com.tinet.ctilink.conf.service.v1;
 
 
+import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.request.AgentListRequest;
@@ -10,7 +11,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * @author fengwei //
@@ -24,7 +24,7 @@ import java.util.List;
 @Path("v1/agent")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface AgentService {
+public interface CtiLinkAgentService {
 
     @POST
     @Path("create")
@@ -40,7 +40,7 @@ public interface AgentService {
 
     @POST
     @Path("list")
-    ApiResult<List<Agent>> listAgent(AgentListRequest agent);
+    ApiResult<PageInfo<Agent>> listAgent(AgentListRequest agent);
 
     @POST
     @Path("get")

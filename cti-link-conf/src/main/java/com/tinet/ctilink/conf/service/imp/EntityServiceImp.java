@@ -19,7 +19,7 @@ public class EntityServiceImp extends BaseService<Entity>
         implements EntityService {
 
     @Override
-    public ApiResult<List<Entity>> list() {
+    public ApiResult<List<Entity>> listEntity() {
         Condition condition = new Condition(Entity.class);
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andNotEqualTo("status", Const.ENTITY_STATUS_CLOSE);
@@ -29,7 +29,7 @@ public class EntityServiceImp extends BaseService<Entity>
     }
 
     @Override
-    public ApiResult<Entity> get(Entity entity) {
+    public ApiResult<Entity> getEntity(Entity entity) {
         if (entity.getEnterpriseId() == null || entity.getEnterpriseId() <= 0) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }

@@ -9,9 +9,9 @@ import com.tinet.ctilink.conf.dao.QueueMemberDao;
 import com.tinet.ctilink.conf.dao.QueueSkillDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.model.QueueMember;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Queue;
-import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.service.v1.QueueService;
 import com.tinet.ctilink.service.BaseService;
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +64,7 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
             logger.error("QueueServiceImp.createQueue error, " + queue + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
-            //setRefreshCacheMethod(queue.getEnterpriseId());
+            setRefreshCacheMethod("setCache", queue);
             //TODO BigQueue 调用ami接口? 进行底层同步?
             return new ApiResult<>(queue);
         }
@@ -96,7 +96,7 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
         int count = deleteByPrimaryKey(queue.getId());
 
         //TODO BigQueue 调用ami接口? 进行底层同步?
-
+        setRefreshCacheMethod("deleteCache", queue);
         return null;
     }
 
@@ -128,7 +128,7 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
             logger.error("QueueServiceImp.updateQueue error, " + queue + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
-        //setRefreshCacheMethod(queue.getEnterpriseId());
+        setRefreshCacheMethod("setCache", queue);
         //TODO BigQueue 调用ami接口? 进行底层同步?
         return new ApiResult<>(queue);
     }
@@ -243,8 +243,6 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
 
         }
 
-
-
         if (queue.getId() == null) {  //create
             if (queue.getQno() == null) {
                 return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[qno]不能为空");
@@ -278,13 +276,23 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
         //queue_memeber
         redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO, queue.getQno()));
         Set<String> cnoKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO_CNO, queue.getQno(), "*"));
-        //删除 cti-link.queue_member.{qno}.cno.{cno}=json
-        redisService.delete(Const.REDIS_DB_CONF_INDEX, cnoKeySet);
         //删除座席
         for (String key : cnoKeySet) {
+            QueueMember queueMember = redisService.get(Const.REDIS_DB_CONF_INDEX, key, QueueMember.class);
             String cno = key.substring(key.lastIndexOf("."), key.length());
+            Condition condition = new Condition(QueueMember.class);
+            Condition.Criteria criteria = condition.createCriteria();
+            criteria.andEqualTo("enterpriseId", queueMember.getEnterpriseId());
+            criteria.andEqualTo("agentId", queueMember.getAgentId());
+            List<QueueMember> list = queueMemberDao.selectByCondition(condition);
+            if (list != null &&list.size() > 0) {
+                redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_CNO, queue.getEnterpriseId(), cno), list);
+            } else {
+                redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_CNO, queue.getEnterpriseId(), cno));
+            }
         }
-
+        //删除 cti-link.queue_member.{qno}.cno.{cno}=json
+        redisService.delete(Const.REDIS_DB_CONF_INDEX, cnoKeySet);
         //queue
         redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_ENTERPRISE_ID_QNO, queue.getEnterpriseId(), queue.getQno()));
     }
@@ -293,9 +301,9 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
         try {
             Method method = this.getClass().getMethod(methodName, Queue.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, queue);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("AgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("CtiLinkAgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

@@ -1,7 +1,9 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
@@ -11,13 +13,13 @@ import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.dao.QueueMemberDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.service.v1.CtiLinkAgentService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.model.AgentSkill;
 import com.tinet.ctilink.conf.model.AgentTel;
 import com.tinet.ctilink.conf.model.QueueMember;
 import com.tinet.ctilink.conf.request.AgentListRequest;
-import com.tinet.ctilink.conf.service.v1.AgentService;
 import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +37,7 @@ import java.util.List;
  * @date 16/4/7 16:49
  */
 @Service
-public class AgentServiceImp extends BaseService<Agent> implements AgentService {
+public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLinkAgentService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -70,7 +72,7 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
         agent.setCreateTime(new Date());
         int count = insertSelective(agent);
         if (count != 1) {
-            logger.error("AgentServiceImp.createAgent error, " + agent + ", count=" + count);
+            logger.error("CtiLinkAgentServiceImp.createAgent error, " + agent + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod("setCache", agent);
@@ -116,7 +118,7 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
         int count = deleteByCondition(condition);
 
         if (count != 1) {
-            logger.error("AgentServiceImp.deleteAgent error, " + agent + ", count=" + count);
+            logger.error("CtiLinkAgentServiceImp.deleteAgent error, " + agent + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod("deleteCache", agent);
@@ -150,7 +152,7 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
         int count = updateByPrimaryKeySelective(agent);
 
         if (count != 1) {
-            logger.error("AgentServiceImp.updateAgent error, " + agent + ", count=" + count);
+            logger.error("CtiLinkAgentServiceImp.updateAgent error, " + agent + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod("setCache", agent);
@@ -158,7 +160,7 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
     }
 
     @Override
-    public ApiResult<List<Agent>> listAgent(AgentListRequest request) {
+    public ApiResult<PageInfo<Agent>> listAgent(AgentListRequest request) {
         //验证enterpriseId
         if (!entityDao.validateEntity(request.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
@@ -169,7 +171,6 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
         if (request.getOffset() <= 0) {
             request.setOffset(0);
         }
-        PageHelper.startPage(request.getOffset()/request.getLimit() + 1, request.getLimit());
 
         Condition condition = new Condition(Agent.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -203,10 +204,11 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
         if (request.getObRecord() != null) {
             criteria.andEqualTo("obRecord", request.getObRecord());
         }
+        Page<Agent> page = PageHelper.startPage(request.getOffset() / request.getLimit() + 1, request.getLimit());
 
-        List<Agent> list = selectByCondition(condition);
-
-        return new ApiResult<>(list);
+        selectByCondition(condition);
+        PageInfo<Agent> pageInfo = page.toPageInfo();
+        return new ApiResult<>(pageInfo);
     }
 
     @Override
@@ -342,9 +344,9 @@ public class AgentServiceImp extends BaseService<Agent> implements AgentService 
         try {
             Method method = this.getClass().getMethod(methodName, Agent.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, agent);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("AgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("CtiLinkAgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

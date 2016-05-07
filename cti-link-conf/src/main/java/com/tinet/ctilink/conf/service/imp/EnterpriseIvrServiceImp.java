@@ -248,7 +248,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
         try {
             Method method = this.getClass().getMethod("refreshCache", EnterpriseIvr.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseIvr);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
             logger.error("EnterpriseIvrServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);

@@ -22,10 +22,10 @@ import java.util.List;
 public interface EntityService {
     @POST
     @Path("list")
-    ApiResult<List<Entity>> list();
+    ApiResult<List<Entity>> listEntity();
 
     @POST
     @Path("get")
-    ApiResult<Entity> get(Entity entity);
+    ApiResult<Entity> getEntity(Entity entity);
 
 }

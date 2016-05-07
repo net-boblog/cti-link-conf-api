@@ -272,9 +272,9 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements AgentTe
         try {
             Method method = this.getClass().getMethod("setCache", AgentTel.class);
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, agentTel);
-            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("AgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("CtiLinkAgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

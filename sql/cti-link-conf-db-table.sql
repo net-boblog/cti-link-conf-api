@@ -150,7 +150,7 @@ CREATE TABLE cti_link_router
   create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
   CONSTRAINT cti_link_router_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_router_routerset_id_fkey FOREIGN KEY (routerset_id)
-    REFERENCES cti_link_routerset (id) MATCH SIMPLE,  
+    REFERENCES cti_link_routerset (id) MATCH SIMPLE,
   CONSTRAINT cti_link_router_gateway_id_fkey FOREIGN KEY (gateway_id)
     REFERENCES cti_link_gateway (id) MATCH SIMPLE
 )
@@ -213,10 +213,10 @@ CREATE TABLE cti_link_public_voice
   id serial NOT NULL,
   voice_name character varying,
   path character varying,
-  description character varying, 
+  description character varying,
   create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
   CONSTRAINT cti_link_public_voice_pkey PRIMARY KEY (id)
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_public_voice OWNER TO postgres;
 COMMENT ON TABLE cti_link_public_voice IS '公共语音库';
@@ -242,7 +242,7 @@ CREATE TABLE cti_link_public_moh
   format character varying NOT NULL default '',
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_public_moh_id PRIMARY KEY (id)
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_public_moh OWNER TO postgres;
 COMMENT ON TABLE cti_link_public_moh IS '保存music_on_hold文件路径信息';
@@ -271,7 +271,7 @@ CREATE INDEX cti_link_public_moh_name_idex
 
 CREATE TABLE cti_link_public_moh_voice
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   moh_id integer NOT NULL,
   voice_id integer NOT NULL,
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
@@ -280,7 +280,7 @@ CREATE TABLE cti_link_public_moh_voice
     REFERENCES cti_link_public_moh (id) MATCH SIMPLE,
   CONSTRAINT cti_link_public_moh_voice_voice_id_fkey FOREIGN KEY (voice_id)
     REFERENCES cti_link_public_voice (id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_public_moh_voice OWNER TO postgres;
 COMMENT ON TABLE cti_link_public_moh_voice IS 'music_on_hold中语音文件';
@@ -301,7 +301,7 @@ CREATE TABLE cti_link_system_setting
   property character varying, -- 属性
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_system_setting_pkey PRIMARY KEY (id)
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_system_setting OWNER TO postgres;
 COMMENT ON TABLE cti_link_system_setting IS '系统设置表';
@@ -319,10 +319,10 @@ CREATE TABLE cti_link_entity
 (
   enterprise_id integer NOT NULL,
   enterprise_name character varying,
-  entity_type integer, 
-  area_code character varying, 
+  entity_type integer,
+  area_code character varying,
   status integer, -- 企业业务状态 0:未开通 1:正常 2:欠费 3:停机 4:注销
-  create_time timestamp with time zone DEFAULT now(), 
+  create_time timestamp with time zone DEFAULT now(),
   CONSTRAINT cti_link_entity_pkey PRIMARY KEY (enterprise_id)
 )
 WITHOUT OIDS;
@@ -344,11 +344,11 @@ CREATE TABLE cti_link_ab_test
   enterprise_id integer NOT NULL,
   sip_group_id integer default -1,
   comment character varying,
-  create_time timestamp with time zone DEFAULT now(), 
+  create_time timestamp with time zone DEFAULT now(),
   CONSTRAINT cti_link_ab_test_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_trunk_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_ab_test OWNER TO postgres;
 COMMENT ON TABLE cti_link_ab_test IS 'abtest灰度发布配置表';
@@ -368,14 +368,14 @@ CREATE TABLE cti_link_trunk
   enterprise_id integer NOT NULL,
   sip_group_id integer default -1,
   number_trunk character varying,
-  area_code character varying, 
+  area_code character varying,
   type integer NOT NULL,
   comment character varying,
-  create_time timestamp with time zone DEFAULT now(), 
+  create_time timestamp with time zone DEFAULT now(),
   CONSTRAINT cti_link_trunk_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_trunk_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_trunk OWNER TO postgres;
 COMMENT ON TABLE cti_link_trunk IS '企业的中继号码表';
@@ -394,7 +394,7 @@ create index cti_link_trunk_enterprise_id_index on cti_link_trunk using btree(en
 CREATE TABLE cti_link_enterprise_hotline
 (
   id serial NOT NULL,
-  enterprise_id integer NOT NULL, 
+  enterprise_id integer NOT NULL,
   hotline character varying NOT NULL,
   is_master integer NOT NULL DEFAULT 0,
   number_trunk character varying NOT NULL,
@@ -493,7 +493,7 @@ CREATE TABLE cti_link_enterprise_setting
   CONSTRAINT cti_link_enterprise_setting_enterprise_id_fkey FOREIGN KEY (enterprise_id)
   REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_enterprise_setting OWNER TO postgres;
 COMMENT ON TABLE cti_link_enterprise_setting IS '企业客户扩展设置表';
@@ -518,7 +518,7 @@ CREATE INDEX cti_link_enterprise_setting_enterprise_id_index
  -- ib_call_limit integer DEFAULT 0,
  -- ob_call_limit integer default 0,
  -- 有多少enterpriseSetting放到enterpriseSetting文档中
- 
+
 
 
 -- Table: cti_link_restrict_tel
@@ -529,7 +529,7 @@ CREATE TABLE cti_link_restrict_tel
 (
   id serial NOT NULL, -- id标识
   enterprise_id integer NOT NULL, -- 企业id
-  restrict_type integer DEFAULT 1, -- 1:黑名单 2:白名单 
+  restrict_type integer DEFAULT 1, -- 1:黑名单 2:白名单
   type integer DEFAULT 1, -- 黑名单类型 1:呼入 2:外呼
   tel character varying, -- 加入黑名单电话
   tel_type integer DEFAULT 1, -- 电话号码类型 1:单个电话手机不加0固话加区号例如13409876543/01059222999 2:地区例如010/0311 3:未知号码
@@ -538,7 +538,7 @@ CREATE TABLE cti_link_restrict_tel
   CONSTRAINT cti_link_restrict_tel_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_restrict_tel_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_restrict_tel OWNER TO postgres;
 COMMENT ON TABLE cti_link_restrict_tel IS '呼叫限制表';
@@ -585,7 +585,7 @@ CREATE TABLE cti_link_ivr_profile
   CONSTRAINT cti_link_ivr_profile_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_ivr_profile OWNER TO postgres;
 COMMENT ON TABLE cti_link_ivr_profile IS 'IVR配置表';
@@ -779,7 +779,7 @@ CREATE TABLE cti_link_enterprise_voice
   CONSTRAINT cti_link_enterprise_voice_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_enterprise_voice OWNER TO postgres;
 COMMENT ON TABLE cti_link_enterprise_voice IS '企业语音库';
@@ -812,7 +812,7 @@ CREATE TABLE cti_link_enterprise_moh
   CONSTRAINT cti_link_enterprise_moh_id PRIMARY KEY (id),
   CONSTRAINT cti_link_enterprise_moh_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_enterprise_moh OWNER TO postgres;
 COMMENT ON TABLE cti_link_enterprise_moh IS '保存music_on_hold文件路径信息';
@@ -842,7 +842,7 @@ CREATE INDEX cti_link_enterprise_moh_name_idex
 
 CREATE TABLE cti_link_enterprise_moh_voice
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   enterprise_id integer NOT NULL,
   moh_id integer NOT NULL,
   voice_id integer NOT NULL,
@@ -854,7 +854,7 @@ CREATE TABLE cti_link_enterprise_moh_voice
     REFERENCES cti_link_enterprise_moh (id) MATCH SIMPLE,
   CONSTRAINT cti_link_enterprise_moh_voice_voice_id_fkey FOREIGN KEY (voice_id)
     REFERENCES cti_link_enterprise_voice (id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_enterprise_moh_voice OWNER TO postgres;
 COMMENT ON TABLE cti_link_enterprise_moh_voice IS 'music_on_hold中语音文件';
@@ -913,12 +913,12 @@ COMMENT ON COLUMN cti_link_enterprise_ivr_router.create_time IS '记录创建时
 
 CREATE TABLE cti_link_enterprise_voicemail
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   enterprise_id integer NOT NULL,
   name character varying,
   vno character varying,
-  type integer DEFAULT 1, 
-  create_time timestamp with time zone DEFAULT now(), 
+  type integer DEFAULT 1,
+  create_time timestamp with time zone DEFAULT now(),
   CONSTRAINT cti_link_enterprise_voicemail_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_enterprise_voicemail_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
@@ -972,36 +972,36 @@ COMMENT ON COLUMN cti_link_enterprise_hangup_action.type IS '1.呼入来电推�
 COMMENT ON COLUMN cti_link_enterprise_hangup_action.interval_time IS '间隔时间';
 COMMENT ON COLUMN cti_link_enterprise_hangup_action.method IS '推送方式  0 post  1 get';
 
--- Table: cti_link_enterprise_hangup_set 
+-- Table: cti_link_enterprise_hangup_set
 
--- DROP TABLE cti_link_enterprise_hangup_set; 
+-- DROP TABLE cti_link_enterprise_hangup_set;
 
-CREATE TABLE cti_link_enterprise_hangup_set 
-( 
-  id serial NOT NULL, 
-  enterprise_id integer NOT NULL, -- 企业ID 
+CREATE TABLE cti_link_enterprise_hangup_set
+(
+  id serial NOT NULL,
+  enterprise_id integer NOT NULL, -- 企业ID
   type integer, -- 类型 0:呼入 1:外呼
-  variable_name character varying, -- 变量名称 
+  variable_name character varying, -- 变量名称
   variable_value character varying, -- 变量值
-  variable_value_type integer default 0, -- 变量类型 0:表达式 1:字符串 
+  variable_value_type integer default 0, -- 变量类型 0:表达式 1:字符串
   sort integer, -- 排序序号从1开始
-  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间 
-CONSTRAINT cti_link_enterprise_hangup_set_pkey PRIMARY KEY (id) 
-) 
-WITH ( 
-  OIDS=FALSE 
-); 
-ALTER TABLE cti_link_enterprise_hangup_set 
-OWNER TO postgres; 
-COMMENT ON TABLE cti_link_enterprise_hangup_set 
-IS '挂机设置变量配置表'; 
-COMMENT ON COLUMN cti_link_enterprise_hangup_set.enterprise_id IS '企业ID'; 
+  create_time timestamp with time zone NOT NULL DEFAULT now(), -- 创建时间
+CONSTRAINT cti_link_enterprise_hangup_set_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cti_link_enterprise_hangup_set
+OWNER TO postgres;
+COMMENT ON TABLE cti_link_enterprise_hangup_set
+IS '挂机设置变量配置表';
+COMMENT ON COLUMN cti_link_enterprise_hangup_set.enterprise_id IS '企业ID';
 COMMENT ON COLUMN cti_link_enterprise_hangup_set.type IS '类型 0:呼入 1:外呼';
-COMMENT ON COLUMN cti_link_enterprise_hangup_set.variable_name IS '变量名称'; 
-COMMENT ON COLUMN cti_link_enterprise_hangup_set.variable_value IS '变量值'; 
-COMMENT ON COLUMN cti_link_enterprise_hangup_set.variable_value_type IS '变量类型 0:表达式 1:字符串 '; 
+COMMENT ON COLUMN cti_link_enterprise_hangup_set.variable_name IS '变量名称';
+COMMENT ON COLUMN cti_link_enterprise_hangup_set.variable_value IS '变量值';
+COMMENT ON COLUMN cti_link_enterprise_hangup_set.variable_value_type IS '变量类型 0:表达式 1:字符串 ';
 COMMENT ON COLUMN cti_link_enterprise_hangup_set.sort IS '排序序号从1开始';
-COMMENT ON COLUMN cti_link_enterprise_hangup_set.create_time IS '创建时间'; 
+COMMENT ON COLUMN cti_link_enterprise_hangup_set.create_time IS '创建时间';
 
 -- Table: cti_link_tel_set
 
@@ -1112,7 +1112,7 @@ CREATE INDEX cti_link_tel_set_tel_tsno_index
 CREATE TABLE cti_link_queue
 (
   id serial NOT NULL,
-  enterprise_id integer NOT NULL, -- 企业ID 
+  enterprise_id integer NOT NULL, -- 企业ID
   qno character varying NOT NULL,
   description character varying,
   music_class character varying DEFAULT 'default'::character varying,
@@ -1143,14 +1143,14 @@ WITHOUT OIDS;
 ALTER TABLE cti_link_queue OWNER TO postgres;
 COMMENT ON TABLE cti_link_queue IS ' 队列参数表';
 COMMENT ON COLUMN cti_link_queue.id IS 'id标识';
-COMMENT ON COLUMN cti_link_queue.enterprise_id IS '企业ID'; 
+COMMENT ON COLUMN cti_link_queue.enterprise_id IS '企业ID';
 COMMENT ON COLUMN cti_link_queue.description IS '队列描述：客服队列/投诉队列';
 COMMENT ON COLUMN cti_link_queue.qno IS '队列号 默认四位数字支持3-5位';
 COMMENT ON COLUMN cti_link_queue.music_class IS '等待音乐class';
 COMMENT ON COLUMN cti_link_queue.queue_timeout IS '队列超时时间';
 COMMENT ON COLUMN cti_link_queue.say_agentno IS '语音报号';
 COMMENT ON COLUMN cti_link_queue.member_timeout IS '坐席超时时间';
-COMMENT ON COLUMN cti_link_queue.retry IS '座席超时无应答,呼叫下一座席的延迟秒数'; 
+COMMENT ON COLUMN cti_link_queue.retry IS '座席超时无应答,呼叫下一座席的延迟秒数';
 COMMENT ON COLUMN cti_link_queue.wrapup_time IS '整理时间';
 COMMENT ON COLUMN cti_link_queue.max_len IS '最大等待数';
 COMMENT ON COLUMN cti_link_queue.strategy IS '呼叫策略';
@@ -1236,7 +1236,7 @@ CREATE TABLE cti_link_agent_tel
     REFERENCES cti_link_agent (id) MATCH SIMPLE,
   CONSTRAINT cti_link_agent_tel_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_agent_tel OWNER TO postgres;
 COMMENT ON TABLE cti_link_agent_tel IS '座席对应电话表';
@@ -1268,7 +1268,7 @@ CREATE TABLE cti_link_agent_crontab
     REFERENCES cti_link_agent (id) MATCH SIMPLE,
   CONSTRAINT cti_link_agent_crontab_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_agent_crontab OWNER TO postgres;
 COMMENT ON TABLE cti_link_agent_crontab IS '座席对应电话表';
@@ -1336,15 +1336,15 @@ CREATE INDEX cti_link_queue_member_interface_index
 
 CREATE TABLE cti_link_skill
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   enterprise_id integer NOT NULL,
-  name character varying, 
-  "comment" character varying, 
+  name character varying,
+  comment character varying, 
   create_time timestamp with time zone DEFAULT now(),
   CONSTRAINT cti_link_skill_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_skill_enterprise_id_fkey FOREIGN KEY (enterprise_id)
     REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_skill OWNER TO postgres;
 COMMENT ON TABLE cti_link_skill IS '企业技能组';
@@ -1360,7 +1360,7 @@ COMMENT ON COLUMN cti_link_skill.create_time IS '记录创建时间';
 
 CREATE TABLE cti_link_queue_skill
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   enterprise_id integer NOT NULL,
   queue_id integer NOT NULL,
   skill_id integer NOT NULL,
@@ -1373,7 +1373,7 @@ CREATE TABLE cti_link_queue_skill
     REFERENCES cti_link_queue (id) MATCH SIMPLE,
   CONSTRAINT cti_link_queue_skill_skill_id_fkey FOREIGN KEY (skill_id)
     REFERENCES cti_link_skill (id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_queue_skill OWNER TO postgres;
 COMMENT ON TABLE cti_link_queue_skill IS '企业队列中包含的电话转接到技能组关系表';
@@ -1390,7 +1390,7 @@ COMMENT ON COLUMN cti_link_queue_skill.create_time IS '记录创建时间';
 
 CREATE TABLE cti_link_agent_skill
 (
-  id serial NOT NULL, 
+  id serial NOT NULL,
   enterprise_id integer NOT NULL,
   agent_id integer NOT NULL,
   skill_id integer NOT NULL,
@@ -1403,7 +1403,7 @@ CREATE TABLE cti_link_agent_skill
     REFERENCES cti_link_agent (id) MATCH SIMPLE,
   CONSTRAINT cti_link_agent_skill_skill_id_fkey FOREIGN KEY (skill_id)
     REFERENCES cti_link_skill (id) MATCH SIMPLE
-) 
+)
 WITHOUT OIDS;
 ALTER TABLE cti_link_agent_skill OWNER TO postgres;
 COMMENT ON TABLE cti_link_agent_skill IS '企业座席拥有的技能关系表';

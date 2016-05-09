@@ -16,7 +16,7 @@ import java.util.List;
 @Path("v1/enterpriseSetting")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface EnterpriseSettingService {
+public interface CtiLinkEnterpriseSettingService {
 
     @POST
     @Path("create")

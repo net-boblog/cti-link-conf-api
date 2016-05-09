@@ -6,7 +6,7 @@ package com.tinet.ctilink.conf.request;
  *
  * 企业和公共语音库设置等待语音请求
  */
-public class MohUpdateRequest {
+public class CtiLinkMohUpdateRequest {
     public int enterpriseId;
 
     public int voiceId;

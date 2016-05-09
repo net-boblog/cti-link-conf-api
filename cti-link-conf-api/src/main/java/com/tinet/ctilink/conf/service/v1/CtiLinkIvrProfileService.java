@@ -19,7 +19,7 @@ import java.util.List;
 @Path("v1/ivrProfile")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface IvrProfileService {
+public interface CtiLinkIvrProfileService {
     @POST
     @Path("create")
     ApiResult<IvrProfile> createIvrProfile(IvrProfile ivrProfile);

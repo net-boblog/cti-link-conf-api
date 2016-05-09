@@ -100,12 +100,12 @@ public class QueueMember {
         this.agentId = agentId;
     }
 
-	public String getCno() {
-		return cno;
-	}
+    public String getCno() {
+        return cno;
+    }
 
-	public void setCno(String cno) {
-		this.cno = cno;
-	}
+    public void setCno(String cno) {
+        this.cno = cno;
+    }
     
 }

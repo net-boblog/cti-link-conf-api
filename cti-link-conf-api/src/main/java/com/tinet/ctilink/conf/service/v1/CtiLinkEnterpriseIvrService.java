@@ -17,7 +17,7 @@ import java.util.List;
 @Path("v1/enterpriseIvr")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface EnterpriseIvrService {
+public interface CtiLinkEnterpriseIvrService {
     @POST
     @Path("create")
     ApiResult<EnterpriseIvr> createEnterpriseIvr(EnterpriseIvr enterpriseIvr);

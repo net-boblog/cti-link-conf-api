@@ -173,16 +173,14 @@ public class Queue {
         this.vipSupport = vipSupport;
     }
 
-  
-
     public Integer getJoinEmpty() {
-		return joinEmpty;
-	}
+        return joinEmpty;
+    }
 
-	public void setJoinEmpty(Integer joinEmpty) {
-		this.joinEmpty = joinEmpty;
-	}
-
+    public void setJoinEmpty(Integer joinEmpty) {
+        this.joinEmpty = joinEmpty;
+    }
+  
 	public Integer getAnnounceYouarenext() {
         return announceYouarenext;
     }

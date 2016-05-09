@@ -12,7 +12,7 @@ import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.model.AgentTel;
-import com.tinet.ctilink.conf.service.v1.AgentTelService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkAgentTelService;
 import com.tinet.ctilink.service.BaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ import java.util.List;
  * @date 16/4/19 17:44
  */
 @Service
-public class AgentTelServiceImp extends BaseService<AgentTel> implements AgentTelService {
+public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements CtiLinkAgentTelService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -61,7 +61,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements AgentTe
         agentTel.setCreateTime(new Date());
         int count = insertSelective(agentTel);
         if (count != 1) {
-            logger.error("AgentTelServiceImp.createAgentTel error, " + agentTel + ", count=" + count);
+            logger.error("CtiLinkAgentTelServiceImp.createAgentTel error, " + agentTel + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         }
 
@@ -100,7 +100,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements AgentTe
 
         int count = deleteByPrimaryKey(agentTel.getId());
         if (count != 1) {
-            logger.error("AgentTelServiceImp.deleteAgentTel error, " + agentTel + ", count=" + count);
+            logger.error("CtiLinkAgentTelServiceImp.deleteAgentTel error, " + agentTel + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
 

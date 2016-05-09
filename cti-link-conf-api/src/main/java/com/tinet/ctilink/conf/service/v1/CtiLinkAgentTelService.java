@@ -19,7 +19,7 @@ import java.util.List;
 @Path("v1/agentTel")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface AgentTelService {
+public interface CtiLinkAgentTelService {
 
     @POST
     @Path("create")

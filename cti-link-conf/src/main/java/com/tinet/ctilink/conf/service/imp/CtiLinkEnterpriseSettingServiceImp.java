@@ -6,7 +6,7 @@ import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.model.EnterpriseSetting;
 import com.tinet.ctilink.conf.service.AbstractService;
-import com.tinet.ctilink.conf.service.v1.EnterpriseSettingService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseSettingService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ import java.util.List;
  * @date 16/4/7 17:20
  */
 @Service
-public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetting>
-        implements EnterpriseSettingService {
+public class CtiLinkEnterpriseSettingServiceImp extends AbstractService<EnterpriseSetting>
+        implements CtiLinkEnterpriseSettingService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -52,7 +52,7 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
         //insert
         int count = insertSelective(enterpriseSetting);
         if (count != 1) {
-            logger.error("EnterpriseSettingServiceImp.createAgent error, " + enterpriseSetting + ", count=" + count);
+            logger.error("CtiLinkEnterpriseSettingServiceImp.createAgent error, " + enterpriseSetting + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod(enterpriseSetting.getEnterpriseId());
@@ -87,7 +87,7 @@ public class EnterpriseSettingServiceImp extends AbstractService<EnterpriseSetti
         enterpriseSetting.setName(dbSetting.getName());
         int count = updateByPrimaryKey(enterpriseSetting);
         if (count != 1) {
-            logger.error("EnterpriseSettingServiceImp.update error, " + enterpriseSetting + ", count=" + count);
+            logger.error("CtiLinkEnterpriseSettingServiceImp.update error, " + enterpriseSetting + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod(enterpriseSetting.getEnterpriseId());

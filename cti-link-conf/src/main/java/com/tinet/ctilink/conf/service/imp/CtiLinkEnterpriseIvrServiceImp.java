@@ -11,9 +11,9 @@ import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.IvrProfile;
+import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseIvrService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
-import com.tinet.ctilink.conf.service.v1.EnterpriseIvrService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ import java.util.List;
  * @date 16/4/22 13:43
  */
 @Service
-public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implements EnterpriseIvrService {
+public class CtiLinkEnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implements CtiLinkEnterpriseIvrService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -60,7 +60,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
         enterpriseIvr.setCreateTime(new Date());
         int count = insertSelective(enterpriseIvr);
         if (count != 1) {
-            logger.error("EnterpriseIvrServiceImp.createEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
+            logger.error("CtiLinkEnterpriseIvrServiceImp.createEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod(enterpriseIvr);
@@ -89,7 +89,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
         int count = enterpriseIvrDao.deleteEnterpriseIvr(enterpriseIvr.getId());
 
         if (count <= 0) {
-            logger.error("EnterpriseIvrServiceImp.deleteEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
+            logger.error("CtiLinkEnterpriseIvrServiceImp.deleteEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod(dbEnterpriseIvr);
@@ -119,7 +119,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
         int count = updateByPrimaryKeySelective(dbEnterpriseIvr);
 
         if (count != 1) {
-            logger.error("EnterpriseIvrServiceImp.updateEnterpriseIvr error, " + dbEnterpriseIvr + ", count=" + count);
+            logger.error("CtiLinkEnterpriseIvrServiceImp.updateEnterpriseIvr error, " + dbEnterpriseIvr + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod(dbEnterpriseIvr);
@@ -250,7 +250,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseIvr);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("EnterpriseIvrServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("CtiLinkEnterpriseIvrServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

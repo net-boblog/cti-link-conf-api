@@ -12,7 +12,7 @@ import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.EnterpriseIvrRouter;
 import com.tinet.ctilink.conf.model.IvrProfile;
-import com.tinet.ctilink.conf.service.v1.IvrProfileService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkIvrProfileService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.SqlUtil;
@@ -31,7 +31,7 @@ import java.util.List;
  * @date 16/4/22 13:42
  */
 @Service
-public class IvrProfileServiceImp extends BaseService<IvrProfile> implements IvrProfileService {
+public class CtiLinkIvrProfileServiceImp extends BaseService<IvrProfile> implements CtiLinkIvrProfileService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -69,7 +69,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Ivr
         ivrProfile.setCreateTime(new Date());
         int count = insertSelective(ivrProfile);
         if (count != 1) {
-            logger.error("IvrProfileServiceImp.createIvrProfile error, " + ivrProfile + ", count=" + count);
+            logger.error("CtiLinkIvrProfileServiceImp.createIvrProfile error, " + ivrProfile + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod("setCache", ivrProfile);
@@ -108,7 +108,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Ivr
 
         count = deleteByPrimaryKey(ivrProfile.getId());
         if (count != 1) {
-            logger.error("IvrProfileServiceImp.deleteIvrProfile error, " + ivrProfile + ", count=" + count);
+            logger.error("CtiLinkIvrProfileServiceImp.deleteIvrProfile error, " + ivrProfile + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod("deleteCache", dbIvrProfile);
@@ -139,7 +139,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Ivr
         dbIvrProfile.setIvrDescription(ivrProfile.getIvrDescription());
         int count = updateByPrimaryKeySelective(dbIvrProfile);
         if (count != 1) {
-            logger.error("IvrProfileServiceImp.updateIvrProfile error, " + dbIvrProfile + ", count=" + count);
+            logger.error("CtiLinkIvrProfileServiceImp.updateIvrProfile error, " + dbIvrProfile + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod("setCache", dbIvrProfile);
@@ -204,7 +204,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Ivr
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, ivrProfile);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("IvrProfileServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("CtiLinkIvrProfileServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

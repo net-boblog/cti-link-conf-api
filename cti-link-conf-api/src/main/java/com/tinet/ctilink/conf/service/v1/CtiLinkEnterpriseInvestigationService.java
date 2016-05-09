@@ -19,7 +19,7 @@ import java.util.List;
 @Path("v1/enterpriseInvestigation")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface EnterpriseInvestigationService {
+public interface CtiLinkEnterpriseInvestigationService {
 
     @POST
     @Path("create")

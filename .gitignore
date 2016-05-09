@@ -1,0 +1,14 @@
+
+cti-link-conf-api/.classpath
+
+cti-link-conf-api/.project
+
+cti-link-conf/.classpath
+
+cti-link-conf/.project
+
+*.prefs
+
+cti-link-conf-api/.settings*
+
+cti-link-conf/.settings*

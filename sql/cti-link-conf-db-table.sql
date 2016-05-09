@@ -1283,6 +1283,7 @@ CREATE TABLE cti_link_queue_member
   tel character varying, -- 原始电话号码
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   agent_id integer NOT NULL,
+  cno character varying, -- 坐席工号
   CONSTRAINT cti_link_queue_member_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_queue_member_agent_id_fkey FOREIGN KEY (agent_id)
     REFERENCES cti_link_agent (id) MATCH SIMPLE
@@ -1301,6 +1302,7 @@ COMMENT ON COLUMN cti_link_queue_member.penalty IS '优先级 按照技能组，
 COMMENT ON COLUMN cti_link_queue_member.tel IS '原始电话号码 比如:4003159';
 COMMENT ON COLUMN cti_link_queue_member.create_time IS '记录创建时间';
 COMMENT ON COLUMN cti_link_queue_member.agent_id IS '对应cti_link_agent->agent_id';
+COMMENT ON COLUMN cti_link_queue_member.cno IS '坐席工号';
 
 -- Index: cti_link_queue_member_interface_index
 
@@ -1489,3 +1491,39 @@ COMMENT ON COLUMN cti_link_order_call_back.area IS '地区';
 
 
 -- 分机配置表  webrtc软电话
+-- Table: cti_link_exten
+
+-- DROP TABLE cti_link_exten;
+
+CREATE TABLE cti_link_exten
+(
+  id serial NOT NULL, -- 主键
+  enterprise_id integer NOT NULL, -- 企业ID
+  exten character varying,
+  call_power integer DEFAULT 0, -- 呼叫权限 0:不限制 1:限制国际(只能拨国内) 2:限制长途(只能拨本地) 3:限制本地(只能拨分机)
+  is_ob integer DEFAULT 1, -- 是否可以外呼，0:不允许，1：允许
+  ib_record integer DEFAULT 1, -- 呼入是否录音，0:不录音，1：录音
+  ob_record integer DEFAULT 1, -- 外呼是否录，0:不录音，1：录音
+  area_code character varying, -- 地区
+  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
+  CONSTRAINT cti_link_exten_pkey PRIMARY KEY (id),
+  CONSTRAINT cti_link_exten_enterprise_id_fkey FOREIGN KEY (enterprise_id)
+      REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cti_link_exten
+  OWNER TO postgres;
+COMMENT ON TABLE cti_link_exten
+  IS 'cti_link 分机表';
+COMMENT ON COLUMN cti_link_exten.id IS '主键';
+COMMENT ON COLUMN cti_link_exten.enterprise_id IS '企业ID';
+COMMENT ON COLUMN cti_link_exten.exten IS '分机号';
+COMMENT ON COLUMN cti_link_exten.call_power IS '主叫号码';
+COMMENT ON COLUMN cti_link_exten.is_ob IS '是否外呼  0 还没呼叫  1  已呼叫';
+COMMENT ON COLUMN cti_link_exten.ib_record IS '预约时间';
+COMMENT ON COLUMN cti_link_exten.ob_record IS '记录创建时间';
+COMMENT ON COLUMN cti_link_exten.area_code IS '区号';
+COMMENT ON COLUMN cti_link_exten.create_time IS '记录创建时间';

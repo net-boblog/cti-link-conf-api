@@ -180,8 +180,8 @@ public class Queue {
     public void setJoinEmpty(Integer joinEmpty) {
         this.joinEmpty = joinEmpty;
     }
-
-    public Integer getAnnounceYouarenext() {
+  
+	public Integer getAnnounceYouarenext() {
         return announceYouarenext;
     }
 

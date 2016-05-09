@@ -12,7 +12,7 @@ import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.QueueMember;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Queue;
-import com.tinet.ctilink.conf.service.v1.QueueService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkQueueService;
 import com.tinet.ctilink.service.BaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ import java.util.Set;
  * @date 16/4/7 17:17
  */
 @Service
-public class QueueServiceImp extends BaseService<Queue> implements QueueService {
+public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLinkQueueService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -61,7 +61,7 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
         queue.setCreateTime(new Date());
         int count = insertSelective(queue);
         if (count != 1) {
-            logger.error("QueueServiceImp.createQueue error, " + queue + ", count=" + count);
+            logger.error("CtiLinkQueueServiceImp.createQueue error, " + queue + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod("setCache", queue);
@@ -125,7 +125,7 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
         int count = updateByPrimaryKeySelective(queue);
 
         if (count != 1) {
-            logger.error("QueueServiceImp.updateQueue error, " + queue + ", count=" + count);
+            logger.error("CtiLinkQueueServiceImp.updateQueue error, " + queue + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod("setCache", queue);
@@ -275,7 +275,7 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
     public void deleteCache(Queue queue) {
         //queue_memeber
         redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO, queue.getQno()));
-        Set<String> cnoKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO_CNO, queue.getQno(), "*"));
+        Set<String> cnoKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO_CNO, queue.getQno(), "*"));
         //删除座席
         for (String key : cnoKeySet) {
             QueueMember queueMember = redisService.get(Const.REDIS_DB_CONF_INDEX, key, QueueMember.class);

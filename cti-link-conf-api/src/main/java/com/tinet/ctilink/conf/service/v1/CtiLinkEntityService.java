@@ -19,7 +19,7 @@ import java.util.List;
 @Path("v1/entity")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface EntityService {
+public interface CtiLinkEntityService {
     @POST
     @Path("list")
     ApiResult<List<Entity>> listEntity();

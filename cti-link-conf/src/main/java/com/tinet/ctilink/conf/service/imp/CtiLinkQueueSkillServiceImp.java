@@ -4,8 +4,8 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.model.QueueSkill;
+import com.tinet.ctilink.conf.service.v1.CtiLinkQueueSkillService;
 import com.tinet.ctilink.service.BaseService;
-import com.tinet.ctilink.conf.service.v1.QueueSkillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.List;
  * @date 16/4/21 13:24
  */
 @Service
-public class QueueSkillServiceImp extends BaseService<QueueSkill> implements QueueSkillService {
+public class CtiLinkQueueSkillServiceImp extends BaseService<QueueSkill> implements CtiLinkQueueSkillService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -72,7 +72,7 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Que
         dbQueueSkill.setSkillLevel(queueSkill.getSkillLevel());
         int count = updateByPrimaryKey(dbQueueSkill);
         if (count != 1) {
-            logger.error("QueueSkillServiceImp.updateQueueSkill error, " + dbQueueSkill + ", count=" + count);
+            logger.error("CtiLinkQueueSkillServiceImp.updateQueueSkill error, " + dbQueueSkill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
 

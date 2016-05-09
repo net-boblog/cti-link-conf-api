@@ -9,7 +9,7 @@ import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseInvestigation;
-import com.tinet.ctilink.conf.service.v1.EnterpriseInvestigationService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseInvestigationService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.SqlUtil;
@@ -28,7 +28,7 @@ import java.util.List;
  * @date 16/4/27 14:00
  */
 @Service
-public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInvestigation> implements EnterpriseInvestigationService {
+public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<EnterpriseInvestigation> implements CtiLinkEnterpriseInvestigationService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -93,7 +93,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
         enterpriseInvestigation.setCreateTime(new Date());
         int count = insertSelective(enterpriseInvestigation);
         if (count != 1) {
-            logger.error("EnterpriseInvestigationServiceImp.createEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
+            logger.error("CtiLinkEnterpriseInvestigationServiceImp.createEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod(enterpriseInvestigation.getEnterpriseId());
@@ -124,7 +124,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
         int count = enterpriseInvestigationDao.deleteEnterpriseInvestigation(enterpriseInvestigation.getId());
 
         if (count <= 0) {
-            logger.error("EnterpriseInvestigationServiceImp.deleteEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
+            logger.error("CtiLinkEnterpriseInvestigationServiceImp.deleteEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod(dbEnterpriseInvestigation.getEnterpriseId());
@@ -166,7 +166,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
 
         int count = updateByPrimaryKeySelective(dbEnterpriseInvestigation);
         if (count != 1) {
-            logger.error("EnterpriseInvestigationServiceImp.updateEnterpriseInvestigation error, " + dbEnterpriseInvestigation + ", count=" + count);
+            logger.error("CtiLinkEnterpriseInvestigationServiceImp.updateEnterpriseInvestigation error, " + dbEnterpriseInvestigation + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod(dbEnterpriseInvestigation.getEnterpriseId());
@@ -257,7 +257,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseId);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("EnterpriseInvestigationServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("CtiLinkEnterpriseInvestigationServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

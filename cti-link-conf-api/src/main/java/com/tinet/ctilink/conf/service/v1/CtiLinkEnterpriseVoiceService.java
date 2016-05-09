@@ -21,7 +21,7 @@ import java.util.List;
 @Path("v1/enterpriseVoice")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface EnterpriseVoiceService {
+public interface CtiLinkEnterpriseVoiceService {
 
     //新增企业语音
     @POST

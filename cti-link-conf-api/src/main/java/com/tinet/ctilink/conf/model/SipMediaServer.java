@@ -11,11 +11,17 @@ public class SipMediaServer {
     @GeneratedValue(generator = "JDBC")
     private Integer id;
 
+    private String instanceId;
+
+    private String mac;
+
     private Integer groupId;
 
     private String name;
 
     private String ipAddr;
+
+    private String externalIpAddr;
 
     private Integer port;
 
@@ -33,6 +39,22 @@ public class SipMediaServer {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId == null ? null : instanceId.trim();
+    }
+
+    public String getMac() {
+        return mac;
+    }
+
+    public void setMac(String mac) {
+        this.mac = mac == null ? null : mac.trim();
     }
 
     public Integer getGroupId() {
@@ -57,6 +79,14 @@ public class SipMediaServer {
 
     public void setIpAddr(String ipAddr) {
         this.ipAddr = ipAddr == null ? null : ipAddr.trim();
+    }
+
+    public String getExternalIpAddr() {
+        return externalIpAddr;
+    }
+
+    public void setExternalIpAddr(String externalIpAddr) {
+        this.externalIpAddr = externalIpAddr == null ? null : externalIpAddr.trim();
     }
 
     public Integer getPort() {

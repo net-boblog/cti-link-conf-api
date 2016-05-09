@@ -1,13 +1,11 @@
 package com.tinet.ctilink.conf.service;
 
-import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Entity;
-import com.tinet.ctilink.conf.service.v1.EntityService;
 import com.tinet.ctilink.service.BaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
     }
 
     protected boolean cleanCache(List<Entity> entityList) {
-        Set<String> existKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, getCleanKeyPrefix());
+        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, getCleanKeyPrefix());
         Set<String> dbKeySet = new HashSet<>();
         for (Entity entity : entityList) {
             List<T> list = select(entity.getEnterpriseId());
@@ -66,7 +64,7 @@ public abstract class AbstractService<T> extends BaseService<T> {
     }
 
     public boolean refreshCache(Integer enterpriseId) {
-        Set<String> existKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, getRefreshKeyPrefix(enterpriseId));
+        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, getRefreshKeyPrefix(enterpriseId));
         Set<String> dbKeySet = new HashSet<>();
         List<T> list = select(enterpriseId);
         for (T t : list) {

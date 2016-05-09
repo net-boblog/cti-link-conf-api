@@ -6,7 +6,7 @@ import com.tinet.ctilink.conf.model.Agent;
  * @author fengwei //
  * @date 16/4/14 16:34
  */
-public class AgentListRequest extends Agent {
+public class CtiLinkAgentListRequest extends Agent {
 
     private int limit;
 

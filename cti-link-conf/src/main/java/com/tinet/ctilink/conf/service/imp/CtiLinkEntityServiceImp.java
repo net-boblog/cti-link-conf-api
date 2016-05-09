@@ -5,7 +5,7 @@ import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Entity;
 import com.tinet.ctilink.service.BaseService;
-import com.tinet.ctilink.conf.service.v1.EntityService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkEntityService;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.util.List;
@@ -15,8 +15,8 @@ import java.util.List;
  * @date 16/4/7 13:45
  */
 @Service
-public class EntityServiceImp extends BaseService<Entity>
-        implements EntityService {
+public class CtiLinkEntityServiceImp extends BaseService<Entity>
+        implements CtiLinkEntityService {
 
     @Override
     public ApiResult<List<Entity>> listEntity() {

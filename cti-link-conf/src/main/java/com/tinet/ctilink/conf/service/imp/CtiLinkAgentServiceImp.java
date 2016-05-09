@@ -19,7 +19,7 @@ import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.model.AgentSkill;
 import com.tinet.ctilink.conf.model.AgentTel;
 import com.tinet.ctilink.conf.model.QueueMember;
-import com.tinet.ctilink.conf.request.AgentListRequest;
+import com.tinet.ctilink.conf.request.CtiLinkAgentListRequest;
 import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -160,7 +160,7 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
     }
 
     @Override
-    public ApiResult<PageInfo<Agent>> listAgent(AgentListRequest request) {
+    public ApiResult<PageInfo<Agent>> listAgent(CtiLinkAgentListRequest request) {
         //验证enterpriseId
         if (!entityDao.validateEntity(request.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");

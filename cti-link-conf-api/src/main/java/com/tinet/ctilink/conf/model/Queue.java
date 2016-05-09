@@ -39,7 +39,7 @@ public class Queue {
 
     private Integer vipSupport;
 
-    private String joinEmpty;
+    private Integer joinEmpty;
 
     private Integer announceYouarenext;
 
@@ -173,12 +173,12 @@ public class Queue {
         this.vipSupport = vipSupport;
     }
 
-    public String getJoinEmpty() {
+    public Integer getJoinEmpty() {
         return joinEmpty;
     }
 
-    public void setJoinEmpty(String joinEmpty) {
-        this.joinEmpty = joinEmpty == null ? null : joinEmpty.trim();
+    public void setJoinEmpty(Integer joinEmpty) {
+        this.joinEmpty = joinEmpty;
     }
 
     public Integer getAnnounceYouarenext() {

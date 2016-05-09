@@ -8,8 +8,8 @@ import com.tinet.ctilink.conf.dao.QueueSkillDao;
 import com.tinet.ctilink.conf.model.AgentSkill;
 import com.tinet.ctilink.conf.model.QueueSkill;
 import com.tinet.ctilink.conf.model.Skill;
+import com.tinet.ctilink.conf.service.v1.CtiLinkSkillService;
 import com.tinet.ctilink.service.BaseService;
-import com.tinet.ctilink.conf.service.v1.SkillService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import java.util.List;
  * @date 16/4/7 17:17
  */
 @Service
-public class SkillServiceImp extends BaseService<Skill> implements SkillService {
+public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLinkSkillService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -54,7 +54,7 @@ public class SkillServiceImp extends BaseService<Skill> implements SkillService 
         int count = insertSelective(skill);
 
         if (count != 1) {  //新增失败
-            logger.error("SkillServiceImp.createSkill error, " + skill + ", count=" + count);
+            logger.error("CtiLinkSkillServiceImp.createSkill error, " + skill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
         } else {
             return new ApiResult<>(skill);
@@ -84,7 +84,7 @@ public class SkillServiceImp extends BaseService<Skill> implements SkillService 
         int count = deleteByCondition(condition);
 
         if (count != 1) {
-            logger.error("SkillServiceImp.deleteSkill error, " + skill + ", count=" + count);
+            logger.error("CtiLinkSkillServiceImp.deleteSkill error, " + skill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         } else {
             return new ApiResult(ApiResult.SUCCESS_RESULT);
@@ -114,7 +114,7 @@ public class SkillServiceImp extends BaseService<Skill> implements SkillService 
         int count = updateByPrimaryKey(skill);
 
         if (count != 1) {
-            logger.error("SkillServiceImp.updateSkill error, " + skill + ", count=" + count);
+            logger.error("CtiLinkSkillServiceImp.updateSkill error, " + skill + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
         } else {
             return new ApiResult<>(skill);

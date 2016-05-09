@@ -19,7 +19,7 @@ import java.util.List;
 @Path("v1/queueSkill")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public interface QueueSkillService {
+public interface CtiLinkQueueSkillService {
 
     @POST
     @Path("create")

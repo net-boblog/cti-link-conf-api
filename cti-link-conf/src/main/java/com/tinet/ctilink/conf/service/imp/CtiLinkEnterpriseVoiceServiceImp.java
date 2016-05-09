@@ -8,7 +8,7 @@ import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.EnterpriseMohVoice;
 import com.tinet.ctilink.conf.model.EnterpriseVoice;
-import com.tinet.ctilink.conf.service.v1.EnterpriseVoiceService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseVoiceService;
 import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.util.VoiceFile;
 import com.tinet.ctilink.inc.Const;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @date 16/4/7 17:20
  */
 @Service
-public class EnterpriseVoiceServiceImp extends AbstractService<EnterpriseVoice> implements EnterpriseVoiceService {
+public class CtiLinkEnterpriseVoiceServiceImp extends AbstractService<EnterpriseVoice> implements CtiLinkEnterpriseVoiceService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -186,7 +186,7 @@ public class EnterpriseVoiceServiceImp extends AbstractService<EnterpriseVoice> 
         if (success) {
             int count = insertSelective(enterpriseVoice);
             if (count != 1) {
-                logger.error("EnterpriseVoiceServiceImp.createEnterpriseVoice error, " + enterpriseVoice + ", count=" + count);
+                logger.error("CtiLinkEnterpriseVoiceServiceImp.createEnterpriseVoice error, " + enterpriseVoice + ", count=" + count);
                 return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
             } else {
                 return new ApiResult<>(enterpriseVoice);
@@ -222,7 +222,7 @@ public class EnterpriseVoiceServiceImp extends AbstractService<EnterpriseVoice> 
         int count = deleteByPrimaryKey(enterpriseVoice.getId());
 
         if (count != 1) {
-            logger.error("EnterpriseVoiceServiceImp.deleteEnterpriseVoice error, " + enterpriseVoice + ", count=" + count);
+            logger.error("CtiLinkEnterpriseVoiceServiceImp.deleteEnterpriseVoice error, " + enterpriseVoice + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
         return new ApiResult(ApiResult.SUCCESS_RESULT);
@@ -281,7 +281,7 @@ public class EnterpriseVoiceServiceImp extends AbstractService<EnterpriseVoice> 
 
             int count = updateByPrimaryKeySelective(dbEnterpriseVoice);
             if (count != 1) {
-                logger.error("EnterpriseVoiceServiceImp.updateEnterpriseVoice error, " + dbEnterpriseVoice + ", count=" + count);
+                logger.error("CtiLinkEnterpriseVoiceServiceImp.updateEnterpriseVoice error, " + dbEnterpriseVoice + ", count=" + count);
                 return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
             } else {
                 VoiceFile.deleteEnterpriseVoice(oldPath);

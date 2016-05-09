@@ -32,7 +32,7 @@ public class GatewayDao extends BaseDao<Gateway> {
     }
 
     public boolean cleanCache() {
-        Set<String> existKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY_NAME + ".*");
+        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY_NAME + ".*");
         Set<String> dbKeySet = new HashSet<>();
         List<Gateway> gatewayList = selectAll();
         for (Gateway gateway : gatewayList) {

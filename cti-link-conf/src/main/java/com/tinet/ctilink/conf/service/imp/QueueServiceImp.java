@@ -274,8 +274,8 @@ public class QueueServiceImp extends BaseService<Queue> implements QueueService 
 
     public void deleteCache(Queue queue) {
         //queue_memeber
-        redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO, queue.getQno()));
-        Set<String> cnoKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_QNO_CNO, queue.getQno(), "*"));
+        redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, queue.getQno()));
+        Set<String> cnoKeySet = redisService.keys(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, queue.getQno(), "*"));
         //删除座席
         for (String key : cnoKeySet) {
             QueueMember queueMember = redisService.get(Const.REDIS_DB_CONF_INDEX, key, QueueMember.class);

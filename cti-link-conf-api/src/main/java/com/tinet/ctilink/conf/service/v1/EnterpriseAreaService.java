@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author  huangbin //
@@ -25,7 +26,7 @@ public interface EnterpriseAreaService {
      */
     @POST
     @Path("create")
-    ApiResult createEnterpriseArea(EnterpriseArea enterpriseArea);
+    ApiResult<EnterpriseArea> createEnterpriseArea(EnterpriseArea enterpriseArea);
 
     /**
      * 地区组根据根据企业编号enterpriseId和地区id删除地区
@@ -43,6 +44,6 @@ public interface EnterpriseAreaService {
      */
     @POST
     @Path("list")
-    ApiResult getListEnterpriseArea(EnterpriseArea enterpriseArea);
+    ApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea);
 
 }

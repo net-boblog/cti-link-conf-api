@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**@author huangbin
  * @date 2016/4/22.
@@ -24,7 +25,7 @@ public interface EnterpriseVoicemailService {
      */
     @POST
     @Path("create")
-    ApiResult createEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult<EnterpriseVoicemail> createEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
     /**
      * 根据留言箱id和企业编号enterpriseId删除留言箱
@@ -42,7 +43,7 @@ public interface EnterpriseVoicemailService {
      */
     @POST
     @Path("update")
-    ApiResult updateEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult<EnterpriseVoicemail> updateEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
     /**
      * 根据企业编号enterpriseId获取留言箱列表
@@ -51,6 +52,6 @@ public interface EnterpriseVoicemailService {
      */
     @POST
     @Path("list")
-    ApiResult getListEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult<List<EnterpriseVoicemail>> listEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
 }

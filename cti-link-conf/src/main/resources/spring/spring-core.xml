@@ -24,7 +24,7 @@
     </bean>
 
     <!-- 定义Spring Redis连接工厂 -->
-    <bean id="redisConnectionFactory" class="com.tinet.ctilink.jedis.JedisConnectionFactory">
+    <bean id="redisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
         <property name="hostName" value="${redis.url}" />
         <property name="port" value="${redis.port}" />
         <property name="database" value="0" />
@@ -32,9 +32,23 @@
         <property name="poolConfig" ref="jedisPoolConfig" />
     </bean>
 
-    <bean id="redisService" class="com.tinet.ctilink.cache.RedisService" >
+    <!-- 定义Spring Redis的序列化器 -->
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+    <bean id="jsonRedisSerializer" class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer" />
+
+
+    <!-- 定义Spring Redis模板（采用Json序列化） -->
+    <bean id="jsonRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
         <property name="connectionFactory" ref="redisConnectionFactory" />
+        <property name="keySerializer" ref="stringRedisSerializer" />
+        <property name="valueSerializer" ref="jsonRedisSerializer" />
+        <property name="hashKeySerializer" ref="stringRedisSerializer" />
+        <property name="hashValueSerializer" ref="jsonRedisSerializer" />
     </bean>
+
+
+    <bean id="redisService" class="com.tinet.ctilink.cache.RedisService" />
+
 
     <!-- 注入Spring上下文 -->
     <bean id="contextUtil" class="com.tinet.ctilink.util.ContextUtil" />

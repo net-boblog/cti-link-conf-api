@@ -1,15 +1,26 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.sun.tools.javac.comp.Enter;
+import com.tinet.ctilink.cache.CacheKey;
+import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.filter.AfterReturningMethod;
+import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseTime;
+import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.service.v1.EnterpriseTimeService;
+import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
 
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
 /**
@@ -18,9 +29,15 @@ import tk.mybatis.mapper.entity.Condition;
  */
 
 @Service
-public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implements EnterpriseTimeService {
+public class EnterpriseTimeServiceImp extends AbstractService<EnterpriseTime> implements EnterpriseTimeService {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private RedisService redisService;
+
     @Override
-    public ApiResult createEnterpriseTime(EnterpriseTime enterpriseTime) {
+    public ApiResult<EnterpriseTime> createEnterpriseTime(EnterpriseTime enterpriseTime) {
         if(enterpriseTime.getEnterpriseId()==null || enterpriseTime.getEnterpriseId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
         if(enterpriseTime.getName().isEmpty())
@@ -75,10 +92,13 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
         }
         if(enterpriseTime.getPriority()==null || enterpriseTime.getPriority()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"优先级不能为空");
-
         int success = insertSelective(enterpriseTime);
-        if(success==1)
-            return new ApiResult(ApiResult.SUCCESS_RESULT,ApiResult.SUCCESS_DESCRIPTION);
+
+        if(success==1) {
+            setRefreshCacheMethod("setCache",enterpriseTime);
+            return new ApiResult<>(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+        }
+        logger.error("EnterpriseTimeServiceImp.createEnterpriseTime error " + enterpriseTime + "success=" + success);
         return new ApiResult(ApiResult.FAIL_RESULT,"添加失败");
     }
 
@@ -94,13 +114,17 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
         criteria.andEqualTo("enterpriseId",enterpriseTime.getEnterpriseId());
         criteria.andEqualTo("id",enterpriseTime.getId());
         int success = deleteByCondition(condition);
-        if(success==1)
-            return new ApiResult(ApiResult.SUCCESS_RESULT,ApiResult.SUCCESS_DESCRIPTION);
+
+        if(success==1) {
+            setRefreshCacheMethod("deleteCache",enterpriseTime);
+            return new ApiResult(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+        }
+        logger.error("EnterpriseTimeServiceImp.deleteEnterpriseTime error " + enterpriseTime + "success" + success);
         return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult updateEnterpriseTime(EnterpriseTime enterpriseTime) {
+    public ApiResult<EnterpriseTime> updateEnterpriseTime(EnterpriseTime enterpriseTime) {
         if(enterpriseTime.getEnterpriseId()==null || enterpriseTime.getEnterpriseId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseTime.getId()==null || enterpriseTime.getId()<=0)
@@ -161,22 +185,66 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
 
         if(enterpriseTime.getPriority()==null || enterpriseTime.getPriority()<1)
             return new ApiResult(ApiResult.FAIL_RESULT,"请选择优先级");
-
         int success = updateByPrimaryKeySelective(enterpriseTime);
-        if(success==1)
-            return new ApiResult(ApiResult.SUCCESS_RESULT,ApiResult.SUCCESS_DESCRIPTION);
+
+        if(success==1) {
+            setRefreshCacheMethod("setCache",enterpriseTime);
+            return new ApiResult(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+        }
+        logger.error("EnterpriseTimeServiceImp.updateEnterpriseTime error " + enterpriseTime + "success" + success);
         return new ApiResult(ApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult getListEnterpriseTime(EnterpriseTime enterpriseTime) {
+    public ApiResult<List<EnterpriseTime>> listEnterpriseTime(EnterpriseTime enterpriseTime) {
         if(enterpriseTime.getEnterpriseId()==null || enterpriseTime.getEnterpriseId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+
         Condition condition = new Condition(EnterpriseTime.class);
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId",enterpriseTime.getEnterpriseId());
         List<EnterpriseTime> enterpriseTimeList = selectByCondition(condition);
+
         return new ApiResult(enterpriseTimeList);
+    }
+
+    @Override
+    protected List<EnterpriseTime> select(Integer enterpriseId) {
+        return null;
+    }
+
+    @Override
+    protected String getKey(EnterpriseTime enterpriseTime) {
+        return String.format(CacheKey.ENTERPRISE_TIME_ENTERPRISE_ID_ID,enterpriseTime.getEnterpriseId(),enterpriseTime.getId());
+    }
+
+    @Override
+    protected String getCleanKeyPrefix() {
+        return null;
+    }
+
+    @Override
+    protected String getRefreshKeyPrefix(Integer enterpriseId) {
+        return null;
+    }
+
+    public void setCache(EnterpriseTime enterpriseTime){
+        redisService.set(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseTime),enterpriseTime);
+    }
+
+    public void deleteCache(EnterpriseTime enterpriseTime){
+        redisService.delete(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseTime));
+    }
+
+    private void setRefreshCacheMethod(String methodName,EnterpriseTime enterpriseTime){
+        try {
+            Method method = this.getClass().getMethod(methodName, EnterpriseTime.class);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method,this,enterpriseTime);
+            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+        }catch (Exception e){
+            logger.error("EnterpriseTimeServiceImp.setRefreshCacheMethod error cache refresh fail" + "class = "
+                    + this.getClass().getName(), e);
+        }
     }
 
 }

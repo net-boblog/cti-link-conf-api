@@ -11,8 +11,8 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
- * @author fengwei //
- * @date 16/4/14 14:30
+ * @author huangbin //
+ * @date 16/4/21 14:30
  *
  * https://github.com/ti-net/cti-link-conf-api/wiki/conf-db%E5%B9%B3%E5%8F%B0%E8%AE%BE%E7%BD%AE%E6%8E%A5%E5%8F%A3-v1
  */
@@ -27,6 +27,6 @@ public interface SystemSettingService {
 
     @POST
     @Path("list")
-    ApiResult<List<SystemSetting>> listSystemSetting();
+    ApiResult<List<SystemSetting>> listSystemSetting(SystemSetting systemSetting);
 
 }

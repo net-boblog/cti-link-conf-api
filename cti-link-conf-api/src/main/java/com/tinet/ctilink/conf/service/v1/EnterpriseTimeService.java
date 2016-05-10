@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author  huangbin
@@ -25,7 +26,7 @@ public interface EnterpriseTimeService {
      */
     @POST
     @Path("create")
-    ApiResult createEnterpriseTime(EnterpriseTime enterpriseTime);
+    ApiResult<EnterpriseTime> createEnterpriseTime(EnterpriseTime enterpriseTime);
 
     /**
      * 根据时间条件id和企业编号enterpriseId删除时间条件
@@ -43,7 +44,7 @@ public interface EnterpriseTimeService {
      */
     @POST
     @Path("update")
-    ApiResult updateEnterpriseTime(EnterpriseTime enterpriseTime);
+    ApiResult<EnterpriseTime> updateEnterpriseTime(EnterpriseTime enterpriseTime);
 
     /**
      * 根据企业编号enterpriseId获取时间条件列表
@@ -52,6 +53,6 @@ public interface EnterpriseTimeService {
      */
     @POST
     @Path("list")
-    ApiResult getListEnterpriseTime(EnterpriseTime enterpriseTime);
+    ApiResult<List<EnterpriseTime>> listEnterpriseTime(EnterpriseTime enterpriseTime);
 
 }

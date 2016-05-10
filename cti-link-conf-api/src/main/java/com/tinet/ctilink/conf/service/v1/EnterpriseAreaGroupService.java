@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author  huangbin
@@ -26,7 +27,7 @@ public interface EnterpriseAreaGroupService {
      */
     @POST
     @Path("create")
-    ApiResult createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) ;
+    ApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) ;
 
     /**
      * 根据地区组id和企业编号enterpriseId删除地区组
@@ -44,7 +45,7 @@ public interface EnterpriseAreaGroupService {
      */
     @POST
     @Path("update")
-    ApiResult updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
+    ApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 
     /**
      * 根据企业编号enterpriseId获取地区组列表
@@ -53,5 +54,5 @@ public interface EnterpriseAreaGroupService {
      */
     @POST
     @Path("list")
-    ApiResult getListEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
+    ApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 }

@@ -41,15 +41,19 @@ public class Queue {
 
     private Integer joinEmpty;
 
-    private Integer announceYouarenext;
+    private Integer announceSound;
 
-    private Integer announceLessThen;
+    private Integer announceSoundFrequency;
 
-    private Integer announceLargeThen;
+    private String announceSoundFile;
 
-    private String announceThankyou;
+    private Integer announcePosition;
 
-    private Integer announceFrequency;
+    private Integer announcePositionYouarenext;
+
+    private Integer announcePositionFrequency;
+
+    private Integer announcePositionParam;
 
     private Date createTime;
 
@@ -180,45 +184,61 @@ public class Queue {
     public void setJoinEmpty(Integer joinEmpty) {
         this.joinEmpty = joinEmpty;
     }
-  
-	public Integer getAnnounceYouarenext() {
-        return announceYouarenext;
+
+    public Integer getAnnounceSound() {
+        return announceSound;
     }
 
-    public void setAnnounceYouarenext(Integer announceYouarenext) {
-        this.announceYouarenext = announceYouarenext;
+    public void setAnnounceSound(Integer announceSound) {
+        this.announceSound = announceSound;
     }
 
-    public Integer getAnnounceLessThen() {
-        return announceLessThen;
+    public Integer getAnnounceSoundFrequency() {
+        return announceSoundFrequency;
     }
 
-    public void setAnnounceLessThen(Integer announceLessThen) {
-        this.announceLessThen = announceLessThen;
+    public void setAnnounceSoundFrequency(Integer announceSoundFrequency) {
+        this.announceSoundFrequency = announceSoundFrequency;
     }
 
-    public Integer getAnnounceLargeThen() {
-        return announceLargeThen;
+    public String getAnnounceSoundFile() {
+        return announceSoundFile;
     }
 
-    public void setAnnounceLargeThen(Integer announceLargeThen) {
-        this.announceLargeThen = announceLargeThen;
+    public void setAnnounceSoundFile(String announceSoundFile) {
+        this.announceSoundFile = announceSoundFile == null ? null : announceSoundFile.trim();
     }
 
-    public String getAnnounceThankyou() {
-        return announceThankyou;
+    public Integer getAnnouncePosition() {
+        return announcePosition;
     }
 
-    public void setAnnounceThankyou(String announceThankyou) {
-        this.announceThankyou = announceThankyou == null ? null : announceThankyou.trim();
+    public void setAnnouncePosition(Integer announcePosition) {
+        this.announcePosition = announcePosition;
     }
 
-    public Integer getAnnounceFrequency() {
-        return announceFrequency;
+    public Integer getAnnouncePositionYouarenext() {
+        return announcePositionYouarenext;
     }
 
-    public void setAnnounceFrequency(Integer announceFrequency) {
-        this.announceFrequency = announceFrequency;
+    public void setAnnouncePositionYouarenext(Integer announcePositionYouarenext) {
+        this.announcePositionYouarenext = announcePositionYouarenext;
+    }
+
+    public Integer getAnnouncePositionFrequency() {
+        return announcePositionFrequency;
+    }
+
+    public void setAnnouncePositionFrequency(Integer announcePositionFrequency) {
+        this.announcePositionFrequency = announcePositionFrequency;
+    }
+
+    public Integer getAnnouncePositionParam() {
+        return announcePositionParam;
+    }
+
+    public void setAnnouncePositionParam(Integer announcePositionParam) {
+        this.announcePositionParam = announcePositionParam;
     }
 
     public Date getCreateTime() {

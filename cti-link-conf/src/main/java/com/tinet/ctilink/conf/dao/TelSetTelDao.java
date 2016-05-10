@@ -5,9 +5,9 @@ import com.tinet.ctilink.dao.BaseDao;
 import org.springframework.stereotype.Repository;
 
 /**
- * @author fengwei //
- * @date 16/5/6 14:31
+ * Created by nope-J on 2016/5/3.
  */
+
 @Repository
 public class TelSetTelDao extends BaseDao<TelSetTel> {
 }

@@ -1,12 +1,22 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.tinet.ctilink.cache.CacheKey;
+import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.filter.AfterReturningMethod;
+import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.TelSetTel;
+import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.service.v1.TelSetTelService;
-import com.tinet.ctilink.service.BaseService;
+import com.tinet.ctilink.inc.Const;
+import org.slf4j.Logger;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
+import java.lang.reflect.Method;
 import java.util.List;
 /**
  * @author huangbin
@@ -14,12 +24,18 @@ import java.util.List;
  */
 
 @Service
-public class TelSetTelServiceImp extends BaseService<TelSetTel> implements TelSetTelService {
+public class TelSetTelServiceImp extends AbstractService<TelSetTel> implements TelSetTelService {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private RedisService redisService;
+
     @Override
     public ApiResult createTelSetTel(TelSetTel telSetTel) {
         if(telSetTel.getEnterpriseId()==null || telSetTel.getEnterpriseId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
-        if(telSetTel.getId()==null || telSetTel.getSetId()<=0)
+        if(telSetTel.getSetId()==null || telSetTel.getSetId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"电话组id不能为空");
         if(telSetTel.getTel()==null || "".equals(telSetTel.getTel().trim()))
             return new ApiResult(ApiResult.FAIL_RESULT,"电话不能为控");
@@ -27,11 +43,14 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements TelSe
             return new ApiResult(ApiResult.FAIL_RESULT,"超时时间为5-60秒");
         if(telSetTel.getPriority()==null || telSetTel.getPriority()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"优先级不能为空");
-
         int success = insertSelective(telSetTel);
-        if(success==1)
-            return new ApiResult(ApiResult.SUCCESS_RESULT,"成功");
-        return new ApiResult(ApiResult.FAIL_RESULT,"失败");
+
+        if(success==1) {
+            setRefreshCacheMethod("setCache",telSetTel);
+            return new ApiResult<>(ApiResult.SUCCESS_RESULT, "成功");
+        }
+        logger.error("TelSetTelServiceImp.createTelSetTel error " + telSetTel + "success=" + success );
+        return new ApiResult<>(ApiResult.FAIL_RESULT,"失败");
     }
 
     @Override
@@ -46,9 +65,13 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements TelSe
         criteria.andEqualTo("id",telSetTel.getId());
         criteria.andEqualTo("enterpriseId",telSetTel.getEnterpriseId());
         int success = deleteByCondition(condition);
-        if(success==1)
-            return new ApiResult(ApiResult.SUCCESS_RESULT,"成功");
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+
+        if(success==1) {
+            setRefreshCacheMethod("deleteCache",telSetTel);
+            return new ApiResult<>(ApiResult.SUCCESS_RESULT, "删除成功");
+        }
+        logger.error("TelSetTelServiceImp.deleteTelSetTel error " + telSetTel + "success=" + success );
+        return new ApiResult<>(ApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
@@ -65,16 +88,19 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements TelSe
             return new ApiResult(ApiResult.FAIL_RESULT,"优先级不能为空");
 
         int success = updateByPrimaryKeySelective(telSetTel);
-        if(success==1)
-            return new ApiResult(ApiResult.SUCCESS_RESULT,"成功");
-        return new ApiResult(ApiResult.FAIL_RESULT,"修改失败");
+        if(success==1) {
+            setRefreshCacheMethod("setCache",telSetTel);
+            return new ApiResult<>(ApiResult.SUCCESS_RESULT, "更新成功");
+        }
+        logger.error("TelSetTelServiceImp.updateTelSetTel error " + telSetTel + "success=" + success);
+        return new ApiResult<>(ApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult getTelSetTels(TelSetTel telSetTel) {
+    public ApiResult<List<TelSetTel>> listTelSetTel(TelSetTel telSetTel) {
         if(telSetTel.getEnterpriseId()==null || telSetTel.getEnterpriseId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
-        if(telSetTel.getId()==null || telSetTel.getSetId()<=0)
+        if(telSetTel.getSetId()==null || telSetTel.getSetId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"电话组id不能为空");
 
         Condition condition = new Condition(TelSetTel.class);
@@ -82,9 +108,52 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements TelSe
         criteria.andEqualTo("enterpriseId", telSetTel.getEnterpriseId());
         criteria.andEqualTo("setId", telSetTel.getSetId());
         List<TelSetTel> telSetTelsList = selectByCondition(condition);
+
         if(telSetTelsList!=null && telSetTelsList.size()>0)
-            return new ApiResult(telSetTelsList);
-        return new ApiResult(ApiResult.FAIL_RESULT,"失败");
+            return new ApiResult<>(telSetTelsList);
+        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取电话列表失败");
     }
 
+    @Override
+    protected List<TelSetTel> select(Integer enterpriseId) {
+        Condition condition = new Condition(TelSetTel.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("enterpriseId",enterpriseId);
+        return selectByCondition(condition);
+    }
+
+    @Override
+    protected String getKey(TelSetTel telSetTel) {
+        return String.format(CacheKey.TEL_SET_TEL_ENTERPRISE_TSNO,
+                telSetTel.getEnterpriseId(),  telSetTel.getTelName());
+    }
+
+    @Override
+    protected String getCleanKeyPrefix() {
+        return (CacheKey.TEL_SET_TEL_ENTERPRISE_TSNO + ".*");
+    }
+
+    @Override
+    protected String getRefreshKeyPrefix(Integer enterpriseId) {
+        return String.format(CacheKey.TEL_SET_TEL_ENTERPRISE_TSNO,enterpriseId)+".*";
+    }
+
+    public void deleteCache(TelSetTel telSetTel){
+        redisService.delete(Const.REDIS_DB_CONF_INDEX,getKey(telSetTel));
+    }
+
+    public void setCache(TelSetTel telSetTel){
+        redisService.set(Const.REDIS_DB_CONF_INDEX,getKey(telSetTel), telSetTel);
+    }
+
+    private void setRefreshCacheMethod(String methodName, TelSetTel telSetTel){
+        try {
+            Method method = this.getClass().getMethod(methodName, TelSetTel.class);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method,this,telSetTel);
+            ProviderFilter.methodThreadLocal.set(afterReturningMethod);
+        }catch (Exception e) {
+            logger.error("TelSetTelServiceImp.setRefreshCacheMethod error,cache refresh fail," + "class=" +
+                    this.getClass().getName(), e);
+        }
+    }
 }

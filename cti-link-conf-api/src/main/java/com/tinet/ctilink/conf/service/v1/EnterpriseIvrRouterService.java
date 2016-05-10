@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
- * @author fengwei //
+ * @author huangbin //
  * @date 16/4/15 16:38
  */
 @Path("v1/enterpriseIvrRouter")
@@ -21,22 +21,22 @@ public interface EnterpriseIvrRouterService {
 
     @POST
     @Path("create")
-    ApiResult<EnterpriseIvrRouter> create(EnterpriseIvrRouter enterpriseIvrRouter);
+    ApiResult<EnterpriseIvrRouter> createEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter);
 
     @POST
     @Path("delete")
-    ApiResult delete(EnterpriseIvrRouter enterpriseIvrRouter);
+    ApiResult deleteEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter);
 
     @POST
     @Path("update")
-    ApiResult<EnterpriseIvrRouter> update(EnterpriseIvrRouter enterpriseIvrRouter);
+    ApiResult<EnterpriseIvrRouter> updateEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter);
 
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseIvrRouter>> list(EnterpriseIvrRouter enterpriseIvrRouter);
+    ApiResult<List<EnterpriseIvrRouter>> listEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter);
 
     @POST
     @Path("get")
-    ApiResult<EnterpriseIvrRouter> get(EnterpriseIvrRouter enterpriseIvrRouter);
+    ApiResult<EnterpriseIvrRouter> getEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter);
 
 }

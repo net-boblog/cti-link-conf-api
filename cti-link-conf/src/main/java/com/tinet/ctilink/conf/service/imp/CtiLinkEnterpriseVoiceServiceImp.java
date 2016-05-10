@@ -9,9 +9,9 @@ import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.EnterpriseMohVoice;
 import com.tinet.ctilink.conf.model.EnterpriseVoice;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseVoiceService;
-import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.util.VoiceFile;
 import com.tinet.ctilink.inc.Const;
+import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.FileUtils;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @date 16/4/7 17:20
  */
 @Service
-public class CtiLinkEnterpriseVoiceServiceImp extends AbstractService<EnterpriseVoice> implements CtiLinkEnterpriseVoiceService {
+public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> implements CtiLinkEnterpriseVoiceService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -338,18 +338,4 @@ public class CtiLinkEnterpriseVoiceServiceImp extends AbstractService<Enterprise
         return false;
     }
 
-    @Override
-    protected List<EnterpriseVoice> select(Integer enterpriseId) {
-        return null;
-    }
-
-    @Override
-    protected String getKey(EnterpriseVoice enterpriseVoice) {
-        return null;
-    }
-
-    @Override
-    protected String getRefreshKeyPrefix(Integer enterpriseId) {
-        return null;
-    }
 }

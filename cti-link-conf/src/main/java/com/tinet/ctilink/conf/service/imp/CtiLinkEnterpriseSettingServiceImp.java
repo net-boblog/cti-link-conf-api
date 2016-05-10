@@ -1,12 +1,16 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.filter.AfterReturningMethod;
+import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseSetting;
-import com.tinet.ctilink.conf.service.AbstractService;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseSettingService;
+import com.tinet.ctilink.inc.Const;
+import com.tinet.ctilink.service.BaseService;
 import com.tinet.ctilink.util.SqlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,17 +18,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
+import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author fengwei //
  * @date 16/4/7 17:20
  */
 @Service
-public class CtiLinkEnterpriseSettingServiceImp extends AbstractService<EnterpriseSetting>
+public class CtiLinkEnterpriseSettingServiceImp extends BaseService<EnterpriseSetting>
         implements CtiLinkEnterpriseSettingService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private RedisService redisService;
 
     @Autowired
     private EntityDao entityDao;
@@ -141,7 +151,6 @@ public class CtiLinkEnterpriseSettingServiceImp extends AbstractService<Enterpri
         return result;
     }
 
-    @Override
     protected List<EnterpriseSetting> select(Integer enterpriseId) {
         Condition condition = new Condition(EnterpriseSetting.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -149,15 +158,44 @@ public class CtiLinkEnterpriseSettingServiceImp extends AbstractService<Enterpri
         return selectByCondition(condition);
     }
 
-    @Override
     protected String getKey(EnterpriseSetting enterpriseSetting) {
         return String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID_NAME,
                 enterpriseSetting.getEnterpriseId(), enterpriseSetting.getName());
     }
 
-    @Override
-    protected String getRefreshKeyPrefix(Integer enterpriseId) {
-        return String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID, enterpriseId) + ".*";
+
+    /**
+     * 刷新缓存方法
+     * @param enterpriseId
+     */
+    protected void setRefreshCacheMethod(Integer enterpriseId) {
+        try {
+            Method method = this.getClass().getMethod("refreshCache", Integer.class);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseId);
+            ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
+        } catch (Exception e) {
+            logger.error("CtiLinkEnterpriseSettingServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+                    "class=" + this.getClass().getName(), e);
+        }
+    }
+
+    public boolean refreshCache(Integer enterpriseId) {
+        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
+                , String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID_NAME, enterpriseId, "*"));
+        Set<String> dbKeySet = new HashSet<>();
+        List<EnterpriseSetting> list = select(enterpriseId);
+        for (EnterpriseSetting t : list) {
+            String key = getKey(t);
+            redisService.set(Const.REDIS_DB_CONF_INDEX, key, t);
+            dbKeySet.add(key);
+        }
+
+        existKeySet.removeAll(dbKeySet);
+        if (existKeySet.size() > 0) {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, existKeySet);
+        }
+
+        return true;
     }
 
 }

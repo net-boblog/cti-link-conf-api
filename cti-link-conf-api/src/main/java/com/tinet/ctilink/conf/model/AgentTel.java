@@ -15,6 +15,8 @@ public class AgentTel {
 
     private Integer agentId;
 
+    private String cno;
+
     private String tel;
 
     private Integer telType;
@@ -49,6 +51,14 @@ public class AgentTel {
 
     public void setAgentId(Integer agentId) {
         this.agentId = agentId;
+    }
+
+    public String getCno() {
+        return cno;
+    }
+
+    public void setCno(String cno) {
+        this.cno = cno;
     }
 
     public String getTel() {

@@ -349,11 +349,6 @@ public class CtiLinkEnterpriseVoiceServiceImp extends AbstractService<Enterprise
     }
 
     @Override
-    protected String getCleanKeyPrefix() {
-        return null;
-    }
-
-    @Override
     protected String getRefreshKeyPrefix(Integer enterpriseId) {
         return null;
     }

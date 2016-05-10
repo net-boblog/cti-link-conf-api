@@ -239,10 +239,6 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[vipSupport]格式不正确");
         }
 
-        if (StringUtils.isEmpty(queue.getAnnounceThankyou())) {
-
-        }
-
         if (queue.getId() == null) {  //create
             if (queue.getQno() == null) {
                 return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[qno]不能为空");

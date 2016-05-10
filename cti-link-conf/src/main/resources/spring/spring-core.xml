@@ -48,9 +48,9 @@
         <property name="password" value="${db.password}" />
 
         <!-- 配置连接池的初始化大小、最小值、最大值 -->
-        <property name="initialSize" value="${db.initialSize.biz}" />
-        <property name="minIdle" value="${db.minIdle.biz}" />
-        <property name="maxActive" value="${db.maxActive.biz}" />
+        <property name="initialSize" value="${db.initialSize.conf}" />
+        <property name="minIdle" value="${db.minIdle.conf}" />
+        <property name="maxActive" value="${db.maxActive.conf}" />
 
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
         <property name="timeBetweenEvictionRunsMillis" value="60000" />

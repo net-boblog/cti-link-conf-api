@@ -156,11 +156,6 @@ public class CtiLinkEnterpriseSettingServiceImp extends AbstractService<Enterpri
     }
 
     @Override
-    protected String getCleanKeyPrefix() {
-        return CacheKey.ENTERPRISE_SETTING + ".*";
-    }
-
-    @Override
     protected String getRefreshKeyPrefix(Integer enterpriseId) {
         return String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID, enterpriseId) + ".*";
     }

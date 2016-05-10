@@ -30,39 +30,6 @@ public abstract class AbstractService<T> extends BaseService<T> {
     @Autowired
     private EntityDao entityDao;
 
-    //加载企业所有缓存
-    protected boolean loadCache() {
-        List<Entity> list = entityDao.list();
-        for (Entity entity : list) {
-            loadCache(entity.getEnterpriseId());
-        }
-        return true;
-    }
-
-    protected boolean loadCache(Integer enterpriseId) {
-        List<T> list = select(enterpriseId);
-        for (T t : list) {
-            redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(t), t);
-        }
-        return true;
-    }
-
-    protected boolean cleanCache(List<Entity> entityList) {
-        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, getCleanKeyPrefix());
-        Set<String> dbKeySet = new HashSet<>();
-        for (Entity entity : entityList) {
-            List<T> list = select(entity.getEnterpriseId());
-            list.stream().forEach(t-> dbKeySet.add(getKey(t)));
-        }
-
-        existKeySet.removeAll(dbKeySet);
-        if (existKeySet.size() > 0) {
-            redisService.delete(Const.REDIS_DB_CONF_INDEX, existKeySet);
-        }
-
-        return true;
-    }
-
     public boolean refreshCache(Integer enterpriseId) {
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, getRefreshKeyPrefix(enterpriseId));
         Set<String> dbKeySet = new HashSet<>();
@@ -126,12 +93,6 @@ public abstract class AbstractService<T> extends BaseService<T> {
      * @return
      */
     protected abstract String getKey(T t);
-
-    /**
-     * 清理缓存key的前缀
-     * @return
-     */
-    protected abstract String getCleanKeyPrefix();
 
     /**
      * 刷新缓存key的前缀

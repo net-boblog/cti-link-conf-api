@@ -1,11 +1,8 @@
 package com.tinet.ctilink;
 
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.dao.*;
-import com.tinet.ctilink.conf.model.EnterpriseInvestigation;
-import com.tinet.ctilink.conf.model.EnterpriseIvr;
-import com.tinet.ctilink.inc.Const;
-import com.tinet.ctilink.util.ContextUtil;
+import com.tinet.ctilink.conf.cache.ConfCacheInterface;
+import com.tinet.ctilink.conf.cache.ReloadCacheJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * 应用程序启动器
@@ -28,6 +25,9 @@ public class ApplicationStarter implements ApplicationListener<ContextRefreshedE
 	@Autowired
 	RedisService redisService;
 
+	@Autowired
+	List<ConfCacheInterface> confCacheInterfaceList;
+
 	@Override
 	public void onApplicationEvent(final ContextRefreshedEvent event) {
 
@@ -35,35 +35,14 @@ public class ApplicationStarter implements ApplicationListener<ContextRefreshedE
 		// http://docs.amazonaws.cn/AWSSdkDocsJava/latest/DeveloperGuide/java-dg-jvm-ttl.html
 		java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
-		//第一次启动, 加载所有缓存
-		ContextUtil.getContext().getBean(GatewayDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(PublicMohDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseMohDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(RestrictTelDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseSettingDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseClidDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseHangupSetDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseInvestigationDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseIvrDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(TrunkDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(TelSetDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(TelSetTelDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(RouterDao.class).loadCache();
-
-		ContextUtil.getContext().getBean(EnterpriseRouterDao.class).loadCache();
-
+		//配置了加载所有缓存  -DloadCache=true
+		String loadCache = System.getProperty("loadCache");
+		//if (loadCache != null && "true".equals(loadCache)) {
+		ReloadCacheJob reloadCacheJob = new ReloadCacheJob();
+		reloadCacheJob.setConfCacheInterfaceList(confCacheInterfaceList);
+		Thread reloadThread = new Thread(reloadCacheJob);
+		reloadThread.start();
+		//}
 
 		logger.info("cti-link-conf启动成功");
 		System.out.println("cti-clink-conf启动成功");

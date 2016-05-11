@@ -29,7 +29,7 @@ CREATE TABLE cti_link_sip_media_server
   instance_id character varying, -- 实例唯一id
   mac character varying, -- 实例mac地址
   group_id integer NOT NULL, -- sip media server组id
-  name character varying, -- 名字 唯一
+  sip_id integer, --  sip id, 唯一
   ip_addr character varying, -- IP地址
   external_ip_addr character varying, -- 实例公网ip地址
   port integer DEFAULT 5060, -- sip信令端口
@@ -48,7 +48,7 @@ COMMENT ON COLUMN cti_link_sip_media_server.id IS 'id标识';
 COMMENT ON COLUMN cti_link_sip_media_server.instance_id IS '实例唯一id';
 COMMENT ON COLUMN cti_link_sip_media_server.mac IS '实例mac地址';
 COMMENT ON COLUMN cti_link_sip_media_server.group_id IS 'sip media server组id';
-COMMENT ON COLUMN cti_link_sip_media_server.name IS '名字 唯一';
+COMMENT ON COLUMN cti_link_sip_media_server.sip_id IS 'sip id, 唯一';
 COMMENT ON COLUMN cti_link_sip_media_server.ip_addr IS 'IP地址';
 COMMENT ON COLUMN cti_link_sip_media_server.external_ip_addr IS '实例公网ip地址';
 COMMENT ON COLUMN cti_link_sip_media_server.port IS 'sip信令端口';

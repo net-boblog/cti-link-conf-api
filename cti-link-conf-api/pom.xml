@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>cti-link</artifactId>
-        <groupId>com.tinet</groupId>
+        <groupId>com.tinet.ctilink</groupId>
         <version>0.0.1</version>
     </parent>
 
@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.tinet</groupId>
+            <groupId>com.tinet.ctilink</groupId>
             <artifactId>cti-link-core</artifactId>
             <version>0.0.1</version>
         </dependency>
@@ -48,4 +48,5 @@
             <artifactId>pagehelper</artifactId>
         </dependency>
     </dependencies>
+
 </project>

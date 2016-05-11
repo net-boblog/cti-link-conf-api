@@ -6,8 +6,14 @@
 *.war
 *.ear
 
-*.
+
 # IntelliJ project files
 .idea
 *.iml
 target
+
+# Eclipse project files
+.classpath
+.project
+*.prefs
+.settings*

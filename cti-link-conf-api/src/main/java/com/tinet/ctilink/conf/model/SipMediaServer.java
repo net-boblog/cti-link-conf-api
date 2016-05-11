@@ -17,7 +17,7 @@ public class SipMediaServer {
 
     private Integer groupId;
 
-    private String name;
+    private Integer sipId;
 
     private String ipAddr;
 
@@ -65,12 +65,12 @@ public class SipMediaServer {
         this.groupId = groupId;
     }
 
-    public String getName() {
-        return name;
+    public Integer getSipId() {
+        return sipId;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setSipId(Integer sipId) {
+        this.sipId = sipId;
     }
 
     public String getIpAddr() {

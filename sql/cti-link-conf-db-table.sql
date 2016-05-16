@@ -639,6 +639,52 @@ CREATE INDEX cti_link_enterprise_ivr_ivr_id_idex
   USING btree
   (ivr_id );
 
+-- Table: cti_link_enterprise_ivr_anchor
+
+-- DROP TABLE cti_link_enterprise_ivr_anchor;
+
+CREATE TABLE cti_link_enterprise_ivr_anchor
+(
+  id serial NOT NULL, -- id标识
+  ivr_id integer NOT NULL, -- 所属ivr_id
+  enterprise_id integer NOT NULL, -- 企业id
+  path character varying, -- 节点
+  event character varying, -- 锚点产生的事件
+  data character varying, -- 事件所带属性值,直接在dialplan中翻译完成 json格式 {callType:"${callType}"}
+  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
+  CONSTRAINT cti_link_enterprise_ivr_anchor_pkey PRIMARY KEY (id ),
+  CONSTRAINT cti_link_enterprise_ivr_anchor_enterprise_id_fkey FOREIGN KEY (enterprise_id)
+      REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cti_link_enterprise_ivr_anchor_ivr_id_fkey FOREIGN KEY (ivr_id)
+      REFERENCES cti_link_ivr_profile (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cti_link_enterprise_ivr_anchor
+  OWNER TO postgres;
+COMMENT ON TABLE cti_link_enterprise_ivr_anchor
+  IS 'IVR详表';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.id IS 'id标识';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.ivr_id IS '所属ivr_id';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.enterprise_id IS '企业id';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.path IS '节点';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.event IS '==锚点产生的事件';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.data IS '事件所带属性值,直接在dialplan中翻译完成 json格式 {callType:"${callType}"}';
+COMMENT ON COLUMN cti_link_enterprise_ivr.create_time IS '记录创建时间';
+
+
+-- Index: cti_link_enterprise_ivr_anchor_ivr_id_path_idex
+
+-- DROP INDEX cti_link_enterprise_ivr_anchor_ivr_id_path_idex;
+
+CREATE INDEX cti_link_enterprise_ivr_anchor_ivr_id_path_idex
+  ON cti_link_enterprise_ivr_anchor
+  USING btree
+  (ivr_id, path);
+
 -- Table: cti_link_enterprise_time
 
 -- DROP TABLE cti_link_enterprise_time;

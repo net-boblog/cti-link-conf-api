@@ -601,7 +601,6 @@ CREATE TABLE cti_link_enterprise_ivr
   parent_id integer DEFAULT 0, -- 父节点id
   action integer, -- 动作类型
   property character varying, -- 属性值
-  anchor character varying, -- 锚点属性值
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_enterprise_ivr_pkey PRIMARY KEY (id ),
   CONSTRAINT cti_link_enterprise_ivr_enterprise_id_fkey FOREIGN KEY (enterprise_id)
@@ -626,7 +625,6 @@ COMMENT ON COLUMN cti_link_enterprise_ivr.path_name IS '节点名称';
 COMMENT ON COLUMN cti_link_enterprise_ivr.parent_id IS '父节点id';
 COMMENT ON COLUMN cti_link_enterprise_ivr.action IS '动作类型';
 COMMENT ON COLUMN cti_link_enterprise_ivr.property IS '属性值';
-COMMENT ON COLUMN cti_link_enterprise_ivr.anchor IS '锚点属性值';
 COMMENT ON COLUMN cti_link_enterprise_ivr.create_time IS '记录创建时间';
 
 

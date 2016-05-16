@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.Entity;
 
 import javax.ws.rs.Consumes;
@@ -22,10 +22,10 @@ import java.util.List;
 public interface CtiLinkEntityService {
     @POST
     @Path("list")
-    ApiResult<List<Entity>> listEntity();
+    CtiLinkApiResult<List<Entity>> listEntity();
 
     @POST
     @Path("get")
-    ApiResult<Entity> getEntity(Entity entity);
+    CtiLinkApiResult<Entity> getEntity(Entity entity);
 
 }

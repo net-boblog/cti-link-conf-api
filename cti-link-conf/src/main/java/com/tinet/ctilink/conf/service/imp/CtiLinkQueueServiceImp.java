@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.dao.QueueMemberDao;
 import com.tinet.ctilink.conf.dao.QueueSkillDao;
@@ -46,14 +46,14 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
     private RedisService redisService;
 
     @Override
-    public ApiResult<Queue> createQueue(Queue queue) {
+    public CtiLinkApiResult<Queue> createQueue(Queue queue) {
         //参数验证
         if (!entityDao.validateEntity(queue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //validate
         queue.setId(null);
-        ApiResult<Queue> result = validateQueue(queue);
+        CtiLinkApiResult<Queue> result = validateQueue(queue);
         if (result != null) {
             return result;
         }
@@ -62,19 +62,19 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
         int count = insertSelective(queue);
         if (count != 1) {
             logger.error("CtiLinkQueueServiceImp.createQueue error, " + queue + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod("setCache", queue);
             //TODO BigQueue 调用ami接口? 进行底层同步?
-            return new ApiResult<>(queue);
+            return new CtiLinkApiResult<>(queue);
         }
     }
 
     @Override
-    public ApiResult deleteQueue(Queue queue) {
+    public CtiLinkApiResult deleteQueue(Queue queue) {
         //参数验证
         if (!entityDao.validateEntity(queue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         //队列里面有在线座席, 不能删除
@@ -101,23 +101,23 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
     }
 
     @Override
-    public ApiResult<Queue> updateQueue(Queue queue) {
+    public CtiLinkApiResult<Queue> updateQueue(Queue queue) {
         //参数验证
         if (!entityDao.validateEntity(queue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         if (queue.getId() == null || queue.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
-        ApiResult<Queue> result = validateQueue(queue);
+        CtiLinkApiResult<Queue> result = validateQueue(queue);
         if (result != null) {
             return result;
         }
         Queue dbQueue = selectByPrimaryKey(queue.getId());
         if (!queue.getEnterpriseId().equals(dbQueue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]或[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]或[id]不正确");
         }
 
         queue.setQno(dbQueue.getQno());
@@ -126,18 +126,18 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
 
         if (count != 1) {
             logger.error("CtiLinkQueueServiceImp.updateQueue error, " + queue + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod("setCache", queue);
         //TODO BigQueue 调用ami接口? 进行底层同步?
-        return new ApiResult<>(queue);
+        return new CtiLinkApiResult<>(queue);
     }
 
     @Override
-    public ApiResult<List<Queue>> listQueue(Queue queue) {
+    public CtiLinkApiResult<List<Queue>> listQueue(Queue queue) {
         //参数验证
         if (!entityDao.validateEntity(queue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         Condition condition = new Condition(Queue.class);
@@ -145,53 +145,53 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
         criteria.andEqualTo("enterpriseId", queue.getEnterpriseId());
         condition.setOrderByClause("qno");
         List<Queue> list = selectByCondition(condition);
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
     @Override
-    public ApiResult<Queue> getQueue(Queue queue) {
+    public CtiLinkApiResult<Queue> getQueue(Queue queue) {
         //参数验证
         if (!entityDao.validateEntity(queue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (queue.getId() == null || queue.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         Queue dbQueue = selectByPrimaryKey(queue.getId());
         if (dbQueue == null || !queue.getEnterpriseId().equals(dbQueue.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]或[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]或[id]不正确");
         }
 
-        return new ApiResult<>(dbQueue);
+        return new CtiLinkApiResult<>(dbQueue);
     }
 
-    private <T> ApiResult<T> validateQueue(Queue queue) {
+    private <T> CtiLinkApiResult<T> validateQueue(Queue queue) {
         if (StringUtils.isEmpty(queue.getDescription())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[description]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[description]不能为空");
         }
 
         if (queue.getDescription().length() > 25) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[description]长度不能超过25个字符");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[description]长度不能超过25个字符");
         }
 
         if (queue.getMaxLen() == null || queue.getMaxLen() < 0
                 || queue.getMaxLen() > 999) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[maxLen]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[maxLen]格式不正确");
         }
 
         if (queue.getMemberTimeout() == null || queue.getMemberTimeout() < 20
                 || queue.getMemberTimeout() > 60) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[memberTimeout]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[memberTimeout]格式不正确");
         }
 
         if (queue.getQueueTimeout() == null || queue.getQueueTimeout() < 30
                 || queue.getQueueTimeout() > 600) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[queueTimeout]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[queueTimeout]格式不正确");
         }
 
         if (StringUtils.isEmpty(queue.getStrategy())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[strategy]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[strategy]不能为空");
         }
 
         if (!queue.getStrategy().equals(Const.STRATEGY_FEWEST_CALLS) &&
@@ -202,53 +202,53 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
                 !queue.getStrategy().equals(Const.STRATEGY_RRORDERED) &&
                 !queue.getStrategy().equals(Const.STRATEGY_SKILL) &&
                 !queue.getStrategy().equals(Const.STRATEGY_WRANDOM)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[strategy]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[strategy]不正确");
         }
 
         //验证music Class
         if (StringUtils.isEmpty(queue.getMusicClass())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[musicClass]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[musicClass]不能为空");
         }
 
         if (queue.getSayAgentno() == null) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[sayAgentno]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[sayAgentno]不正确");
         }
 
         if (queue.getWrapupTime() == null || queue.getWrapupTime() < 3
                 || queue.getWrapupTime() > 300) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[wrapupTime]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[wrapupTime]格式不正确");
         }
 
         if (queue.getRetry() == null || queue.getRetry() < 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[retry]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[retry]格式不正确");
         }
 
         if (queue.getWeight() == null || queue.getWeight() < 1
                 || queue.getWeight() > 10) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[weight]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[weight]格式不正确");
         }
 
         if (queue.getServiceLevel() == null || queue.getServiceLevel() < 1
                 || queue.getServiceLevel() > 60) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[serviceLevel]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[serviceLevel]格式不正确");
         }
 
         if (queue.getVipSupport() == null
                 || (queue.getVipSupport() != Const.QUEUE_VIP_SUPPORT_DEFAULT
                 && queue.getVipSupport() != Const.QUEUE_VIP_SUPPORT_YES)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[vipSupport]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[vipSupport]格式不正确");
         }
 
         if (queue.getId() == null) {  //create
             if (queue.getQno() == null) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[qno]不能为空");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[qno]不能为空");
             }
             if (!queue.getQno().startsWith(String.valueOf(queue.getEnterpriseId()))) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[qno]格式不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[qno]格式不正确");
             }
             if (!StringUtils.isNumeric(queue.getQno())
                     || (queue.getQno().length() - String.valueOf((queue.getEnterpriseId())).length() != 4)) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[qno]格式不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[qno]格式不正确");
             }
             //队列号已存在
             Condition condition = new Condition(Queue.class);
@@ -257,7 +257,7 @@ public class CtiLinkQueueServiceImp extends BaseService<Queue> implements CtiLin
             criteria.andEqualTo("qno", queue.getQno());
             List<Queue> list = selectByCondition(condition);
             if (list != null && list.size() > 0) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "队列号已经存在");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "队列号已经存在");
             }
         }
 

@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseAreaDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
@@ -39,32 +39,32 @@ public class CtiLinkEnterpriseAreaGroupServiceImp extends BaseService<Enterprise
     private EnterpriseAreaDao enterpriseAreaDao;
 
     @Override
-    public ApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
+    public CtiLinkApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
         if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(enterpriseAreaGroup.getGroupName()==null || "".equals(enterpriseAreaGroup.getGroupName().trim()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区名称不为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区名称不为空");
         if(enterpriseAreaGroup.getGroupType() != null){
             if(!(enterpriseAreaGroup.getGroupType()==1 || enterpriseAreaGroup.getGroupType()==2))
-                return new ApiResult(ApiResult.FAIL_RESULT,"地区组类型：1 地区组，2 其他地区");
+                return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区组类型：1 地区组，2 其他地区");
         }
         enterpriseAreaGroup.setCreateTime(new Date());
         int success = insertSelective(enterpriseAreaGroup);
 
         if(success==1) {
             setRefreshCacheMethod("setCache",enterpriseAreaGroup);
-            return new ApiResult<>(enterpriseAreaGroup);
+            return new CtiLinkApiResult<>(enterpriseAreaGroup);
         }
         logger.error("CtiLinkEnterpriseAreaGroupServiceImp.createEnterpriseAreaGroup error " + enterpriseAreaGroup + "success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"添加失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"添加失败");
     }
 
     @Override
-    public ApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
+    public CtiLinkApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
         if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(enterpriseAreaGroup.getId()==null || enterpriseAreaGroup.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区组id不能为空");
 
         //删除地区组地区
         Condition areaCondition = new Condition(EnterpriseArea.class);
@@ -83,42 +83,42 @@ public class CtiLinkEnterpriseAreaGroupServiceImp extends BaseService<Enterprise
 
         if(success==1) {
             setRefreshCacheMethod("deleteCache",enterpriseAreaGroup);
-            return new ApiResult<>(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+            return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT, CtiLinkApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("CtiLinkEnterpriseAreaGroupServiceImp.deleteEnterpriseAreaGroup error " + enterpriseAreaGroup + "success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
+    public CtiLinkApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
 
         if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(enterpriseAreaGroup.getId()==null || enterpriseAreaGroup.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区组id不能为空");
         if(enterpriseAreaGroup.getGroupName().isEmpty())
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区名称不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区名称不能为空");
         if(enterpriseAreaGroup.getGroupType()!=null && !(enterpriseAreaGroup.getGroupType()==1 || enterpriseAreaGroup.getGroupType()==2))
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组类型为：1 地区组，2 其他地区");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区组类型为：1 地区组，2 其他地区");
 
         EnterpriseAreaGroup eag = selectByPrimaryKey(enterpriseAreaGroup);
         if(!(enterpriseAreaGroup.getEnterpriseId().equals(eag.getEnterpriseId())))
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组id和企业编号不匹配");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"地区组id和企业编号不匹配");
         enterpriseAreaGroup.setCreateTime(eag.getCreateTime());
         int success = updateByPrimaryKey(enterpriseAreaGroup);
 
         if(success==1) {
             setRefreshCacheMethod("setCache",enterpriseAreaGroup);
-            return new ApiResult<>(enterpriseAreaGroup);
+            return new CtiLinkApiResult<>(enterpriseAreaGroup);
         }
         logger.error("EnterpriseAreaGroup.updateEnterpriseAreaGroup error " + enterpriseAreaGroup + "success=" +success );
-        return new ApiResult(ApiResult.FAIL_RESULT,"更新失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
+    public CtiLinkApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
         if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
 
         Condition condition = new Condition(EnterpriseAreaGroup.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -126,8 +126,8 @@ public class CtiLinkEnterpriseAreaGroupServiceImp extends BaseService<Enterprise
         List<EnterpriseAreaGroup> enterpriseAreaGroupList = selectByCondition(condition);
 
         if(enterpriseAreaGroupList!=null && enterpriseAreaGroupList.size()>0)
-            return new ApiResult<>(enterpriseAreaGroupList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取地区组列表失败");
+            return new CtiLinkApiResult<>(enterpriseAreaGroupList);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取地区组列表失败");
     }
 
     protected String getKey(EnterpriseAreaGroup enterpriseAreaGroup) {

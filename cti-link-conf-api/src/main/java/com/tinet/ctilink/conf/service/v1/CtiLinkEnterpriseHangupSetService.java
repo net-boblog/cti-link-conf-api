@@ -1,7 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.model.EnterpriseArea;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseHangupSet;
 
 import javax.ws.rs.Consumes;
@@ -22,14 +21,14 @@ import java.util.List;
 public interface CtiLinkEnterpriseHangupSetService {
     @POST
     @Path("create")
-    ApiResult<EnterpriseHangupSet> createEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet);
+    CtiLinkApiResult<EnterpriseHangupSet> createEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet);
 
     @POST
     @Path("delete")
-    ApiResult deleteEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet);
+    CtiLinkApiResult deleteEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet);
 
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseHangupSet>> listEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet);
+    CtiLinkApiResult<List<EnterpriseHangupSet>> listEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet);
 
 }

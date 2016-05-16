@@ -5,7 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.RestrictTel;
@@ -35,30 +35,30 @@ public class CtiLinkRestrictTelServiceImp extends BaseService<RestrictTel> imple
     private RedisService redisService;
 
     @Override
-    public ApiResult<RestrictTel> createRestrictTel(RestrictTel restrictTel) {
+    public CtiLinkApiResult<RestrictTel> createRestrictTel(RestrictTel restrictTel) {
         if(restrictTel.getEnterpriseId() == null || restrictTel.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(restrictTel.getRestrictType() == null || !(restrictTel.getRestrictType() ==1 || restrictTel.getRestrictType()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"黑白名单类型为：1.黑名单 2.白名单");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"黑白名单类型为：1.黑名单 2.白名单");
         if(restrictTel.getRestrictType() == null || !(restrictTel.getType() == 1 || restrictTel.getType()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型为： 1.呼入 2.外呼");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"呼叫类型为： 1.呼入 2.外呼");
         if(restrictTel.getTel().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"电话不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"电话不能为空");
         if(restrictTel.getTelType() == null || !(restrictTel.getTelType() ==1 || restrictTel.getTelType() == 2 || restrictTel.getTelType() == 3))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"电话号码类型不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"电话号码类型不能为空");
         if(restrictTel.getTelType() == 1){
             String tel = restrictTel.getTel();
             Pattern pattern = Pattern.compile(Const.TEL_VALIDATION);
             Matcher matcher = pattern.matcher(tel);
             if ( ! matcher.matches() )
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"电话号码不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"电话号码不正确");
         }
         if(restrictTel.getTelType() == 2 ){
             String tel = restrictTel.getTel();
             Pattern pattern = Pattern.compile(Const.AREA_CODE_VALIDATION);
             Matcher matcher = pattern.matcher(tel);
             if(! matcher.matches())
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"地区编码不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"地区编码不正确");
         }
         if(restrictTel.getTelType() == 3){
 
@@ -68,18 +68,18 @@ public class CtiLinkRestrictTelServiceImp extends BaseService<RestrictTel> imple
 
         if(success == 1){
             setRefreshCacheMethod("setCache",restrictTel);
-            return new ApiResult<>(restrictTel);
+            return new CtiLinkApiResult<>(restrictTel);
         }
         logger.error("CtiLinkRestrictTelServiceImp.createRestrictTel error " + restrictTel + "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"添加失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"添加失败");
     }
 
     @Override
-    public ApiResult deleteRestrictTel(RestrictTel restrictTel) {
+    public CtiLinkApiResult deleteRestrictTel(RestrictTel restrictTel) {
         if(restrictTel.getEnterpriseId() == null || restrictTel.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(restrictTel.getId() == null || restrictTel.getId() <= 0 )
-            return new ApiResult(ApiResult.FAIL_RESULT,"黑白名单id不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"黑白名单id不正确");
 
         Condition condition = new Condition(RestrictTel.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -89,18 +89,18 @@ public class CtiLinkRestrictTelServiceImp extends BaseService<RestrictTel> imple
 
         if(success ==1 ){
             setRefreshCacheMethod("deleteCache",restrictTel);
-            return new ApiResult(ApiResult.SUCCESS_RESULT,"删除成功");
+            return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT,"删除成功");
         }
         logger.error("CtiLinkRestrictTelServiceImp.deleteRestrictTel error " + restrictTel + "success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult<PageInfo> listRestrictTel(CtiLinkRestrictTelRequest ctiLinkRestrictTelRequest) {
+    public CtiLinkApiResult<PageInfo> listRestrictTel(CtiLinkRestrictTelRequest ctiLinkRestrictTelRequest) {
         if(ctiLinkRestrictTelRequest.getEnterpriseId() == null || ctiLinkRestrictTelRequest.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(ctiLinkRestrictTelRequest.getType() == null || !(ctiLinkRestrictTelRequest.getType() == 1 || ctiLinkRestrictTelRequest.getType() == 2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型为：1.呼入 2.外呼");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"呼叫类型为：1.呼入 2.外呼");
 
         Condition condition = new Condition(RestrictTel.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -110,20 +110,20 @@ public class CtiLinkRestrictTelServiceImp extends BaseService<RestrictTel> imple
         //可选项
         if (ctiLinkRestrictTelRequest.getRestrictType() != null) {
             if (!(ctiLinkRestrictTelRequest.getRestrictType() == 1 || ctiLinkRestrictTelRequest.getRestrictType() == 2))
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型为：1.呼入 2.外呼");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"呼叫类型为：1.呼入 2.外呼");
             criteria.andEqualTo("restrictType", ctiLinkRestrictTelRequest.getRestrictType());
         }
         if(ctiLinkRestrictTelRequest.getTel() != null )
             criteria.andEqualTo("tel", ctiLinkRestrictTelRequest.getTel());
         if(ctiLinkRestrictTelRequest.getOffset() < 0 )
-            return  new ApiResult(ApiResult.FAIL_RESULT,"偏移位置错误");
+            return  new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"偏移位置错误");
         if(ctiLinkRestrictTelRequest.getLimit() > 500)
-            return new ApiResult(ApiResult.FAIL_RESULT,"查询条数不能大于500");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"查询条数不能大于500");
 
         PageHelper.startPage(ctiLinkRestrictTelRequest.getOffset(), ctiLinkRestrictTelRequest.getLimit());
         List<RestrictTel> restrictTelList = selectByCondition(condition);
         PageInfo page = new PageInfo(restrictTelList);
-       return  new ApiResult<>(page);
+       return  new CtiLinkApiResult<>(page);
 
     }
 

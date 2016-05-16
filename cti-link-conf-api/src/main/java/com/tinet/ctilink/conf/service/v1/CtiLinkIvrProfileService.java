@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.IvrProfile;
 
 import javax.ws.rs.Consumes;
@@ -22,22 +22,22 @@ import java.util.List;
 public interface CtiLinkIvrProfileService {
     @POST
     @Path("create")
-    ApiResult<IvrProfile> createIvrProfile(IvrProfile ivrProfile);
+    CtiLinkApiResult<IvrProfile> createIvrProfile(IvrProfile ivrProfile);
 
     @POST
     @Path("delete")
-    ApiResult deleteIvrProfile(IvrProfile ivrProfile);
+    CtiLinkApiResult deleteIvrProfile(IvrProfile ivrProfile);
 
     @POST
     @Path("update")
-    ApiResult<IvrProfile> updateIvrProfile(IvrProfile ivrProfile);
+    CtiLinkApiResult<IvrProfile> updateIvrProfile(IvrProfile ivrProfile);
 
     @POST
     @Path("list")
-    ApiResult<List<IvrProfile>> listIvrProfile(IvrProfile ivrProfile);
+    CtiLinkApiResult<List<IvrProfile>> listIvrProfile(IvrProfile ivrProfile);
 
     @POST
     @Path("get")
-    ApiResult<IvrProfile> getIvrProfile(IvrProfile ivrProfile);
+    CtiLinkApiResult<IvrProfile> getIvrProfile(IvrProfile ivrProfile);
 
 }

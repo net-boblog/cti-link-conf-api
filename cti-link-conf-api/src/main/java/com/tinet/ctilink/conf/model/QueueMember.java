@@ -1,10 +1,11 @@
 package com.tinet.ctilink.conf.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_queue_member")
-public class QueueMember {
+public class QueueMember implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;

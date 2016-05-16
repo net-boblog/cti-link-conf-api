@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseInvestigationDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
@@ -42,19 +42,19 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
     private RedisService redisService;
 
     @Override
-    public ApiResult<EnterpriseInvestigation> createEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
+    public CtiLinkApiResult<EnterpriseInvestigation> createEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         enterpriseInvestigation.setId(null);
         if (StringUtils.isEmpty(enterpriseInvestigation.getPathName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[pathName]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[pathName]不能为空");
         }
         enterpriseInvestigation.setPathName(SqlUtil.escapeSql(enterpriseInvestigation.getPathName()));
 
         if (StringUtils.isEmpty(enterpriseInvestigation.getPath())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[path]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[path]不能为空");
         }
         enterpriseInvestigation.setPath(SqlUtil.escapeSql(enterpriseInvestigation.getPath()));
         //验证path?
@@ -62,30 +62,30 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
         if (enterpriseInvestigation.getAction() == null
                 || (enterpriseInvestigation.getAction() != Const.ENTERPRISE_IVR_OP_ACTION_PLAY
                 && enterpriseInvestigation.getAction() != Const.ENTERPRISE_IVR_OP_ACTION_SELECT)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[action]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[action]不正确");
         }
 
         if (StringUtils.isEmpty(enterpriseInvestigation.getProperty())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[property]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[property]不能为空");
         }
         enterpriseInvestigation.setProperty(SqlUtil.escapeSql(enterpriseInvestigation.getProperty()));
         //验证property?
 
         if (enterpriseInvestigation.getParentId() == null
                 || enterpriseInvestigation.getParentId() < 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[parentId]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[parentId]不能为空");
         }
 
         //判断根节点是否存在
         if (enterpriseInvestigation.getParentId() == 0) {
             if (!enterpriseInvestigation.getPath().equals("1")) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "根节点的path必须等于1");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "根节点的path必须等于1");
             }
         }
         enterpriseInvestigation.setAnchor(SqlUtil.escapeSql(enterpriseInvestigation.getAnchor()));
 
         //判断path是否合法
-        ApiResult<EnterpriseInvestigation> result = validatePath(enterpriseInvestigation.getEnterpriseId(),
+        CtiLinkApiResult<EnterpriseInvestigation> result = validatePath(enterpriseInvestigation.getEnterpriseId(),
                 enterpriseInvestigation.getParentId(), enterpriseInvestigation.getPath());
         if (result != null) {
             return result;
@@ -94,61 +94,61 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
         int count = insertSelective(enterpriseInvestigation);
         if (count != 1) {
             logger.error("CtiLinkEnterpriseInvestigationServiceImp.createEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod(enterpriseInvestigation.getEnterpriseId());
-            return new ApiResult<>(enterpriseInvestigation);
+            return new CtiLinkApiResult<>(enterpriseInvestigation);
         }
     }
 
     @Override
-    public ApiResult deleteEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
+    public CtiLinkApiResult deleteEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //删除一条要把子节点也删除了
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         if (enterpriseInvestigation.getId() == null
                 || enterpriseInvestigation.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         EnterpriseInvestigation dbEnterpriseInvestigation = selectByPrimaryKey(enterpriseInvestigation.getId());
 
         if (dbEnterpriseInvestigation == null
                 || !enterpriseInvestigation.getEnterpriseId().equals(dbEnterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         int count = enterpriseInvestigationDao.deleteEnterpriseInvestigation(enterpriseInvestigation.getId());
 
         if (count <= 0) {
             logger.error("CtiLinkEnterpriseInvestigationServiceImp.deleteEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod(dbEnterpriseInvestigation.getEnterpriseId());
-        return new ApiResult<>(ApiResult.SUCCESS_RESULT);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT);
     }
 
     @Override
-    public ApiResult<EnterpriseInvestigation> updateEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
+    public CtiLinkApiResult<EnterpriseInvestigation> updateEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseInvestigation.getId() == null
                 || enterpriseInvestigation.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         if (StringUtils.isEmpty(enterpriseInvestigation.getPathName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[pathName]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[pathName]不能为空");
         }
         enterpriseInvestigation.setPathName(SqlUtil.escapeSql(enterpriseInvestigation.getPathName()));
 
         if (StringUtils.isEmpty(enterpriseInvestigation.getProperty())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[property]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[property]不能为空");
         }
         enterpriseInvestigation.setProperty(SqlUtil.escapeSql(enterpriseInvestigation.getProperty()));
         //验证property?
@@ -157,7 +157,7 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
         EnterpriseInvestigation dbEnterpriseInvestigation = selectByPrimaryKey(enterpriseInvestigation.getId());
         if (dbEnterpriseInvestigation == null
                 || !enterpriseInvestigation.getEnterpriseId().equals(dbEnterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         dbEnterpriseInvestigation.setPathName(enterpriseInvestigation.getPathName());
@@ -167,17 +167,17 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
         int count = updateByPrimaryKeySelective(dbEnterpriseInvestigation);
         if (count != 1) {
             logger.error("CtiLinkEnterpriseInvestigationServiceImp.updateEnterpriseInvestigation error, " + dbEnterpriseInvestigation + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod(dbEnterpriseInvestigation.getEnterpriseId());
-        return new ApiResult<>(dbEnterpriseInvestigation);
+        return new CtiLinkApiResult<>(dbEnterpriseInvestigation);
     }
 
     @Override
-    public ApiResult<List<EnterpriseInvestigation>> listEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
+    public CtiLinkApiResult<List<EnterpriseInvestigation>> listEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         Condition condition = new Condition(EnterpriseInvestigation.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -185,43 +185,43 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
         condition.setOrderByClause("path");
         List<EnterpriseInvestigation> list = selectByCondition(condition);
 
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
     @Override
-    public ApiResult<EnterpriseInvestigation> getEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
+    public CtiLinkApiResult<EnterpriseInvestigation> getEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         if (enterpriseInvestigation.getId() == null
                 || enterpriseInvestigation.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         EnterpriseInvestigation dbEnterpriseInvestigation = selectByPrimaryKey(enterpriseInvestigation.getId());
         if (dbEnterpriseInvestigation == null
                 || !enterpriseInvestigation.getEnterpriseId().equals(dbEnterpriseInvestigation.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
-        return new ApiResult<>(dbEnterpriseInvestigation);
+        return new CtiLinkApiResult<>(dbEnterpriseInvestigation);
     }
 
-    private ApiResult<EnterpriseInvestigation> validatePath(Integer enterpriseId, Integer parentId, String path) {
+    private CtiLinkApiResult<EnterpriseInvestigation> validatePath(Integer enterpriseId, Integer parentId, String path) {
 
         if (parentId != 0) {
             EnterpriseInvestigation enterpriseInvestigation  = selectByPrimaryKey(parentId);
             if (enterpriseInvestigation == null) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "父节点不存在");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "父节点不存在");
             }
             if (!path.startsWith(enterpriseInvestigation.getPath() + ".")) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[path]不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[path]不正确");
 
             }
             if (!StringUtils.isNumeric(path.substring(enterpriseInvestigation.getPath().length() + 1, path.length()))) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[path]不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[path]不正确");
             }
         }
 
@@ -232,7 +232,7 @@ public class CtiLinkEnterpriseInvestigationServiceImp extends BaseService<Enterp
         criteria.andEqualTo("path", path);
         int count = selectCountByCondition(condition);
         if (count > 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "节点已存在");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "节点已存在");
         }
         return null;
     }

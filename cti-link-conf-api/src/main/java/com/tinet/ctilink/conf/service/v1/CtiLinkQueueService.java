@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.Queue;
 
 import javax.ws.rs.Consumes;
@@ -23,22 +23,22 @@ public interface CtiLinkQueueService {
 
     @POST
     @Path("create")
-    ApiResult<Queue> createQueue(Queue queue);
+    CtiLinkApiResult<Queue> createQueue(Queue queue);
 
     @POST
     @Path("delete")
-    ApiResult deleteQueue(Queue queue);
+    CtiLinkApiResult deleteQueue(Queue queue);
 
     @POST
     @Path("update")
-    ApiResult<Queue> updateQueue(Queue queue);
+    CtiLinkApiResult<Queue> updateQueue(Queue queue);
 
     @POST
     @Path("list")
-    ApiResult<List<Queue>> listQueue(Queue queue);
+    CtiLinkApiResult<List<Queue>> listQueue(Queue queue);
 
     @POST
     @Path("get")
-    ApiResult<Queue> getQueue(Queue queue);
+    CtiLinkApiResult<Queue> getQueue(Queue queue);
 
 }

@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseHangupSet;
@@ -28,36 +28,36 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
     private RedisService redisService;
 
     @Override
-    public ApiResult<EnterpriseHangupSet> createEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
+    public CtiLinkApiResult<EnterpriseHangupSet> createEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
         if(enterpriseHangupSet.getEnterpriseId() == null || enterpriseHangupSet.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseHangupSet.getType() == null || !(enterpriseHangupSet.getType()==0 || enterpriseHangupSet.getType()==1))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型：1.呼入 2。外呼");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"呼叫类型：1.呼入 2。外呼");
         if(enterpriseHangupSet.getVariableName().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量名称不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"变量名称不能为空");
         if(enterpriseHangupSet.getVariableValue().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量值不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"变量值不能为空");
         if(enterpriseHangupSet.getVariableValueType() == null || !(enterpriseHangupSet.getVariableValueType()==0 || enterpriseHangupSet.getVariableValueType()==1))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量类型为：0.表达式 1.字符串");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"变量类型为：0.表达式 1.字符串");
         if(enterpriseHangupSet.getSort() == null || enterpriseHangupSet.getSort() < 1)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"排序，从 1 开始");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"排序，从 1 开始");
         enterpriseHangupSet.setCreateTime(new Date());
         int success = insertSelective(enterpriseHangupSet);
 
         if(success == 1){
             setRefreshCacheMethod("setCache",enterpriseHangupSet);
-            return new ApiResult<>(enterpriseHangupSet);
+            return new CtiLinkApiResult<>(enterpriseHangupSet);
         }
         logger.error("CtiLinkEnterpriseHangupSetServiceImp.createEnterpriseHangupSet error " + enterpriseHangupSet + "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"新增失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"新增失败");
     }
 
     @Override
-    public ApiResult deleteEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
+    public CtiLinkApiResult deleteEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
         if(enterpriseHangupSet.getEnterpriseId() == null || enterpriseHangupSet.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseHangupSet.getId() == null || enterpriseHangupSet.getId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"推送id不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"推送id不正确");
 
         Condition condition = new Condition(EnterpriseHangupSet.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -68,16 +68,16 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
 
         if(success == 1){
             setRefreshCacheMethod("deleteCache",enterpriseHangupSet);
-            return new ApiResult(ApiResult.SUCCESS_RESULT,ApiResult.SUCCESS_DESCRIPTION);
+            return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT, CtiLinkApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("CtiLinkEnterpriseHangupSetServiceImp.deleteEnterpriseHangupSet error "+ enterpriseHangupSet +"success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult<List<EnterpriseHangupSet>> listEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
+    public CtiLinkApiResult<List<EnterpriseHangupSet>> listEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
         if(enterpriseHangupSet.getEnterpriseId() == null || enterpriseHangupSet.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
 
         Condition condition = new Condition(EnterpriseHangupSet.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -86,8 +86,8 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
         List<EnterpriseHangupSet> enterpriseHangupSetList = selectByCondition(condition);
 
         if(enterpriseHangupSetList != null && enterpriseHangupSetList.size() > 0)
-            return new ApiResult<>(enterpriseHangupSetList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取推送变量列表失败");
+            return new CtiLinkApiResult<>(enterpriseHangupSetList);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取推送变量列表失败");
     }
 
     protected String getKey(EnterpriseHangupSet enterpriseHangupSet) {

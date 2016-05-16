@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.SystemSetting;
 
 import javax.ws.rs.Consumes;
@@ -23,10 +23,10 @@ public interface CtiLinkSystemSettingService {
 
     @POST
     @Path("update")
-    ApiResult<SystemSetting> updateSystemSetting(SystemSetting systemSetting);
+    CtiLinkApiResult<SystemSetting> updateSystemSetting(SystemSetting systemSetting);
 
     @POST
     @Path("list")
-    ApiResult<List<SystemSetting>> listSystemSetting(SystemSetting systemSetting);
+    CtiLinkApiResult<List<SystemSetting>> listSystemSetting(SystemSetting systemSetting);
 
 }

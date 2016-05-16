@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.dao.AgentDao;
@@ -46,14 +46,14 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
     private RedisService redisService;
 
     @Override
-    public ApiResult<AgentTel> createAgentTel(AgentTel agentTel) {
+    public CtiLinkApiResult<AgentTel> createAgentTel(AgentTel agentTel) {
         //如果新增的是绑定电话(isBind=1)，需要判断座席是否在线，在线的话，不能新增绑定电话，如果不在线，需要把其他绑定电话设置为isBind=0
         if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         agentTel.setId(null);
-        ApiResult<AgentTel> result = validateAgentTel(agentTel);
+        CtiLinkApiResult<AgentTel> result = validateAgentTel(agentTel);
         if (result != null) {
             return result;
         }
@@ -62,7 +62,7 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
         int count = insertSelective(agentTel);
         if (count != 1) {
             logger.error("CtiLinkAgentTelServiceImp.createAgentTel error, " + agentTel + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         }
 
         //TODO 绑定电话, 查询座席是否在线
@@ -76,56 +76,56 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
 
         //如果不是绑定电话, 只新增就可以
         setRefreshCacheMethod(agentTel);
-        return new ApiResult<>(agentTel);
+        return new CtiLinkApiResult<>(agentTel);
     }
 
     @Override
-    public ApiResult deleteAgentTel(AgentTel agentTel) {
+    public CtiLinkApiResult deleteAgentTel(AgentTel agentTel) {
         //删除前, 需要先解绑
         if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentTel.getId() == null || agentTel.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         AgentTel dbAgentTel = selectByPrimaryKey(agentTel.getId());
         if (dbAgentTel == null || !agentTel.getEnterpriseId().equals(dbAgentTel.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         if (dbAgentTel.getIsBind() == Const.AGENT_TEL_IS_BIND_YES) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "电话正在使用中，请先解绑");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "电话正在使用中，请先解绑");
         }
 
         int count = deleteByPrimaryKey(agentTel.getId());
         if (count != 1) {
             logger.error("CtiLinkAgentTelServiceImp.deleteAgentTel error, " + agentTel + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         }
 
         setRefreshCacheMethod(agentTel);
-        return new ApiResult(ApiResult.SUCCESS_RESULT);
+        return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT);
     }
 
     @Override
-    public ApiResult<AgentTel> updateAgentTel(AgentTel agentTel) {
+    public CtiLinkApiResult<AgentTel> updateAgentTel(AgentTel agentTel) {
         //绑定, 解绑. 解绑前, 需要下下线
         if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentTel.getId() == null || agentTel.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
-        ApiResult<AgentTel> result = validateAgentTel(agentTel);
+        CtiLinkApiResult<AgentTel> result = validateAgentTel(agentTel);
         if (result != null) {
             return result;
         }
 
         AgentTel dbAgentTel = selectByPrimaryKey(agentTel.getId());
         if (dbAgentTel == null || !agentTel.getEnterpriseId().equals(dbAgentTel.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         //TODO 判断座席是否在线, 在线情况下不能修改
@@ -133,7 +133,7 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
         //如果不在线
         if (agentTel.getIsBind() == Const.AGENT_TEL_IS_BIND_YES) {
             if (dbAgentTel.getIsBind() == Const.AGENT_TEL_IS_BIND_YES) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败，电话已经绑定");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败，电话已经绑定");
             }
             dbAgentTel.setIsBind(Const.AGENT_TEL_IS_BIND_YES);
             updateByPrimaryKey(dbAgentTel);
@@ -143,7 +143,7 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
             //queue_memeber?
         } else {
             if (dbAgentTel.getIsBind() == Const.AGENT_TEL_IS_BIND_NO) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败，电话已经解绑");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败，电话已经解绑");
             }
             dbAgentTel.setIsBind(Const.AGENT_TEL_IS_BIND_NO);
             updateByPrimaryKey(dbAgentTel);
@@ -154,12 +154,12 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
     }
 
     @Override
-    public ApiResult<List<AgentTel>> listAgentTel(AgentTel agentTel) {
+    public CtiLinkApiResult<List<AgentTel>> listAgentTel(AgentTel agentTel) {
         if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentTel.getAgentId() == null || agentTel.getAgentId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[agentId]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[agentId]不能为空");
         }
 
         Condition condition = new Condition(AgentTel.class);
@@ -169,25 +169,25 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
         condition.setOrderByClause("is_bind desc, id");
         List<AgentTel> list = selectByCondition(condition);
 
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
-    private <T> ApiResult<T> validateAgentTel(AgentTel agentTel) {
+    private <T> CtiLinkApiResult<T> validateAgentTel(AgentTel agentTel) {
         if (agentTel.getAgentId() == null || agentTel.getAgentId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[agentId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[agentId]不正确");
         }
 
         agentTel.setIsValidity(Const.AGENT_TEL_IS_VALIDITY_DEFAULT);
         if (agentTel.getIsBind() == null) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[isBind]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[isBind]不能为空");
         }
         if (agentTel.getIsBind() != Const.AGENT_TEL_IS_BIND_NO && agentTel.getIsBind() != Const.AGENT_TEL_IS_BIND_YES) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[isBind]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[isBind]不正确");
         }
 
         if (agentTel.getId() == null) {  //新增电话
             if (StringUtils.isEmpty(agentTel.getTel())) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[tel]不能为空");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[tel]不能为空");
             }
             if (agentTel.getTel().matches(Const.LANDLINE_VALIDATION)) {
                 agentTel.setTelType(Const.TEL_TYPE_LANDLINE);
@@ -195,16 +195,16 @@ public class CtiLinkAgentTelServiceImp extends BaseService<AgentTel> implements 
                 agentTel.setTelType(Const.TEL_TYPE_MOBILE);
             } else {
                 //TODO 分机和软电话
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[tel]格式不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[tel]格式不正确");
             }
 
             //判断号码是否已经被其他座席绑定或者自己已经添加了这个号码
             if (isAgentTelBinding(agentTel.getEnterpriseId(), agentTel.getTel())) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "操作失败，电话号码已经绑定");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "操作失败，电话号码已经绑定");
             }
 
             if (isAgentTelCreated(agentTel.getEnterpriseId(), agentTel.getAgentId(), agentTel.getTel())) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "操作失败，座席已经添加了此号码");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "操作失败，座席已经添加了此号码");
             }
         }
         return null;

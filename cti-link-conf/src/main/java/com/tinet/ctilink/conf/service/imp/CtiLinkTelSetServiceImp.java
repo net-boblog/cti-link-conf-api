@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.TelSetTelDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
@@ -39,35 +39,35 @@ public class CtiLinkTelSetServiceImp extends BaseService<TelSet> implements CtiL
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public ApiResult createTelSet(TelSet telSet) {
+    public CtiLinkApiResult createTelSet(TelSet telSet) {
         if (telSet.getEnterpriseId() == null || telSet.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "企业编号不正确");
         if (telSet.getTsno() == null || telSet.getTsno().trim().length() > 8)
-            return new ApiResult(ApiResult.FAIL_RESULT, "电话组组号不大于8位");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "电话组组号不大于8位");
         if (telSet.getSetName() == null || "".equals(telSet.getSetName().trim()))
-            return new ApiResult(ApiResult.FAIL_RESULT, "电话组名不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "电话组名不能为空");
         if (telSet.getTimeout() == null || telSet.getTimeout() > 600 || telSet.getTimeout() < 5)
-            return new ApiResult(ApiResult.FAIL_RESULT, "超时时间为5-600");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "超时时间为5-600");
         if (telSet.getStrategy() == null || !("order".equals(telSet.getStrategy()) || "random".equals(telSet.getStrategy())))
-            return new ApiResult(ApiResult.FAIL_RESULT, "呼叫策略取值为order或random");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "呼叫策略取值为order或random");
         if (telSet.getIsStop() == null || !(telSet.getIsStop() == 1 || telSet.getIsStop() == 0))
-            return new ApiResult(ApiResult.FAIL_RESULT, "是否停用取值为1或0");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "是否停用取值为1或0");
 
         int success = insertSelective(telSet);
         if (success == 1) {
             setRefreshCacheMethod("setCache",telSet);
-            return new ApiResult(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+            return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT, CtiLinkApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("CtiLinkTelSetServiceImp.createTelSet error "+ telSet +",success = " + success);
-        return new ApiResult(ApiResult.FAIL_RESULT, "添加失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "添加失败");
     }
 
     @Override
-    public ApiResult deleteTelSet(TelSet telSet) {
+    public CtiLinkApiResult deleteTelSet(TelSet telSet) {
         if (telSet.getEnterpriseId() == null || telSet.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "企业编号不能为空");
         if (telSet.getId() == null || telSet.getId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "电话组id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "电话组id不能为空");
 
         //删除电话组电话
         Condition telCondition = new Condition(TelSetTel.class);
@@ -86,39 +86,39 @@ public class CtiLinkTelSetServiceImp extends BaseService<TelSet> implements CtiL
 
         if (success == 1) {
             setRefreshCacheMethod("deleteCache",telSet);
-            return new ApiResult<>(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+            return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT, CtiLinkApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("CtiLinkTelSetServiceImp.deleteTelSet error "+ telSet +",success = "+success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT, "失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "失败");
     }
 
     @Override
-    public ApiResult updateTelSet(TelSet telSet) {
+    public CtiLinkApiResult updateTelSet(TelSet telSet) {
         if (telSet.getEnterpriseId() == null || telSet.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "企业编号不能为空");
         if (telSet.getId() == null || telSet.getId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "电话组id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "电话组id不能为空");
         if (telSet.getSetName() == null || "".equals(telSet.getSetName().trim()))
-            return new ApiResult(ApiResult.FAIL_RESULT, "电话组名不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "电话组名不能为空");
         if (telSet.getStrategy() == null || !("order".equals(telSet.getStrategy()) || "random".equals(telSet.getStrategy())))
-            return new ApiResult(ApiResult.FAIL_RESULT, "呼叫策略为order或random");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "呼叫策略为order或random");
         if (telSet.getIsStop() == null || !(telSet.getIsStop() == 1 || telSet.getIsStop() == 0))
-            return new ApiResult(ApiResult.FAIL_RESULT, "是否停用取值为0或1");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "是否停用取值为0或1");
         Date modify = new Date();
         telSet.setModifyTime(modify);
         int success = updateByPrimaryKeySelective(telSet);
 
         if (success == 1) {
             setRefreshCacheMethod("setCache",telSet);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, ApiResult.SUCCESS_DESCRIPTION);
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, CtiLinkApiResult.SUCCESS_DESCRIPTION);
         }
-        return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
     }
 
     @Override
-    public ApiResult listTelSet(CtiLinkTelSetListRequest ctiLinkTelSetListRequest) {
+    public CtiLinkApiResult listTelSet(CtiLinkTelSetListRequest ctiLinkTelSetListRequest) {
         if (ctiLinkTelSetListRequest.getEnterpriseId() == null || ctiLinkTelSetListRequest.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "企业编号不能为空");
 
         Condition condition = new Condition(TelSet.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -137,16 +137,16 @@ public class CtiLinkTelSetServiceImp extends BaseService<TelSet> implements CtiL
                 System.out.println("------>"+telSetList.get(i));
 
         PageInfo page = new PageInfo(telSetList);
-        return new ApiResult(page);
+        return new CtiLinkApiResult(page);
     }
 
     @Override
-    public ApiResult getTelSetByIdAndEnterpriseId(TelSet telSet) {
+    public CtiLinkApiResult getTelSetByIdAndEnterpriseId(TelSet telSet) {
         if (telSet.getId() == null || telSet.getId() < 0) {
-            return new ApiResult(ApiResult.FAIL_RESULT, "电话组id不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "电话组id不正确");
         }
         if (telSet.getEnterpriseId() == null || telSet.getEnterpriseId() <= 0) {
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT, "企业编号不正确");
         }
 
         Condition condition = new Condition(TelSet.class);
@@ -156,8 +156,8 @@ public class CtiLinkTelSetServiceImp extends BaseService<TelSet> implements CtiL
         List<TelSet> telSetList = selectByCondition(condition);
 
         if (telSetList != null && telSetList.size() > 0)
-            return new ApiResult<>(telSetList.get(0));
-        return new ApiResult<>(ApiResult.FAIL_RESULT, "查询失败");
+            return new CtiLinkApiResult<>(telSetList.get(0));
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "查询失败");
     }
 
     protected String getKey(TelSet telSet) {

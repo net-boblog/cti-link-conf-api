@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseTime;
 
 import javax.ws.rs.Consumes;
@@ -26,7 +26,7 @@ public interface CtiLinkEnterpriseTimeService {
      */
     @POST
     @Path("create")
-    ApiResult<EnterpriseTime> createEnterpriseTime(EnterpriseTime enterpriseTime);
+    CtiLinkApiResult<EnterpriseTime> createEnterpriseTime(EnterpriseTime enterpriseTime);
 
     /**
      * 根据时间条件id和企业编号enterpriseId删除时间条件
@@ -35,7 +35,7 @@ public interface CtiLinkEnterpriseTimeService {
      */
     @POST
     @Path("delete")
-    ApiResult deleteEnterpriseTime(EnterpriseTime enterpriseTime);
+    CtiLinkApiResult deleteEnterpriseTime(EnterpriseTime enterpriseTime);
 
     /**
      * 更新时间条件
@@ -44,7 +44,7 @@ public interface CtiLinkEnterpriseTimeService {
      */
     @POST
     @Path("update")
-    ApiResult<EnterpriseTime> updateEnterpriseTime(EnterpriseTime enterpriseTime);
+    CtiLinkApiResult<EnterpriseTime> updateEnterpriseTime(EnterpriseTime enterpriseTime);
 
     /**
      * 根据企业编号enterpriseId获取时间条件列表
@@ -53,6 +53,6 @@ public interface CtiLinkEnterpriseTimeService {
      */
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseTime>> listEnterpriseTime(EnterpriseTime enterpriseTime);
+    CtiLinkApiResult<List<EnterpriseTime>> listEnterpriseTime(EnterpriseTime enterpriseTime);
 
 }

@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.AgentSkill;
 
 import javax.ws.rs.Consumes;
@@ -23,18 +23,18 @@ public interface CtiLInkAgentSkillService {
 
     @POST
     @Path("create")
-    ApiResult<AgentSkill> createAgentSkill(AgentSkill agentSkill);
+    CtiLinkApiResult<AgentSkill> createAgentSkill(AgentSkill agentSkill);
 
     @POST
     @Path("delete")
-    ApiResult deleteAgentSkill(AgentSkill agentSkill);
+    CtiLinkApiResult deleteAgentSkill(AgentSkill agentSkill);
 
     @POST
     @Path("update")
-    ApiResult<AgentSkill> updateAgentSkill(AgentSkill agentSkill);
+    CtiLinkApiResult<AgentSkill> updateAgentSkill(AgentSkill agentSkill);
 
     @POST
     @Path("list")
-    ApiResult<List<AgentSkill>> listAgentSkill(AgentSkill agentSkill);
+    CtiLinkApiResult<List<AgentSkill>> listAgentSkill(AgentSkill agentSkill);
 
 }

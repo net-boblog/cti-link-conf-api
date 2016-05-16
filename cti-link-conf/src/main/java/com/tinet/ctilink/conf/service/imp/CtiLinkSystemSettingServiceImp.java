@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.SystemSetting;
@@ -30,34 +30,34 @@ public class CtiLinkSystemSettingServiceImp extends BaseService<SystemSetting> i
     private RedisService redisService;
 
     @Override
-    public ApiResult<SystemSetting> updateSystemSetting(SystemSetting systemSetting) {
+    public CtiLinkApiResult<SystemSetting> updateSystemSetting(SystemSetting systemSetting) {
         SystemSetting st = selectByPrimaryKey(systemSetting);
         if (st == null)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"id不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"id不正确");
         if(systemSetting.getName().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"名称不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"名称不能为空");
         if(systemSetting.getValue().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"值不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"值不能为空");
         if(systemSetting.getProperty().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"属性不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"属性不能为空");
         systemSetting.setCreateTime(st.getCreateTime());
         int success = updateByPrimaryKey(systemSetting);
 
         if(success == 1){
             setRefreshCacheMethod("setCache",systemSetting);
-            return new ApiResult<>(systemSetting);
+            return new CtiLinkApiResult<>(systemSetting);
         }
         logger.error("CtiLinkSystemSettingServiceImp.updateSystemSetting error " + systemSetting + "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"更新失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult<List<SystemSetting>> listSystemSetting(SystemSetting systemSetting) {
+    public CtiLinkApiResult<List<SystemSetting>> listSystemSetting(SystemSetting systemSetting) {
         List<SystemSetting> list = selectAll();
         if(list != null && list.size()>0)
-            return new ApiResult<>(list);
+            return new CtiLinkApiResult<>(list);
         else
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"获取平台设置列表错误");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取平台设置列表错误");
     }
 
     protected String getKey(SystemSetting systemSetting) {

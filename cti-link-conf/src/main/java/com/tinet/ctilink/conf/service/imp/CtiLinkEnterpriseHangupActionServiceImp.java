@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseHangupAction;
@@ -32,11 +32,11 @@ public class CtiLinkEnterpriseHangupActionServiceImp extends BaseService<Enterpr
     private RedisService redisService;
 
     @Override
-    public ApiResult<EnterpriseHangupAction> createEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
+    public CtiLinkApiResult<EnterpriseHangupAction> createEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
         if(enterpriseHangupAction.getEnterpriseId()==null || enterpriseHangupAction.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编码不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编码不正确");
         if(enterpriseHangupAction.getUrl().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送地址不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送地址不能为空");
 
         if( ! enterpriseHangupAction.getParamName().isEmpty()){
             byte[] nameByte;
@@ -77,44 +77,44 @@ public class CtiLinkEnterpriseHangupActionServiceImp extends BaseService<Enterpr
 
             String[] paramName = enterpriseHangupAction.getParamName().split(",");
             if(paramName.length != base64Variable.length)
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"推送参数和值不匹配");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送参数和值不匹配");
             enterpriseHangupAction.setParamVariable(paramVariable);
         }
 
         if(enterpriseHangupAction.getTimeout()>30 || enterpriseHangupAction.getTimeout()<0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"超时时间不能大于30");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"超时时间不能大于30");
         if(enterpriseHangupAction.getRetry() == null || enterpriseHangupAction.getRetry() < 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"请选择重试次数");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"请选择重试次数");
         if(enterpriseHangupAction.getType() == null || !(enterpriseHangupAction.getType()==1
         || enterpriseHangupAction.getType()==2 || enterpriseHangupAction.getType()==3
                 || enterpriseHangupAction.getType()==4 || enterpriseHangupAction.getType()==5
                 || enterpriseHangupAction.getType()==6 || enterpriseHangupAction.getType()==7
                 || enterpriseHangupAction.getType()==8 || enterpriseHangupAction.getType()==9))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送类型：1.呼入来电推送2.呼入呼转响铃推送3.呼入呼转接通推送4.呼入挂机推送" +
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送类型：1.呼入来电推送2.呼入呼转响铃推送3.呼入呼转接通推送4.呼入挂机推送" +
                     "5.外呼响铃推送6.外呼呼转响铃推送7.外呼接通推送8.外呼挂机推送9.按键推送");
         if(enterpriseHangupAction.getMethod() == null || !(enterpriseHangupAction.getMethod()==1 || enterpriseHangupAction.getMethod()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送方法：1.POST 2.GET");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送方法：1.POST 2.GET");
         enterpriseHangupAction.setCreateTime(new Date());
         int success = insertSelective(enterpriseHangupAction);
 
         if(success == 1){
             setRefreshCacheMethod("setCache",enterpriseHangupAction);
-            return new ApiResult<>(enterpriseHangupAction);
+            return new CtiLinkApiResult<>(enterpriseHangupAction);
         }
         logger.error("CtiLinkEnterpriseHangupActionServiceImp.createEnterpriseHangupAction error refresh cache fail "+ enterpriseHangupAction +
         "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"添加失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"添加失败");
     }
 
     @Override
-    public ApiResult deleteEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
+    public CtiLinkApiResult deleteEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
         EnterpriseHangupAction eha = selectByPrimaryKey(enterpriseHangupAction.getId());
         if(enterpriseHangupAction.getEnterpriseId()==null || enterpriseHangupAction.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseHangupAction.getId()==null || enterpriseHangupAction.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"id不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"id不正确");
         if( ! eha.getEnterpriseId().equals(enterpriseHangupAction.getEnterpriseId()))
-            return new ApiResult("id和企业编号不对应");
+            return new CtiLinkApiResult("id和企业编号不对应");
 
         Condition condition = new Condition(EnterpriseHangupAction.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -125,24 +125,24 @@ public class CtiLinkEnterpriseHangupActionServiceImp extends BaseService<Enterpr
 
         if(success == 1){
             setRefreshCacheMethod("deleteCache",enterpriseHangupAction);
-            return new ApiResult(ApiResult.SUCCESS_RESULT,ApiResult.SUCCESS_DESCRIPTION);
+            return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT, CtiLinkApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("CtiLinkEnterpriseHangupActionServiceImp.deleteEnterpriseHangupAction error "+ enterpriseHangupAction +
         "success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult<EnterpriseHangupAction> updateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
+    public CtiLinkApiResult<EnterpriseHangupAction> updateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
         if (enterpriseHangupAction.getId()==null || enterpriseHangupAction.getId()<=0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"id不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"id不正确");
 
         EnterpriseHangupAction eha = selectByPrimaryKey(enterpriseHangupAction.getId());
 
         if(enterpriseHangupAction.getEnterpriseId()==null || enterpriseHangupAction.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编码不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编码不正确");
         if(enterpriseHangupAction.getUrl().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送地址不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送地址不能为空");
         if( ! enterpriseHangupAction.getParamName().isEmpty()){
             byte[] nameByte;
             String[] name = enterpriseHangupAction.getParamName().split(",");
@@ -182,41 +182,41 @@ public class CtiLinkEnterpriseHangupActionServiceImp extends BaseService<Enterpr
 
             String[] paramName = enterpriseHangupAction.getParamName().split(",");
             if(paramName.length != base64Variable.length)
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"推送参数和值不匹配");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送参数和值不匹配");
             enterpriseHangupAction.setParamVariable(paramVariable);
         }
 
         if(enterpriseHangupAction.getTimeout()>30 || enterpriseHangupAction.getTimeout()<0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"超时时间不能大于30");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"超时时间不能大于30");
         if(enterpriseHangupAction.getRetry() == null || enterpriseHangupAction.getRetry() < 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"请选择重试次数");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"请选择重试次数");
         if(enterpriseHangupAction.getRetry() == null || !(enterpriseHangupAction.getType()==1
                 || enterpriseHangupAction.getType()==2 || enterpriseHangupAction.getType()==3
                 || enterpriseHangupAction.getType()==4 || enterpriseHangupAction.getType()==5
                 || enterpriseHangupAction.getType()==6 || enterpriseHangupAction.getType()==7
                 || enterpriseHangupAction.getType()==8 || enterpriseHangupAction.getType()==9))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送类型：1.呼入来电推送2.呼入呼转响铃推送3.呼入呼转接通推送4.呼入挂机推送" +
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送类型：1.呼入来电推送2.呼入呼转响铃推送3.呼入呼转接通推送4.呼入挂机推送" +
                     "5.外呼响铃推送6.外呼呼转响铃推送7.外呼接通推送8.外呼挂机推送9.按键推送");
         if(enterpriseHangupAction.getMethod() == null || !(enterpriseHangupAction.getMethod()==1 || enterpriseHangupAction.getMethod()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送方法：1.POST 2.GET");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送方法：1.POST 2.GET");
         enterpriseHangupAction.setCreateTime(eha.getCreateTime());
         int success = updateByPrimaryKey(enterpriseHangupAction);
 
         if(success == 1){
             setRefreshCacheMethod("setCache",enterpriseHangupAction);
-            return new ApiResult<>(enterpriseHangupAction);
+            return new CtiLinkApiResult<>(enterpriseHangupAction);
         }
         logger.error("EnterpriserHangupAction.updateEnterpriseHangupAction error " + enterpriseHangupAction + "success="
         + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"更新失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult<List<EnterpriseHangupAction>> listEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
+    public CtiLinkApiResult<List<EnterpriseHangupAction>> listEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
         if(enterpriseHangupAction.getEnterpriseId() == null || enterpriseHangupAction.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseHangupAction.getType() == null || enterpriseHangupAction.getType() <= 0 )
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送类型不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送类型不能为空");
 
         Condition condition = new Condition(EnterpriseHangupAction.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -225,16 +225,16 @@ public class CtiLinkEnterpriseHangupActionServiceImp extends BaseService<Enterpr
         List<EnterpriseHangupAction> enterpriseHangupActionList = selectByCondition(condition);
 
         if(enterpriseHangupActionList != null && enterpriseHangupActionList.size() > 0)
-            return new ApiResult<>(enterpriseHangupActionList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取推送设置列表失败");
+            return new CtiLinkApiResult<>(enterpriseHangupActionList);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取推送设置列表失败");
     }
 
     @Override
-    public ApiResult<EnterpriseHangupAction> getEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
+    public CtiLinkApiResult<EnterpriseHangupAction> getEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
         if(enterpriseHangupAction.getEnterpriseId() == null || enterpriseHangupAction.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送设置id不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"推送设置id不正确");
 
         Condition condition = new Condition(EnterpriseHangupAction.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -243,8 +243,8 @@ public class CtiLinkEnterpriseHangupActionServiceImp extends BaseService<Enterpr
         List<EnterpriseHangupAction> enterpriseHangupActionList = selectByCondition(condition);
 
         if(enterpriseHangupActionList != null && enterpriseHangupActionList.size() <= 0)
-            return new ApiResult<>(enterpriseHangupAction);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取推送信息失败");
+            return new CtiLinkApiResult<>(enterpriseHangupAction);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取推送信息失败");
     }
 
     protected String getKey(EnterpriseHangupAction enterpriseHangupAction) {

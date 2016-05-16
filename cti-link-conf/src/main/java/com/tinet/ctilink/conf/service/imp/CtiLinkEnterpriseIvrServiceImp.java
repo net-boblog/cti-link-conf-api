@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.dao.IvrProfileDao;
@@ -47,13 +47,13 @@ public class CtiLinkEnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> i
     private RedisService redisService;
 
     @Override
-    public ApiResult<EnterpriseIvr> createEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
+    public CtiLinkApiResult<EnterpriseIvr> createEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
-        ApiResult<EnterpriseIvr> result = validateEnterpriseIvr(enterpriseIvr);
+        CtiLinkApiResult<EnterpriseIvr> result = validateEnterpriseIvr(enterpriseIvr);
         if (result != null) {
             return result;
         }
@@ -61,56 +61,56 @@ public class CtiLinkEnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> i
         int count = insertSelective(enterpriseIvr);
         if (count != 1) {
             logger.error("CtiLinkEnterpriseIvrServiceImp.createEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod(enterpriseIvr);
-            return new ApiResult<>(enterpriseIvr);
+            return new CtiLinkApiResult<>(enterpriseIvr);
         }
     }
 
     @Override
-    public ApiResult deleteEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
+    public CtiLinkApiResult deleteEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseIvr.getId() == null
                 || enterpriseIvr.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         EnterpriseIvr dbEnterpriseIvr = selectByPrimaryKey(enterpriseIvr.getId());
 
         if (dbEnterpriseIvr == null
                 || !enterpriseIvr.getEnterpriseId().equals(dbEnterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         int count = enterpriseIvrDao.deleteEnterpriseIvr(enterpriseIvr.getId());
 
         if (count <= 0) {
             logger.error("CtiLinkEnterpriseIvrServiceImp.deleteEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod(dbEnterpriseIvr);
-        return new ApiResult<>(ApiResult.SUCCESS_RESULT);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT);
     }
 
     @Override
-    public ApiResult<EnterpriseIvr> updateEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
+    public CtiLinkApiResult<EnterpriseIvr> updateEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
-        ApiResult<EnterpriseIvr> result = validateEnterpriseIvr(enterpriseIvr);
+        CtiLinkApiResult<EnterpriseIvr> result = validateEnterpriseIvr(enterpriseIvr);
         if (result != null) {
             return result;
         }
 
         EnterpriseIvr dbEnterpriseIvr = selectByPrimaryKey(enterpriseIvr.getId());
         if (dbEnterpriseIvr == null || !enterpriseIvr.getEnterpriseId().equals(dbEnterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         dbEnterpriseIvr.setPathName(enterpriseIvr.getPathName());
@@ -120,20 +120,20 @@ public class CtiLinkEnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> i
 
         if (count != 1) {
             logger.error("CtiLinkEnterpriseIvrServiceImp.updateEnterpriseIvr error, " + dbEnterpriseIvr + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod(dbEnterpriseIvr);
-        return new ApiResult<>(dbEnterpriseIvr);
+        return new CtiLinkApiResult<>(dbEnterpriseIvr);
     }
 
     @Override
-    public ApiResult<List<EnterpriseIvr>> listEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
+    public CtiLinkApiResult<List<EnterpriseIvr>> listEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseIvr.getIvrId() == null || enterpriseIvr.getIvrId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrId]不正确");
         }
         Condition condition = new Condition(EnterpriseIvr.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -141,68 +141,68 @@ public class CtiLinkEnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> i
         criteria.andEqualTo("ivrId", enterpriseIvr.getIvrId());
         condition.setOrderByClause("path");
         List<EnterpriseIvr> list = selectByCondition(condition);
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
     @Override
-    public ApiResult<EnterpriseIvr> getEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
+    public CtiLinkApiResult<EnterpriseIvr> getEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseIvr.getId() == null || enterpriseIvr.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         EnterpriseIvr dbEnterpriseIvr = selectByPrimaryKey(enterpriseIvr.getId());
         if (dbEnterpriseIvr == null || !enterpriseIvr.getEnterpriseId().equals(dbEnterpriseIvr.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
-        return new ApiResult<>(dbEnterpriseIvr);
+        return new CtiLinkApiResult<>(dbEnterpriseIvr);
     }
 
 
-    private ApiResult<EnterpriseIvr> validateEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
+    private CtiLinkApiResult<EnterpriseIvr> validateEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         if (enterpriseIvr.getIvrId() == null || enterpriseIvr.getIvrId() < 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrId]不正确");
         }
         if (StringUtils.isEmpty(enterpriseIvr.getPathName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[pathName]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[pathName]不能为空");
         }
         enterpriseIvr.setPathName(SqlUtil.escapeSql(enterpriseIvr.getPathName()));
 
         if (StringUtils.isEmpty(enterpriseIvr.getProperty())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[property]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[property]不能为空");
         }
 
         //验证property格式?
 
         if (enterpriseIvr.getId() == null) {  //新增
             if (StringUtils.isEmpty(enterpriseIvr.getPath())) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[path]不能为空");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[path]不能为空");
             }
             if (enterpriseIvr.getParentId() == null || enterpriseIvr.getParentId() < 0) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[parentId]不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[parentId]不正确");
             }
             //根节点判断
             if (enterpriseIvr.getParentId() == 0 && !enterpriseIvr.getPath().equals("1")) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "根节点的path必须等于1");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "根节点的path必须等于1");
             }
             if (enterpriseIvr.getAction() == null || enterpriseIvr.getAction() <= 0) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[action]不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[action]不正确");
             }
 
             if (enterpriseIvr.getParentId() != 0) {
                 EnterpriseIvr parentIvr  = selectByPrimaryKey(enterpriseIvr.getParentId());
                 if (parentIvr == null) {
-                    return new ApiResult<>(ApiResult.FAIL_RESULT, "父节点不存在");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "父节点不存在");
                 }
                 if (!enterpriseIvr.getPath().startsWith(parentIvr.getPath() + ".")) {
-                    return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[path]不正确");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[path]不正确");
 
                 }
                 if (!StringUtils.isNumeric(enterpriseIvr.getPath().substring(parentIvr.getPath().length() + 1
                         , enterpriseIvr.getPath().length()))) {
-                    return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[path]不正确");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[path]不正确");
                 }
             }
             //判断节点是否已经存在
@@ -213,13 +213,13 @@ public class CtiLinkEnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> i
             criteria.andEqualTo("path", enterpriseIvr.getPath());
             int count = selectCountByCondition(condition);
             if (count > 0) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "节点已存在");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "节点已存在");
             }
         }
         //判断ivrId是否存在
         IvrProfile ivrProfile = ivrProfileDao.selectByPrimaryKey(enterpriseIvr.getIvrId());
         if (ivrProfile == null || !enterpriseIvr.getEnterpriseId().equals(ivrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrId]不正确");
         }
         enterpriseIvr.setAnchor(SqlUtil.escapeSql(enterpriseIvr.getAnchor()));
 

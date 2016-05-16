@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.v1;
 
 
 import com.github.pagehelper.PageInfo;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.request.CtiLinkAgentListRequest;
 
@@ -28,22 +28,22 @@ public interface CtiLinkAgentService {
 
     @POST
     @Path("create")
-    ApiResult<Agent> createAgent(Agent agent);
+    CtiLinkApiResult<Agent> createAgent(Agent agent);
 
     @POST
     @Path("delete")
-    ApiResult deleteAgent(Agent agent);
+    CtiLinkApiResult deleteAgent(Agent agent);
 
     @POST
     @Path("update")
-    ApiResult<Agent> updateAgent(Agent agent);
+    CtiLinkApiResult<Agent> updateAgent(Agent agent);
 
     @POST
     @Path("list")
-    ApiResult<PageInfo<Agent>> listAgent(CtiLinkAgentListRequest agent);
+    CtiLinkApiResult<PageInfo<Agent>> listAgent(CtiLinkAgentListRequest agent);
 
     @POST
     @Path("get")
-    ApiResult<Agent> getAgent(Agent agent);
+    CtiLinkApiResult<Agent> getAgent(Agent agent);
 }
 

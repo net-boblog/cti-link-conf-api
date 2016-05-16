@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.TelSetTel;
@@ -32,33 +32,33 @@ public class CtiLinkTelSetTelServiceImp extends BaseService<TelSetTel> implement
     private RedisService redisService;
 
     @Override
-    public ApiResult createTelSetTel(TelSetTel telSetTel) {
+    public CtiLinkApiResult createTelSetTel(TelSetTel telSetTel) {
         if(telSetTel.getEnterpriseId()==null || telSetTel.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(telSetTel.getSetId()==null || telSetTel.getSetId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"电话组id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"电话组id不能为空");
         if(telSetTel.getTel()==null || "".equals(telSetTel.getTel().trim()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"电话不能为控");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"电话不能为控");
         if(telSetTel.getTimeout()==null || telSetTel.getTimeout()>60 || telSetTel.getTimeout()<5)
-            return new ApiResult(ApiResult.FAIL_RESULT,"超时时间为5-60秒");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"超时时间为5-60秒");
         if(telSetTel.getPriority()==null || telSetTel.getPriority()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"优先级不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"优先级不能为空");
         int success = insertSelective(telSetTel);
 
         if(success==1) {
             setRefreshCacheMethod("setCache",telSetTel);
-            return new ApiResult<>(ApiResult.SUCCESS_RESULT, "成功");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT, "成功");
         }
         logger.error("CtiLinkTelSetTelServiceImp.createTelSetTel error " + telSetTel + "success=" + success );
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"失败");
     }
 
     @Override
-    public ApiResult deleteTelSetTel(TelSetTel telSetTel) {
+    public CtiLinkApiResult deleteTelSetTel(TelSetTel telSetTel) {
         if(telSetTel.getEnterpriseId()==null || telSetTel.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(telSetTel.getId()==null || telSetTel.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"电话组电话id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"电话组电话id不能为空");
 
         Condition condition = new Condition(TelSetTel.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -68,40 +68,40 @@ public class CtiLinkTelSetTelServiceImp extends BaseService<TelSetTel> implement
 
         if(success==1) {
             setRefreshCacheMethod("deleteCache",telSetTel);
-            return new ApiResult<>(ApiResult.SUCCESS_RESULT, "删除成功");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT, "删除成功");
         }
         logger.error("CtiLinkTelSetTelServiceImp.deleteTelSetTel error " + telSetTel + "success=" + success );
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"删除失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult updateTelSetTel(TelSetTel telSetTel) {
+    public CtiLinkApiResult updateTelSetTel(TelSetTel telSetTel) {
         if(telSetTel.getEnterpriseId()==null || telSetTel.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(telSetTel.getId()==null || telSetTel.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"电话组电话id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"电话组电话id不能为空");
         if(telSetTel.getTel()==null || "".equals(telSetTel.getTel().trim()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"电话不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"电话不能为空");
         if(telSetTel.getTimeout()==null || telSetTel.getTimeout()>60 || telSetTel.getTimeout()<5)
-            return new ApiResult(ApiResult.FAIL_RESULT,"超时时间为5-60秒");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"超时时间为5-60秒");
         if(telSetTel.getPriority()==null || telSetTel.getPriority()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"优先级不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"优先级不能为空");
 
         int success = updateByPrimaryKeySelective(telSetTel);
         if(success==1) {
             setRefreshCacheMethod("setCache",telSetTel);
-            return new ApiResult<>(ApiResult.SUCCESS_RESULT, "更新成功");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT, "更新成功");
         }
         logger.error("CtiLinkTelSetTelServiceImp.updateTelSetTel error " + telSetTel + "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"更新失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult<List<TelSetTel>> listTelSetTel(TelSetTel telSetTel) {
+    public CtiLinkApiResult<List<TelSetTel>> listTelSetTel(TelSetTel telSetTel) {
         if(telSetTel.getEnterpriseId()==null || telSetTel.getEnterpriseId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不能为空");
         if(telSetTel.getSetId()==null || telSetTel.getSetId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"电话组id不能为空");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"电话组id不能为空");
 
         Condition condition = new Condition(TelSetTel.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -110,8 +110,8 @@ public class CtiLinkTelSetTelServiceImp extends BaseService<TelSetTel> implement
         List<TelSetTel> telSetTelsList = selectByCondition(condition);
 
         if(telSetTelsList!=null && telSetTelsList.size()>0)
-            return new ApiResult<>(telSetTelsList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取电话列表失败");
+            return new CtiLinkApiResult<>(telSetTelsList);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取电话列表失败");
     }
 
     protected String getKey(TelSetTel telSetTel) {

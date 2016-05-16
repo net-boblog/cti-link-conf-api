@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
@@ -40,22 +40,22 @@ public class CtiLinkEnterpriseSettingServiceImp extends BaseService<EnterpriseSe
     private EntityDao entityDao;
 
     @Override
-    public ApiResult<EnterpriseSetting> createEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+    public CtiLinkApiResult<EnterpriseSetting> createEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //validate
         enterpriseSetting.setId(null);
         String name = enterpriseSetting.getName();
         if (StringUtils.isEmpty(name)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[name]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[name]不正确");
         }
         enterpriseSetting.setName(SqlUtil.escapeSql(name));
 
         String value = enterpriseSetting.getValue();
         if (StringUtils.isEmpty(value)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[value]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[value]不正确");
         }
         enterpriseSetting.setValue(SqlUtil.escapeSql(value));
         enterpriseSetting.setProperty(SqlUtil.escapeSql(enterpriseSetting.getProperty()));
@@ -63,59 +63,59 @@ public class CtiLinkEnterpriseSettingServiceImp extends BaseService<EnterpriseSe
         int count = insertSelective(enterpriseSetting);
         if (count != 1) {
             logger.error("CtiLinkEnterpriseSettingServiceImp.createAgent error, " + enterpriseSetting + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod(enterpriseSetting.getEnterpriseId());
-            return new ApiResult<>(enterpriseSetting);
+            return new CtiLinkApiResult<>(enterpriseSetting);
         }
     }
 
     @Override
-    public ApiResult updateEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+    public CtiLinkApiResult updateEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //validate
         Integer id = enterpriseSetting.getId();
         if (id == null || id <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         String value = enterpriseSetting.getValue();
         if (value == null) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[value]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[value]不正确");
         }
         enterpriseSetting.setValue(SqlUtil.escapeSql(value));
         enterpriseSetting.setProperty(SqlUtil.escapeSql(enterpriseSetting.getProperty()));
 
         EnterpriseSetting dbSetting = selectByPrimaryKey(enterpriseSetting.getId());
         if (dbSetting == null || !enterpriseSetting.getEnterpriseId().equals(dbSetting.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
         //update
         enterpriseSetting.setName(dbSetting.getName());
         int count = updateByPrimaryKey(enterpriseSetting);
         if (count != 1) {
             logger.error("CtiLinkEnterpriseSettingServiceImp.update error, " + enterpriseSetting + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod(enterpriseSetting.getEnterpriseId());
-        return new ApiResult<>(enterpriseSetting);
+        return new CtiLinkApiResult<>(enterpriseSetting);
     }
 
     @Override
-    public ApiResult<List<EnterpriseSetting>> listEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+    public CtiLinkApiResult<List<EnterpriseSetting>> listEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
-        ApiResult<List<EnterpriseSetting>> result = new ApiResult<>();
+        CtiLinkApiResult<List<EnterpriseSetting>> result = new CtiLinkApiResult<>();
 
         List<EnterpriseSetting> list = select(enterpriseSetting.getEnterpriseId());
         if (list != null && list.size() > 0) {
-            result.setResult(ApiResult.SUCCESS_RESULT);
-            result.setDescription(ApiResult.SUCCESS_DESCRIPTION);
+            result.setResult(CtiLinkApiResult.SUCCESS_RESULT);
+            result.setDescription(CtiLinkApiResult.SUCCESS_DESCRIPTION);
             result.setData(list);
             return result;
         }
@@ -123,12 +123,12 @@ public class CtiLinkEnterpriseSettingServiceImp extends BaseService<EnterpriseSe
     }
 
     @Override
-    public ApiResult<EnterpriseSetting> getEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
+    public CtiLinkApiResult<EnterpriseSetting> getEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
-        ApiResult<EnterpriseSetting> result = new ApiResult<>();
+        CtiLinkApiResult<EnterpriseSetting> result = new CtiLinkApiResult<>();
 
         Integer id = enterpriseSetting.getId();
         if (id == 0 || id <= 0) {
@@ -142,8 +142,8 @@ public class CtiLinkEnterpriseSettingServiceImp extends BaseService<EnterpriseSe
         criteria.andEqualTo("id", enterpriseSetting.getId());
         List<EnterpriseSetting> list = selectByCondition(condition);
         if (list != null && list.size() > 0) {
-            result.setResult(ApiResult.SUCCESS_RESULT);
-            result.setDescription(ApiResult.SUCCESS_DESCRIPTION);
+            result.setResult(CtiLinkApiResult.SUCCESS_RESULT);
+            result.setDescription(CtiLinkApiResult.SUCCESS_DESCRIPTION);
             result.setData(list.get(0));
             return result;
         }

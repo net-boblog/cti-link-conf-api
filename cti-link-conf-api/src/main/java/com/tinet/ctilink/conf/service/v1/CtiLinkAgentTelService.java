@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.AgentTel;
 
 import javax.ws.rs.Consumes;
@@ -23,17 +23,17 @@ public interface CtiLinkAgentTelService {
 
     @POST
     @Path("create")
-    ApiResult<AgentTel> createAgentTel(AgentTel agentTel);
+    CtiLinkApiResult<AgentTel> createAgentTel(AgentTel agentTel);
 
     @POST
     @Path("delete")
-    ApiResult deleteAgentTel(AgentTel agentTel);
+    CtiLinkApiResult deleteAgentTel(AgentTel agentTel);
 
     @POST
     @Path("update")
-    ApiResult<AgentTel> updateAgentTel(AgentTel agentTel);
+    CtiLinkApiResult<AgentTel> updateAgentTel(AgentTel agentTel);
 
     @POST
     @Path("list")
-    ApiResult<List<AgentTel>> listAgentTel(AgentTel agentTel);
+    CtiLinkApiResult<List<AgentTel>> listAgentTel(AgentTel agentTel);
 }

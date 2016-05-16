@@ -4,7 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.dao.AgentSkillDao;
@@ -57,14 +57,14 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
     private RedisService redisService;
 
     @Override
-    public ApiResult<Agent> createAgent(Agent agent) {
+    public CtiLinkApiResult<Agent> createAgent(Agent agent) {
         //验证enterpriseId
         if (!entityDao.validateEntity(agent.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //校验参数
         agent.setId(null);
-        ApiResult<Agent> result = validateAgent(agent);
+        CtiLinkApiResult<Agent> result = validateAgent(agent);
         if (result != null) {
             return result;
         }
@@ -73,21 +73,21 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
         int count = insertSelective(agent);
         if (count != 1) {
             logger.error("CtiLinkAgentServiceImp.createAgent error, " + agent + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod("setCache", agent);
-            return new ApiResult<>(agent);
+            return new CtiLinkApiResult<>(agent);
         }
     }
 
     @Override
-    public ApiResult deleteAgent(Agent agent) {
+    public CtiLinkApiResult deleteAgent(Agent agent) {
         //验证enterpriseId
         if (!entityDao.validateEntity(agent.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agent.getId() == null || agent.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         //TODO 检查座席是否可以删除, 是否在线
 
@@ -119,24 +119,24 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
 
         if (count != 1) {
             logger.error("CtiLinkAgentServiceImp.deleteAgent error, " + agent + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod("deleteCache", agent);
-        return new ApiResult(ApiResult.SUCCESS_RESULT);
+        return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT);
     }
 
     @Override
-    public ApiResult<Agent> updateAgent(Agent agent) {
+    public CtiLinkApiResult<Agent> updateAgent(Agent agent) {
         //验证enterpriseId
         if (!entityDao.validateEntity(agent.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agent.getId() == null || agent.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         //校验参数
-        ApiResult<Agent> result = validateAgent(agent);
+        CtiLinkApiResult<Agent> result = validateAgent(agent);
         if (result != null) {
             return result;
         }
@@ -144,7 +144,7 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
 
         Agent dbAgent = selectByPrimaryKey(agent.getId());
         if (dbAgent == null || !agent.getEnterpriseId().equals(dbAgent.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
         //不能更改的字段
         agent.setCno(dbAgent.getCno());
@@ -153,17 +153,17 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
 
         if (count != 1) {
             logger.error("CtiLinkAgentServiceImp.updateAgent error, " + agent + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod("setCache", agent);
-        return new ApiResult<>(agent);
+        return new CtiLinkApiResult<>(agent);
     }
 
     @Override
-    public ApiResult<PageInfo<Agent>> listAgent(CtiLinkAgentListRequest request) {
+    public CtiLinkApiResult<PageInfo<Agent>> listAgent(CtiLinkAgentListRequest request) {
         //验证enterpriseId
         if (!entityDao.validateEntity(request.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (request.getLimit() <= 0 || request.getLimit() > 500) {
             request.setLimit(10);
@@ -208,50 +208,50 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
 
         selectByCondition(condition);
         PageInfo<Agent> pageInfo = page.toPageInfo();
-        return new ApiResult<>(pageInfo);
+        return new CtiLinkApiResult<>(pageInfo);
     }
 
     @Override
-    public ApiResult<Agent> getAgent(Agent agent) {
+    public CtiLinkApiResult<Agent> getAgent(Agent agent) {
         //验证enterpriseId
         if (!entityDao.validateEntity(agent.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agent.getId() == null || agent.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         Agent dbAgent = selectByPrimaryKey(agent.getId());
         if (dbAgent == null || !agent.getEnterpriseId().equals(dbAgent.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
-        return new ApiResult<>(dbAgent);
+        return new CtiLinkApiResult<>(dbAgent);
     }
 
     //校验agent
-    private <T> ApiResult<T> validateAgent(Agent agent) {
+    private <T> CtiLinkApiResult<T> validateAgent(Agent agent) {
         if (StringUtils.isEmpty(agent.getName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[name]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[name]不能为空");
         }
         agent.setName(SqlUtil.escapeSql(agent.getName()));
         if (StringUtils.isEmpty(agent.getAreaCode())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[areaCode]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[areaCode]不能为空");
         }
         if (!agent.getAreaCode().matches(Const.AREA_CODE_VALIDATION)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[areaCode]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[areaCode]格式不正确");
         }
 
         //新增座席
         if (agent.getId() == null) {
             if (StringUtils.isEmpty(agent.getCno())) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[cno]不能为空");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[cno]不能为空");
             }
             if (agent.getCno().length() < 4 || agent.getCno().length() > 5) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[cno]位数不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[cno]位数不正确");
             }
             if (!StringUtils.isNumeric(agent.getCno())
                     || Integer.parseInt(agent.getCno()) < 0) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[cno]格式不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[cno]格式不正确");
             }
             //判断name是否已经存在
             Condition condition = new Condition(Agent.class);
@@ -260,7 +260,7 @@ public class CtiLinkAgentServiceImp extends BaseService<Agent> implements CtiLin
             criteria.andEqualTo("cno", agent.getCno());
             List<Agent> list = selectByCondition(condition);
             if (list != null && list.size() > 0) {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "座席工号已经存在");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "座席工号已经存在");
             }
             if (StringUtils.isEmpty(agent.getCrmId())) {
                 agent.setCrmId("");

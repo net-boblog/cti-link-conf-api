@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
 import com.tinet.ctilink.conf.dao.EnterpriseIvrRouterDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
@@ -48,21 +48,21 @@ public class CtiLinkIvrProfileServiceImp extends BaseService<IvrProfile> impleme
     private RedisService redisService;
 
     @Override
-    public ApiResult<IvrProfile> createIvrProfile(IvrProfile ivrProfile) {
+    public CtiLinkApiResult<IvrProfile> createIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
         if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (StringUtils.isEmpty(ivrProfile.getIvrName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrName]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrName]不能为空");
         }
         ivrProfile.setIvrName(SqlUtil.escapeSql(ivrProfile.getIvrName()));
         if (StringUtils.isEmpty(ivrProfile.getIvrType())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrType]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrType]不能为空");
         }
         if (!ivrProfile.getIvrType().equals("1")
                 && !ivrProfile.getIvrType().equals("2")) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrType]格式不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrType]格式不正确");
         }
         ivrProfile.setIvrDescription(SqlUtil.escapeSql(ivrProfile.getIvrDescription()));
 
@@ -70,25 +70,25 @@ public class CtiLinkIvrProfileServiceImp extends BaseService<IvrProfile> impleme
         int count = insertSelective(ivrProfile);
         if (count != 1) {
             logger.error("CtiLinkIvrProfileServiceImp.createIvrProfile error, " + ivrProfile + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
             setRefreshCacheMethod("setCache", ivrProfile);
-            return new ApiResult<>(ivrProfile);
+            return new CtiLinkApiResult<>(ivrProfile);
         }
     }
 
     @Override
-    public ApiResult deleteIvrProfile(IvrProfile ivrProfile) {
+    public CtiLinkApiResult deleteIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
         if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (ivrProfile.getId() == null || ivrProfile.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         IvrProfile dbIvrProfile = selectByPrimaryKey(ivrProfile.getId());
         if (dbIvrProfile == null || !ivrProfile.getEnterpriseId().equals(dbIvrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
         Condition condition = new Condition(EnterpriseIvrRouter.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -97,7 +97,7 @@ public class CtiLinkIvrProfileServiceImp extends BaseService<IvrProfile> impleme
         criteria.andEqualTo("routerProperty", String.valueOf(ivrProfile.getId()));
         int count = enterpriseIvrRouterDao.selectCountByCondition(condition);
         if (count > 0 ) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "语音导航正在使用中");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "语音导航正在使用中");
         }
         //删除enterprise_ivr
         Condition eiCondition = new Condition(EnterpriseIvr.class);
@@ -109,30 +109,30 @@ public class CtiLinkIvrProfileServiceImp extends BaseService<IvrProfile> impleme
         count = deleteByPrimaryKey(ivrProfile.getId());
         if (count != 1) {
             logger.error("CtiLinkIvrProfileServiceImp.deleteIvrProfile error, " + ivrProfile + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         }
         setRefreshCacheMethod("deleteCache", dbIvrProfile);
-        return new ApiResult<>(ApiResult.SUCCESS_RESULT);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.SUCCESS_RESULT);
     }
 
     @Override
-    public ApiResult<IvrProfile> updateIvrProfile(IvrProfile ivrProfile) {
+    public CtiLinkApiResult<IvrProfile> updateIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
         if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (ivrProfile.getId() == null || ivrProfile.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         if (StringUtils.isEmpty(ivrProfile.getIvrName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrName]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[ivrName]不能为空");
         }
         ivrProfile.setIvrName(SqlUtil.escapeSql(ivrProfile.getIvrName()));
         ivrProfile.setIvrDescription(SqlUtil.escapeSql(ivrProfile.getIvrDescription()));
 
         IvrProfile dbIvrProfile = selectByPrimaryKey(ivrProfile.getId());
         if (dbIvrProfile == null || !ivrProfile.getEnterpriseId().equals(dbIvrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         dbIvrProfile.setIvrName(ivrProfile.getIvrName());
@@ -140,38 +140,38 @@ public class CtiLinkIvrProfileServiceImp extends BaseService<IvrProfile> impleme
         int count = updateByPrimaryKeySelective(dbIvrProfile);
         if (count != 1) {
             logger.error("CtiLinkIvrProfileServiceImp.updateIvrProfile error, " + dbIvrProfile + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
         setRefreshCacheMethod("setCache", dbIvrProfile);
-        return new ApiResult<>(dbIvrProfile);
+        return new CtiLinkApiResult<>(dbIvrProfile);
     }
 
     @Override
-    public ApiResult<List<IvrProfile>> listIvrProfile(IvrProfile ivrProfile) {
+    public CtiLinkApiResult<List<IvrProfile>> listIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
         if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         List<IvrProfile> list = select(ivrProfile.getEnterpriseId());
 
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
     @Override
-    public ApiResult<IvrProfile> getIvrProfile(IvrProfile ivrProfile) {
+    public CtiLinkApiResult<IvrProfile> getIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
         if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (ivrProfile.getId() == null || ivrProfile.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         IvrProfile dbIvrProfile = selectByPrimaryKey(ivrProfile.getId());
         if (dbIvrProfile == null || !ivrProfile.getEnterpriseId().equals(dbIvrProfile.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
-        return new ApiResult<>(dbIvrProfile);
+        return new CtiLinkApiResult<>(dbIvrProfile);
     }
 
     private List<IvrProfile> select(Integer enterpriseId) {

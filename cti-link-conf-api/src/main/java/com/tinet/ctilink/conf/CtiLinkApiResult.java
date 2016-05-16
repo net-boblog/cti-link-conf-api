@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author fengwei //
  * @date 16/4/8 17:51
  */
-public class ApiResult<T> implements Serializable {
+public class CtiLinkApiResult<T> implements Serializable {
     // 成功描述
     public static final String SUCCESS_DESCRIPTION = "成功";
 
@@ -20,11 +20,11 @@ public class ApiResult<T> implements Serializable {
 
     private T data;
 
-    public ApiResult() {
+    public CtiLinkApiResult() {
 
     }
 
-    public ApiResult(int result) {
+    public CtiLinkApiResult(int result) {
         this.result = result;
         if (result == SUCCESS_RESULT) {
             this.description = SUCCESS_DESCRIPTION;
@@ -32,7 +32,7 @@ public class ApiResult<T> implements Serializable {
     }
 
     //有data一定是成功的
-    public ApiResult(T data) {
+    public CtiLinkApiResult(T data) {
         this.result = SUCCESS_RESULT;
         this.description = SUCCESS_DESCRIPTION;
         this.data = data;
@@ -41,7 +41,7 @@ public class ApiResult<T> implements Serializable {
     /**
      * 失败
      */
-    public ApiResult(int result, String description) {
+    public CtiLinkApiResult(int result, String description) {
         this.result = result;
         this.description = description;
     }

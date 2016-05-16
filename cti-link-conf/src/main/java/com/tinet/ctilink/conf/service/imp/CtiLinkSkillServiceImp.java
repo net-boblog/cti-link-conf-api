@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.AgentSkillDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.dao.QueueSkillDao;
@@ -39,12 +39,12 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
     private AgentSkillDao agentSkillDao;
 
     @Override
-    public ApiResult<Skill> createSkill(Skill skill) {
+    public CtiLinkApiResult<Skill> createSkill(Skill skill) {
         //参数验证
         if (!entityDao.validateEntity(skill.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
-        ApiResult<Skill> result = validateSkill(skill);
+        CtiLinkApiResult<Skill> result = validateSkill(skill);
         if (result != null) {
             return result;
         }
@@ -55,26 +55,26 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
 
         if (count != 1) {  //新增失败
             logger.error("CtiLinkSkillServiceImp.createSkill error, " + skill + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         } else {
-            return new ApiResult<>(skill);
+            return new CtiLinkApiResult<>(skill);
         }
 
     }
 
     @Override
-    public ApiResult deleteSkill(Skill skill) {
+    public CtiLinkApiResult deleteSkill(Skill skill) {
         if (!entityDao.validateEntity(skill.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //
         if (skill.getId() == null || skill.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
         //技能是否在使用中, agent_skill, queue_skill
         if (isSkillInUse(skill.getId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败，技能使用中");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败，技能使用中");
         }
 
         Condition condition = new Condition(Skill.class);
@@ -85,22 +85,22 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
 
         if (count != 1) {
             logger.error("CtiLinkSkillServiceImp.deleteSkill error, " + skill + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         } else {
-            return new ApiResult(ApiResult.SUCCESS_RESULT);
+            return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT);
         }
     }
 
     @Override
-    public ApiResult<Skill> updateSkill(Skill skill) {
+    public CtiLinkApiResult<Skill> updateSkill(Skill skill) {
         if (!entityDao.validateEntity(skill.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (skill.getId() == null || skill.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
 
-        ApiResult<Skill> result = validateSkill(skill);
+        CtiLinkApiResult<Skill> result = validateSkill(skill);
         if (result != null) {
             return result;
         }
@@ -108,24 +108,24 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
         //判断id所在的enterprise是否和enterpriseId一致
         Skill dbSkill = selectByPrimaryKey(skill.getId());
         if (dbSkill == null || !skill.getEnterpriseId().equals(dbSkill.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
         skill.setCreateTime(dbSkill.getCreateTime());
         int count = updateByPrimaryKey(skill);
 
         if (count != 1) {
             logger.error("CtiLinkSkillServiceImp.updateSkill error, " + skill + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         } else {
-            return new ApiResult<>(skill);
+            return new CtiLinkApiResult<>(skill);
         }
     }
 
     @Override
-    public ApiResult<List<Skill>> listSkill(Skill skill) {
+    public CtiLinkApiResult<List<Skill>> listSkill(Skill skill) {
         //校验enterpriseId
         if (!entityDao.validateEntity(skill.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
         Condition condition = new Condition(Skill.class);
@@ -134,7 +134,7 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
         condition.setOrderByClause("id asc");
         List<Skill> list = selectByCondition(condition);
 
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
     /**
@@ -143,9 +143,9 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
      * @param <T>
      * @return
      */
-    private<T> ApiResult<T> validateSkill(Skill skill) {
+    private<T> CtiLinkApiResult<T> validateSkill(Skill skill) {
         if (StringUtils.isEmpty(skill.getName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[name]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[name]不能为空");
         }
 
         //过滤name和comment
@@ -158,7 +158,7 @@ public class CtiLinkSkillServiceImp extends BaseService<Skill> implements CtiLin
         criteria.andEqualTo("name", skill.getName());
         List<Skill> list = selectByCondition(condition);
         if (list != null && list.size() > 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "技能名称已经存在");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "技能名称已经存在");
         }
 
         return null;

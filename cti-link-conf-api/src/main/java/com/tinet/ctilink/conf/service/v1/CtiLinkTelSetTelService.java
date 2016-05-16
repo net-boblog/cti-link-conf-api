@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.TelSetTel;
 
 import javax.ws.rs.Consumes;
@@ -19,18 +19,18 @@ import javax.ws.rs.core.MediaType;
 public interface CtiLinkTelSetTelService {
     @POST
     @Path("create")
-    ApiResult createTelSetTel(TelSetTel telSetTel);
+    CtiLinkApiResult createTelSetTel(TelSetTel telSetTel);
 
     @POST
     @Path("delete")
-    ApiResult deleteTelSetTel(TelSetTel telSetTel);
+    CtiLinkApiResult deleteTelSetTel(TelSetTel telSetTel);
 
     @POST
     @Path("update")
-    ApiResult updateTelSetTel(TelSetTel telSetTel);
+    CtiLinkApiResult updateTelSetTel(TelSetTel telSetTel);
 
     @POST
     @Path("list")
-    ApiResult listTelSetTel(TelSetTel telSetTel);
+    CtiLinkApiResult listTelSetTel(TelSetTel telSetTel);
 
 }

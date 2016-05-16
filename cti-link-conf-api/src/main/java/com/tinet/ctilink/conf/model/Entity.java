@@ -1,10 +1,11 @@
 package com.tinet.ctilink.conf.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_entity")
-public class Entity {
+public class Entity implements Serializable {
 
     private Integer enterpriseId;
 

@@ -3,7 +3,7 @@ package com.tinet.ctilink.conf.service.imp;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseTimeDao;
 import com.tinet.ctilink.conf.dao.IvrProfileDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
@@ -43,19 +43,19 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
     private EnterpriseTimeDao enterpriseTimeDao;
 
     @Override
-    public ApiResult<EnterpriseIvrRouter> createEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
+    public CtiLinkApiResult<EnterpriseIvrRouter> createEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
         if(enterpriseIvrRouter.getEnterpriseId() == null || enterpriseIvrRouter.getEnterpriseId() <=0 )
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
 
         if(enterpriseIvrRouter.getActive() == null || !(enterpriseIvrRouter.getActive()==1 || enterpriseIvrRouter.getActive()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"是否启用：1.启用 2.停用");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"是否启用：1.启用 2.停用");
 
         if(enterpriseIvrRouter.getRouterType() == null || !(enterpriseIvrRouter.getRouterType()==1
         || enterpriseIvrRouter.getRouterType()==2 || enterpriseIvrRouter.getRouterType()==3))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"路由目的类型：1.IVR 2.固定电话 3.分机号");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"路由目的类型：1.IVR 2.固定电话 3.分机号");
 
         if(enterpriseIvrRouter.getRouterProperty().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"路由目的值不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"路由目的值不能为空");
 
         //语音导航id
         if(enterpriseIvrRouter.getRouterType() == 1){
@@ -65,7 +65,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             ivrProfileCondition.setTableName("cti_link_ivr_profile");
             List<IvrProfile> ivrProfileList = ivrProfileDao.selectByCondition(ivrProfileCondition);
             if(ivrProfileList == null || ivrProfileList.size() <= 0)
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"语音导航id不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"语音导航id不正确");
         }
 
         //固定电话号码
@@ -73,7 +73,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             Pattern pattern = Pattern.compile(Const.TEL_VALIDATION);
             Matcher matcher = pattern.matcher(enterpriseIvrRouter.getRouterProperty());
             if ( ! matcher.matches())
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"固定号码不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"固定号码不正确");
         }
 
         //分机号码
@@ -81,11 +81,11 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             Pattern pattern = Pattern.compile(Const.EXTEN_TEL_VALIDATION);
             Matcher matcher = pattern.matcher(enterpriseIvrRouter.getRouterProperty());
             if( ! matcher.matches())
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"分机号码不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"分机号码不正确");
         }
 
         if(enterpriseIvrRouter.getPriority() == null || enterpriseIvrRouter.getPriority() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"优先级不能小于或等于0");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"优先级不能小于或等于0");
 
         //时间条件id(可选项)
         if( ! enterpriseIvrRouter.getRuleTimeProperty().isEmpty()){
@@ -101,7 +101,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
                 timeCondition.setTableName("cti_link_enterprise_time");
                 List<EnterpriseTime> enterpriseTimeList = enterpriseTimeDao.selectByCondition(timeCondition);
                 if(enterpriseTimeList == null || enterpriseTimeList.size() <= 0)
-                    return new ApiResult<>(ApiResult.FAIL_RESULT,"时间条件id不正确");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"时间条件id不正确");
             }
         }
 
@@ -113,7 +113,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             for(int i=0; i<ruleArea.length; i++){
                 Matcher matcher = pattern.matcher(ruleArea[i]);
                 if( ! matcher.matches())
-                    return new ApiResult<>(ApiResult.FAIL_RESULT,"来电地区不符合规则");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"来电地区不符合规则");
             }
         }
 
@@ -125,7 +125,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             for (int i=0;i<ruleTrunk.length;i++){
                 Matcher matcher = pattern.matcher(ruleTrunk[i]);
                 if( ! matcher.matches())
-                    return new ApiResult<>(ApiResult.FAIL_RESULT,"中继号码不符合规则");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"中继号码不符合规则");
             }
         }
 
@@ -135,18 +135,18 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
 
         if(success == 1){
             setRefreshCacheMethod("setCache",enterpriseIvrRouter);
-            return new ApiResult<>(enterpriseIvrRouter);
+            return new CtiLinkApiResult<>(enterpriseIvrRouter);
         }
         logger.error("CtiLinkEnterpriseIvrRouterServiceImp.createEnterpriseIvrRouter error " + enterpriseIvrRouter + "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"添加失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"添加失败");
     }
 
     @Override
-    public ApiResult deleteEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
+    public CtiLinkApiResult deleteEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
         if(enterpriseIvrRouter.getEnterpriseId() == null || enterpriseIvrRouter.getEnterpriseId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseIvrRouter.getId() == null || enterpriseIvrRouter.getId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"呼入路由id不正确");
+            return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"呼入路由id不正确");
 
         Condition condition = new Condition(EnterpriseIvrRouter.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -156,35 +156,35 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
 
         if(success == 1){
             setRefreshCacheMethod("deleteCache",enterpriseIvrRouter);
-            return new ApiResult(enterpriseIvrRouter);
+            return new CtiLinkApiResult(enterpriseIvrRouter);
         }
         logger.error("EnterprisIvrRouterServiceImp.deleteEnterpriseIvrRouter error refresh cache fail "+ enterpriseIvrRouter
                 + "success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        return new CtiLinkApiResult(CtiLinkApiResult.FAIL_RESULT,"删除失败");
     }
 
     @Override
-    public ApiResult<EnterpriseIvrRouter> updateEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
+    public CtiLinkApiResult<EnterpriseIvrRouter> updateEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
         if (enterpriseIvrRouter.getId() == null || enterpriseIvrRouter.getId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼入路由id不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"呼入路由id不正确");
 
         if(enterpriseIvrRouter.getEnterpriseId() == null || enterpriseIvrRouter.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业id不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业id不正确");
 
         EnterpriseIvrRouter enterpriseIvrRouter1 = selectByPrimaryKey(enterpriseIvrRouter);
 
         if( ! enterpriseIvrRouter.getEnterpriseId().equals(enterpriseIvrRouter1.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"路由id和企业id不匹配");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"路由id和企业id不匹配");
 
         if(enterpriseIvrRouter.getActive() == null || !(enterpriseIvrRouter.getActive()==1 || enterpriseIvrRouter.getActive()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"是否启用：1.启用 2.停用");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"是否启用：1.启用 2.停用");
 
         if(enterpriseIvrRouter.getRouterType() == null || !(enterpriseIvrRouter.getRouterType()==1
                 || enterpriseIvrRouter.getRouterType()==2 || enterpriseIvrRouter.getRouterType()==3))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"路由目的类型：1.IVR 2.固定电话 3.分机号");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"路由目的类型：1.IVR 2.固定电话 3.分机号");
 
         if(enterpriseIvrRouter.getRouterProperty().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"路由目的值不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"路由目的值不能为空");
 
         //语音导航id
         if(enterpriseIvrRouter.getRouterType() == 1) {
@@ -194,7 +194,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             ivrProfileCondition.setTableName("cti_link_ivr_profile");
             List<IvrProfile> ivrProfileList = ivrProfileDao.selectByCondition(ivrProfileCondition);
             if(ivrProfileList == null || ivrProfileList.size() <= 0)
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"语音导航id不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"语音导航id不正确");
         }
 
         //固定电话号码
@@ -202,7 +202,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             Pattern pattern = Pattern.compile(Const.TEL_VALIDATION);
             Matcher matcher = pattern.matcher(enterpriseIvrRouter.getRouterProperty());
             if ( ! matcher.matches())
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"固定号码不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"固定号码不正确");
         }
 
         //分机号码
@@ -210,11 +210,11 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             Pattern pattern = Pattern.compile(Const.EXTEN_TEL_VALIDATION);
             Matcher matcher = pattern.matcher(enterpriseIvrRouter.getRouterProperty());
             if( ! matcher.matches())
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"分机号码不正确");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"分机号码不正确");
         }
 
         if(enterpriseIvrRouter.getPriority() == null || enterpriseIvrRouter.getPriority() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"优先级不能小于或等于0");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"优先级不能小于或等于0");
 
         //时间条件id(可选项)
         if( ! enterpriseIvrRouter.getRuleTimeProperty().isEmpty()){
@@ -228,7 +228,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
                 timeCondition.setTableName("cti_link_enterprise_time");
                 List<EnterpriseTime> enterpriseTimeList = enterpriseTimeDao.selectByCondition(timeCondition);
                 if(enterpriseTimeList == null || enterpriseTimeList.size() <= 0)
-                    return new ApiResult<>(ApiResult.FAIL_RESULT,"时间条件id不正确");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"时间条件id不正确");
             }
         }
         //来电地区规则(可选项)
@@ -239,7 +239,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             for(int i=0; i<ruleArea.length; i++){
                 Matcher matcher = pattern.matcher(ruleArea[i]);
                 if( ! matcher.matches())
-                    return new ApiResult<>(ApiResult.FAIL_RESULT,"来电地区不符合规则");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"来电地区不符合规则");
             }
         }
 
@@ -251,7 +251,7 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
             for (int i=0;i<ruleTrunk.length;i++){
                 Matcher matcher = pattern.matcher(ruleTrunk[i]);
                 if( ! matcher.matches())
-                    return new ApiResult<>(ApiResult.FAIL_RESULT,"中继号码不符合规则");
+                    return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"中继号码不符合规则");
             }
         }
         enterpriseIvrRouter.setCreateTime(enterpriseIvrRouter1.getCreateTime());
@@ -260,16 +260,16 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
 
         if(success == 1){
             setRefreshCacheMethod("setCache",enterpriseIvrRouter);
-            return new ApiResult<>(enterpriseIvrRouter);
+            return new CtiLinkApiResult<>(enterpriseIvrRouter);
         }
         logger.error("CtiLinkEnterpriseIvrRouterServiceImp.updateEnterpriseIvrRouter error " + enterpriseIvrRouter + "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"更新失败");
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"更新失败");
     }
 
     @Override
-    public ApiResult<List<EnterpriseIvrRouter>> listEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
+    public CtiLinkApiResult<List<EnterpriseIvrRouter>> listEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
         if(enterpriseIvrRouter.getEnterpriseId() == null || enterpriseIvrRouter.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
 
         Condition condition = new Condition(EnterpriseIvrRouter.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -277,16 +277,16 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
         List<EnterpriseIvrRouter> enterpriseIvrRouterList = selectByCondition(condition);
 
         if(enterpriseIvrRouterList != null && enterpriseIvrRouterList.size() > 0)
-            return new ApiResult<>(enterpriseIvrRouterList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取呼入路由列表失败");
+            return new CtiLinkApiResult<>(enterpriseIvrRouterList);
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取呼入路由列表失败");
     }
 
     @Override
-    public ApiResult<EnterpriseIvrRouter> getEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
+    public CtiLinkApiResult<EnterpriseIvrRouter> getEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
         if(enterpriseIvrRouter.getEnterpriseId() == null || enterpriseIvrRouter.getEnterpriseId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseIvrRouter.getId() == null || enterpriseIvrRouter.getId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼入路由id不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"呼入路由id不正确");
 
         Condition condition = new Condition(EnterpriseIvrRouter.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -295,8 +295,8 @@ public class CtiLinkEnterpriseIvrRouterServiceImp extends BaseService<Enterprise
         List<EnterpriseIvrRouter> enterpriseIvrRouterList = selectByCondition(condition);
 
         if(enterpriseIvrRouterList !=null && enterpriseIvrRouterList.size() > 0)
-            return new ApiResult<>(enterpriseIvrRouterList.get(0));
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取呼入路由信息失败");
+            return new CtiLinkApiResult<>(enterpriseIvrRouterList.get(0));
+        return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT,"获取呼入路由信息失败");
     }
 
     protected String getKey(EnterpriseIvrRouter enterpriseIvrRouter) {

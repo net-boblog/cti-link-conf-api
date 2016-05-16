@@ -6,8 +6,12 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
-@Table(name = "cti_link_enterprise_ivr")
-public class EnterpriseIvr implements Serializable {
+/**
+ * @author fengwei //
+ * @date 16/5/16 17:55
+ */
+@Table(name = "cti_link_enterprise_ivr_anchor")
+public class CtiLinkEnterpriseIvrAnchor implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;
@@ -18,13 +22,9 @@ public class EnterpriseIvr implements Serializable {
 
     private String path;
 
-    private String pathName;
+    private String event;
 
-    private Integer parentId;
-
-    private Integer action;
-
-    private String property;
+    private String data;
 
     private Date createTime;
 
@@ -60,36 +60,20 @@ public class EnterpriseIvr implements Serializable {
         this.path = path == null ? null : path.trim();
     }
 
-    public String getPathName() {
-        return pathName;
+    public String getEvent() {
+        return event;
     }
 
-    public void setPathName(String pathName) {
-        this.pathName = pathName == null ? null : pathName.trim();
+    public void setEvent(String event) {
+        this.event = event == null ? null : event.trim();
     }
 
-    public Integer getParentId() {
-        return parentId;
+    public String getData() {
+        return data;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
-    }
-
-    public Integer getAction() {
-        return action;
-    }
-
-    public void setAction(Integer action) {
-        this.action = action;
-    }
-
-    public String getProperty() {
-        return property;
-    }
-
-    public void setProperty(String property) {
-        this.property = property == null ? null : property.trim();
+    public void setData(String data) {
+        this.data = data == null ? null : data.trim();
     }
 
     public Date getCreateTime() {

@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.QueueSkill;
 
 import javax.ws.rs.Consumes;
@@ -23,18 +23,18 @@ public interface CtiLinkQueueSkillService {
 
     @POST
     @Path("create")
-    ApiResult<QueueSkill> createQueueSkill(QueueSkill queueSkill);
+    CtiLinkApiResult<QueueSkill> createQueueSkill(QueueSkill queueSkill);
 
     @POST
     @Path("delete")
-    ApiResult<QueueSkill> deleteQueueSkill(QueueSkill queueSkill);
+    CtiLinkApiResult<QueueSkill> deleteQueueSkill(QueueSkill queueSkill);
 
     @POST
     @Path("update")
-    ApiResult<QueueSkill> updateQueueSkill(QueueSkill queueSkill);
+    CtiLinkApiResult<QueueSkill> updateQueueSkill(QueueSkill queueSkill);
 
     @POST
     @Path("list")
-    ApiResult<List<QueueSkill>> listQueueSkill(QueueSkill queueSkill);
+    CtiLinkApiResult<List<QueueSkill>> listQueueSkill(QueueSkill queueSkill);
 
 }

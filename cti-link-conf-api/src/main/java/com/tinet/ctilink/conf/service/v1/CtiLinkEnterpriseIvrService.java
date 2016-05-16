@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 
 import javax.ws.rs.Consumes;
@@ -20,21 +20,21 @@ import java.util.List;
 public interface CtiLinkEnterpriseIvrService {
     @POST
     @Path("create")
-    ApiResult<EnterpriseIvr> createEnterpriseIvr(EnterpriseIvr enterpriseIvr);
+    CtiLinkApiResult<EnterpriseIvr> createEnterpriseIvr(EnterpriseIvr enterpriseIvr);
 
     @POST
     @Path("delete")
-    ApiResult deleteEnterpriseIvr(EnterpriseIvr enterpriseIvr);
+    CtiLinkApiResult deleteEnterpriseIvr(EnterpriseIvr enterpriseIvr);
 
     @POST
     @Path("update")
-    ApiResult<EnterpriseIvr> updateEnterpriseIvr(EnterpriseIvr enterpriseIvr);
+    CtiLinkApiResult<EnterpriseIvr> updateEnterpriseIvr(EnterpriseIvr enterpriseIvr);
 
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseIvr>> listEnterpriseIvr(EnterpriseIvr enterpriseIvr);
+    CtiLinkApiResult<List<EnterpriseIvr>> listEnterpriseIvr(EnterpriseIvr enterpriseIvr);
 
     @POST
     @Path("get")
-    ApiResult<EnterpriseIvr> getEnterpriseIvr(EnterpriseIvr enterpriseIvr);
+    CtiLinkApiResult<EnterpriseIvr> getEnterpriseIvr(EnterpriseIvr enterpriseIvr);
 }

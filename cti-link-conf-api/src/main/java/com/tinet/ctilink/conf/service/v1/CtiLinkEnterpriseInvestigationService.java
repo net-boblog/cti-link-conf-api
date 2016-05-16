@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseInvestigation;
 
 import javax.ws.rs.Consumes;
@@ -23,22 +23,22 @@ public interface CtiLinkEnterpriseInvestigationService {
 
     @POST
     @Path("create")
-    ApiResult<EnterpriseInvestigation> createEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
+    CtiLinkApiResult<EnterpriseInvestigation> createEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
 
     @POST
     @Path("delete")
-    ApiResult deleteEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
+    CtiLinkApiResult deleteEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
 
     @POST
     @Path("update")
-    ApiResult<EnterpriseInvestigation> updateEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
+    CtiLinkApiResult<EnterpriseInvestigation> updateEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
 
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseInvestigation>> listEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
+    CtiLinkApiResult<List<EnterpriseInvestigation>> listEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
 
     @POST
     @Path("get")
-    ApiResult<EnterpriseInvestigation> getEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
+    CtiLinkApiResult<EnterpriseInvestigation> getEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation);
 
 }

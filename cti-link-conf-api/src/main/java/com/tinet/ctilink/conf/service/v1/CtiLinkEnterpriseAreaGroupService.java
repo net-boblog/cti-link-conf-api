@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseAreaGroup;
 
 import javax.ws.rs.Consumes;
@@ -27,7 +27,7 @@ public interface CtiLinkEnterpriseAreaGroupService {
      */
     @POST
     @Path("create")
-    ApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) ;
+    CtiLinkApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) ;
 
     /**
      * 根据地区组id和企业编号enterpriseId删除地区组
@@ -36,7 +36,7 @@ public interface CtiLinkEnterpriseAreaGroupService {
      */
     @POST
     @Path("delete")
-    ApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
+    CtiLinkApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 
     /**
      * 更新地区组
@@ -45,7 +45,7 @@ public interface CtiLinkEnterpriseAreaGroupService {
      */
     @POST
     @Path("update")
-    ApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
+    CtiLinkApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 
     /**
      * 根据企业编号enterpriseId获取地区组列表
@@ -54,5 +54,5 @@ public interface CtiLinkEnterpriseAreaGroupService {
      */
     @POST
     @Path("list")
-    ApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
+    CtiLinkApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup);
 }

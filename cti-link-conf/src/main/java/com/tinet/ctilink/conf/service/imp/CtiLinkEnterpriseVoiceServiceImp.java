@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.CtiLinkApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
 import com.tinet.ctilink.conf.dao.EnterpriseMohVoiceDao;
 import com.tinet.ctilink.conf.dao.EntityDao;
@@ -50,7 +50,7 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
 
     //http接口
     @Override
-    public ApiResult<EnterpriseVoice> createEnterpriseVoice(MultipartFormDataInput input) {
+    public CtiLinkApiResult<EnterpriseVoice> createEnterpriseVoice(MultipartFormDataInput input) {
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
         Integer enterpriseId = null;
         List<InputPart> inputParts = uploadForm.get("enterpriseId");
@@ -64,7 +64,7 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
         }
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseId)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         inputParts = uploadForm.get("voiceName");
         String voiceName = null;
@@ -78,7 +78,7 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
         }
 
         if (StringUtils.isEmpty(voiceName)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[voiceName]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[voiceName]不正确");
         }
 
         inputParts = uploadForm.get("description");
@@ -106,7 +106,7 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
         }
 
         if (file == null) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[file]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[file]不正确");
         }
 
         EnterpriseVoice enterpriseVoice = new EnterpriseVoice();
@@ -149,13 +149,13 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
      * @return
      */
     @Override
-    public ApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice) {
+    public CtiLinkApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (StringUtils.isEmpty(enterpriseVoice.getVoiceName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[voiceName]不能为空");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[voiceName]不能为空");
         }
         enterpriseVoice.setVoiceName(SqlUtil.escapeSql(enterpriseVoice.getVoiceName()));
 
@@ -164,7 +164,7 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
             if (enterpriseVoice.getVoiceName().startsWith("[自助录音]")) {
                 success = true;
             } else {
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[file]不能为空");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[file]不能为空");
             }
         } else {
             long timestamp = new Date().getTime();
@@ -187,35 +187,35 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
             int count = insertSelective(enterpriseVoice);
             if (count != 1) {
                 logger.error("CtiLinkEnterpriseVoiceServiceImp.createEnterpriseVoice error, " + enterpriseVoice + ", count=" + count);
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
             } else {
-                return new ApiResult<>(enterpriseVoice);
+                return new CtiLinkApiResult<>(enterpriseVoice);
             }
         } else {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "新增失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "新增失败");
         }
     }
 
     @Override
-    public ApiResult deleteEnterpriseVoice(EnterpriseVoice enterpriseVoice) {
+    public CtiLinkApiResult deleteEnterpriseVoice(EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseVoice.getId() == null || enterpriseVoice.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         EnterpriseVoice dbEnterpriseVoice = selectByPrimaryKey(enterpriseVoice.getId());
         if (dbEnterpriseVoice == null ||
                 !enterpriseVoice.getEnterpriseId().equals(dbEnterpriseVoice.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         if (isUseInMoh(enterpriseVoice.getEnterpriseId(), enterpriseVoice.getId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "已被等待音乐设置，不能删除");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "已被等待音乐设置，不能删除");
         }
         if (isUseInIvr(enterpriseVoice)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "在语音导航中使用，不能删除");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "在语音导航中使用，不能删除");
         }
         boolean success = VoiceFile.deleteEnterpriseVoice(dbEnterpriseVoice.getPath());
 
@@ -223,40 +223,40 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
 
         if (count != 1) {
             logger.error("CtiLinkEnterpriseVoiceServiceImp.deleteEnterpriseVoice error, " + enterpriseVoice + ", count=" + count);
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "删除失败");
         }
-        return new ApiResult(ApiResult.SUCCESS_RESULT);
+        return new CtiLinkApiResult(CtiLinkApiResult.SUCCESS_RESULT);
     }
 
     @Override
-    public ApiResult<EnterpriseVoice> updateEnterpriseVoice(MultipartFormDataInput input) {
+    public CtiLinkApiResult<EnterpriseVoice> updateEnterpriseVoice(MultipartFormDataInput input) {
         return null;
     }
 
     @Override
-    public ApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice) {
+    public CtiLinkApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseVoice.getId() == null || enterpriseVoice.getId() <= 0) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         EnterpriseVoice dbEnterpriseVoice = selectByPrimaryKey(enterpriseVoice.getId());
         if (dbEnterpriseVoice == null ||
                 !enterpriseVoice.getEnterpriseId().equals(dbEnterpriseVoice.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
         if (isUseInMoh(enterpriseVoice.getEnterpriseId(), enterpriseVoice.getId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "已被等待音乐设置，不能更新");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "已被等待音乐设置，不能更新");
         }
         if (isUseInIvr(enterpriseVoice)) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "在语音导航中使用，不能更新");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "在语音导航中使用，不能更新");
         }
 
         if (StringUtils.isEmpty(enterpriseVoice.getVoiceName())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[voiceName不能为空]");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[voiceName不能为空]");
         }
         dbEnterpriseVoice.setVoiceName(SqlUtil.escapeSql(enterpriseVoice.getVoiceName()));
 
@@ -282,28 +282,28 @@ public class CtiLinkEnterpriseVoiceServiceImp extends BaseService<EnterpriseVoic
             int count = updateByPrimaryKeySelective(dbEnterpriseVoice);
             if (count != 1) {
                 logger.error("CtiLinkEnterpriseVoiceServiceImp.updateEnterpriseVoice error, " + dbEnterpriseVoice + ", count=" + count);
-                return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+                return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
             } else {
                 VoiceFile.deleteEnterpriseVoice(oldPath);
-                return new ApiResult<>(dbEnterpriseVoice);
+                return new CtiLinkApiResult<>(dbEnterpriseVoice);
             }
         } else {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "更新失败");
         }
     }
 
     @Override
-    public ApiResult<List<EnterpriseVoice>> listEnterpriseVoice(EnterpriseVoice enterpriseVoice) {
+    public CtiLinkApiResult<List<EnterpriseVoice>> listEnterpriseVoice(EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
         if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
-            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
+            return new CtiLinkApiResult<>(CtiLinkApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         Condition condition = new Condition(EnterpriseMohVoice.class);
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId", enterpriseVoice.getEnterpriseId());
         condition.setOrderByClause("id");
         List<EnterpriseVoice> list = selectByCondition(condition);
-        return new ApiResult<>(list);
+        return new CtiLinkApiResult<>(list);
     }
 
     private boolean isUseInMoh(Integer enterpriseId, Integer voiceId) {

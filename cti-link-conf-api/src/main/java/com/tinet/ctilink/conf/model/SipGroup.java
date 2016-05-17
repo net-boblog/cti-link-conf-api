@@ -3,6 +3,7 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  * @date 16/4/14 14:56
  */
 @Table(name = "cti_link_sip_group")
-public class SipGroup {
+public class SipGroup implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;

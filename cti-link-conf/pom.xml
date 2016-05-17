@@ -13,7 +13,7 @@
     <properties>
         <jvm.xms>256m</jvm.xms>
         <jvm.xmx>2048m</jvm.xmx>
-        <jvm.jmx.port>70001</jvm.jmx.port>
+        <jvm.jmx.port>60001</jvm.jmx.port>
     </properties>
 
     <dependencies>

@@ -85,7 +85,7 @@ public class QueueMemberCacheService extends AbstractCacheService<QueueMember> {
                 subList.add(queueMember);
             }
             if (!qno.equals(queueMember.getQno())) {
-                key = String.format(CacheKey.QUEUE_ENTERPRISE_ID_QNO, enterpriseId, qno);
+                key = String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, enterpriseId, qno);
                 redisService.set(Const.REDIS_DB_CONF_INDEX, key, subList);
                 qnoDbKeySet.add(key);
 
@@ -101,7 +101,7 @@ public class QueueMemberCacheService extends AbstractCacheService<QueueMember> {
             cnoQueueMap.put(queueMember.getCno(), cnoQueueMemberList);
         }
         if (subList.size() > 0) {
-            key = String.format(CacheKey.QUEUE_ENTERPRISE_ID_QNO, enterpriseId, qno);
+            key = String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, enterpriseId, qno);
             redisService.set(Const.REDIS_DB_CONF_INDEX, key, subList);
             qnoDbKeySet.add(key);
         }

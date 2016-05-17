@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.v1;
 
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.RestrictTel;
-import com.tinet.ctilink.conf.request.CtiLinkRestrictTelRequest;
+import com.tinet.ctilink.conf.request.RestrictTelRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -32,5 +32,5 @@ public interface CtiLinkRestrictTelService {
 
     @POST
     @Path("list")
-    ApiResult listRestrictTel(CtiLinkRestrictTelRequest ctiLinkRestrictTelRequest);
+    ApiResult listRestrictTel(RestrictTelRequest restrictTelRequest);
 }

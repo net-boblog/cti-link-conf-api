@@ -4,7 +4,7 @@ package com.tinet.ctilink.conf.service.v1;
 import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.Agent;
-import com.tinet.ctilink.conf.request.CtiLinkAgentListRequest;
+import com.tinet.ctilink.conf.request.AgentListRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -40,7 +40,7 @@ public interface CtiLinkAgentService {
 
     @POST
     @Path("list")
-    ApiResult<PageInfo<Agent>> listAgent(CtiLinkAgentListRequest agent);
+    ApiResult<PageInfo<Agent>> listAgent(AgentListRequest agent);
 
     @POST
     @Path("get")

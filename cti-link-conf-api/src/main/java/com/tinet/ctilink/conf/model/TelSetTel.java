@@ -3,10 +3,11 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_tel_set_tel")
-public class TelSetTel {
+public class TelSetTel implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;

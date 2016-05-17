@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseSetting;
 
 import javax.ws.rs.*;
@@ -20,18 +20,18 @@ public interface CtiLinkEnterpriseSettingService {
 
     @POST
     @Path("create")
-    CtiLinkApiResult<EnterpriseSetting> createEnterpriseSetting(EnterpriseSetting enterpriseSetting);
+    ApiResult<EnterpriseSetting> createEnterpriseSetting(EnterpriseSetting enterpriseSetting);
 
     @POST
     @Path("update")
-    CtiLinkApiResult updateEnterpriseSetting(EnterpriseSetting enterpriseSetting);
+    ApiResult updateEnterpriseSetting(EnterpriseSetting enterpriseSetting);
 
     @POST
     @Path("list")
-    CtiLinkApiResult<List<EnterpriseSetting>> listEnterpriseSetting(EnterpriseSetting enterpriseSetting);
+    ApiResult<List<EnterpriseSetting>> listEnterpriseSetting(EnterpriseSetting enterpriseSetting);
 
     @POST
     @Path("get")
-    CtiLinkApiResult<EnterpriseSetting> getEnterpriseSetting(EnterpriseSetting enterpriseSetting);
+    ApiResult<EnterpriseSetting> getEnterpriseSetting(EnterpriseSetting enterpriseSetting);
 
 }

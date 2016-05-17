@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseHangupAction;
 
 import javax.ws.rs.Consumes;
@@ -21,22 +21,22 @@ import java.util.List;
 public interface CtiLinkEnterpriseHangupActionService {
     @POST
     @Path("create")
-    CtiLinkApiResult<EnterpriseHangupAction> createEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
+    ApiResult<EnterpriseHangupAction> createEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
+    ApiResult deleteEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
 
     @POST
     @Path("update")
-    CtiLinkApiResult<EnterpriseHangupAction> updateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
+    ApiResult<EnterpriseHangupAction> updateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
 
     @POST
     @Path("list")
-    CtiLinkApiResult<List<EnterpriseHangupAction>> listEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
+    ApiResult<List<EnterpriseHangupAction>> listEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
 
     @POST
     @Path("get")
-    CtiLinkApiResult<EnterpriseHangupAction> getEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
+    ApiResult<EnterpriseHangupAction> getEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction);
 
 }

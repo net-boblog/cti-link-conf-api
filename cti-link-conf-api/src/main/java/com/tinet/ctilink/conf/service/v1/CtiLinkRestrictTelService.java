@@ -1,8 +1,8 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.RestrictTel;
-import com.tinet.ctilink.conf.request.CtiLinkRestrictTelRequest;
+import com.tinet.ctilink.conf.request.RestrictTelRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -24,13 +24,13 @@ public interface CtiLinkRestrictTelService {
 
     @POST
     @Path("create")
-    CtiLinkApiResult<RestrictTel> createRestrictTel(RestrictTel restrictTel);
+    ApiResult<RestrictTel> createRestrictTel(RestrictTel restrictTel);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteRestrictTel(RestrictTel restrictTel);
+    ApiResult deleteRestrictTel(RestrictTel restrictTel);
 
     @POST
     @Path("list")
-    CtiLinkApiResult listRestrictTel(CtiLinkRestrictTelRequest ctiLinkRestrictTelRequest);
+    ApiResult listRestrictTel(RestrictTelRequest restrictTelRequest);
 }

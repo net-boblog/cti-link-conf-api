@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseVoice;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
@@ -27,28 +27,28 @@ public interface CtiLinkEnterpriseVoiceService {
     @POST
     @Path("create")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    CtiLinkApiResult<EnterpriseVoice> createEnterpriseVoice(MultipartFormDataInput input);
+    ApiResult<EnterpriseVoice> createEnterpriseVoice(MultipartFormDataInput input);
 
     //dubbo接口
     @POST
     @Path("create/file")
-    CtiLinkApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
+    ApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteEnterpriseVoice(EnterpriseVoice enterpriseVoice);
+    ApiResult deleteEnterpriseVoice(EnterpriseVoice enterpriseVoice);
 
     @POST
     @Path("update")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    CtiLinkApiResult<EnterpriseVoice> updateEnterpriseVoice(MultipartFormDataInput input);
+    ApiResult<EnterpriseVoice> updateEnterpriseVoice(MultipartFormDataInput input);
 
     @POST
     @Path("update/file")
-    CtiLinkApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
+    ApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice);
 
     @POST
     @Path("list")
-    CtiLinkApiResult<List<EnterpriseVoice>> listEnterpriseVoice(EnterpriseVoice enterpriseVoice);
+    ApiResult<List<EnterpriseVoice>> listEnterpriseVoice(EnterpriseVoice enterpriseVoice);
 
 }

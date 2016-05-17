@@ -1,8 +1,8 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.TelSet;
-import com.tinet.ctilink.conf.request.CtiLinkTelSetListRequest;
+import com.tinet.ctilink.conf.request.TelSetListRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -20,21 +20,21 @@ import javax.ws.rs.core.MediaType;
 public interface CtiLinkTelSetService {
     @POST
     @Path("create")
-    CtiLinkApiResult<TelSet> createTelSet(TelSet telSet);
+    ApiResult<TelSet> createTelSet(TelSet telSet);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteTelSet(TelSet telSet);
+    ApiResult deleteTelSet(TelSet telSet);
 
     @POST
     @Path("update")
-    CtiLinkApiResult<TelSet> updateTelSet(TelSet telSet);
+    ApiResult<TelSet> updateTelSet(TelSet telSet);
 
     @POST
     @Path("list")
-    CtiLinkApiResult listTelSet(CtiLinkTelSetListRequest ctiLinkTelSetListRequest);
+    ApiResult listTelSet(TelSetListRequest telSetListRequest);
 
     @POST
     @Path("get")
-    CtiLinkApiResult getTelSetByIdAndEnterpriseId(TelSet telSet);
+    ApiResult getTelSetByIdAndEnterpriseId(TelSet telSet);
 }

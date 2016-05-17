@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.PublicVoice;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
@@ -25,26 +25,26 @@ public interface CtiLinkPublicVoiceService {
 
     @POST
     @Path("list")
-    CtiLinkApiResult<List<PublicVoice>> list();
+    ApiResult<List<PublicVoice>> list();
 
     @POST
     @Path("create")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    CtiLinkApiResult<PublicVoice> create(MultipartFormDataInput input);
+    ApiResult<PublicVoice> create(MultipartFormDataInput input);
 
     //dubbo接口
-    CtiLinkApiResult<PublicVoice> create(File file, PublicVoice publicVoice);
+    ApiResult<PublicVoice> create(File file, PublicVoice publicVoice);
 
     @POST
     @Path("update")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    CtiLinkApiResult<PublicVoice> update(MultipartFormDataInput input);
+    ApiResult<PublicVoice> update(MultipartFormDataInput input);
 
     //dubbo接口
-    CtiLinkApiResult<PublicVoice> update(File file, PublicVoice publicVoice);
+    ApiResult<PublicVoice> update(File file, PublicVoice publicVoice);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult delete(PublicVoice publicVoice);
+    ApiResult delete(PublicVoice publicVoice);
 
 }

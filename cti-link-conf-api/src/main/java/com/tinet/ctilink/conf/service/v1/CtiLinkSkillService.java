@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.Skill;
 
 import javax.ws.rs.Consumes;
@@ -23,17 +23,17 @@ public interface CtiLinkSkillService {
 
     @POST
     @Path("create")
-    CtiLinkApiResult<Skill> createSkill(Skill skill);
+    ApiResult<Skill> createSkill(Skill skill);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteSkill(Skill skill);
+    ApiResult deleteSkill(Skill skill);
 
     @POST
     @Path("update")
-    CtiLinkApiResult<Skill> updateSkill(Skill skill);
+    ApiResult<Skill> updateSkill(Skill skill);
 
     @POST
     @Path("list")
-    CtiLinkApiResult<List<Skill>> listSkill(Skill skill);
+    ApiResult<List<Skill>> listSkill(Skill skill);
 }

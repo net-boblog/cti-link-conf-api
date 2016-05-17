@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.Routerset;
 
 import javax.ws.rs.Consumes;
@@ -23,18 +23,18 @@ public interface CtiLinkRoutersetService {
 
     @POST
     @Path("create")
-    CtiLinkApiResult<Routerset> create(Routerset routerset);
+    ApiResult<Routerset> create(Routerset routerset);
 
     @POST
     @Path("delete")
-    CtiLinkApiResult delete(Routerset routerset);
+    ApiResult delete(Routerset routerset);
 
     @POST
     @Path("update")
-    CtiLinkApiResult<Routerset> update(Routerset routerset);
+    ApiResult<Routerset> update(Routerset routerset);
 
     @POST
     @Path("list")
-    CtiLinkApiResult<List<Routerset>> list();
+    ApiResult<List<Routerset>> list();
 
 }

@@ -1,7 +1,7 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
-import com.tinet.ctilink.conf.request.CtiLinkMohUpdateRequest;
+import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.request.MohUpdateRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -22,5 +22,5 @@ public interface CtiLinkEnterpriseMohService {
 
     @POST
     @Path("update")
-    CtiLinkApiResult update(CtiLinkMohUpdateRequest ctiLinkMohUpdateRequest);
+    ApiResult update(MohUpdateRequest mohUpdateRequest);
 }

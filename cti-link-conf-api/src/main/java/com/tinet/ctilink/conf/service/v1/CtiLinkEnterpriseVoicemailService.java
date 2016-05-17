@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseVoicemail;
 
 import javax.ws.rs.Consumes;
@@ -25,7 +25,7 @@ public interface CtiLinkEnterpriseVoicemailService {
      */
     @POST
     @Path("create")
-    CtiLinkApiResult<EnterpriseVoicemail> createEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult<EnterpriseVoicemail> createEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
     /**
      * 根据留言箱id和企业编号enterpriseId删除留言箱
@@ -34,7 +34,7 @@ public interface CtiLinkEnterpriseVoicemailService {
      */
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult deleteEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
     /**
      * 更新留言箱
@@ -43,7 +43,7 @@ public interface CtiLinkEnterpriseVoicemailService {
      */
     @POST
     @Path("update")
-    CtiLinkApiResult<EnterpriseVoicemail> updateEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult<EnterpriseVoicemail> updateEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
     /**
      * 根据企业编号enterpriseId获取留言箱列表
@@ -52,6 +52,6 @@ public interface CtiLinkEnterpriseVoicemailService {
      */
     @POST
     @Path("list")
-    CtiLinkApiResult<List<EnterpriseVoicemail>> listEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
+    ApiResult<List<EnterpriseVoicemail>> listEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail);
 
 }

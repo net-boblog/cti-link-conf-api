@@ -1,6 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
-import com.tinet.ctilink.conf.CtiLinkApiResult;
+import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.EnterpriseArea;
 
 import javax.ws.rs.Consumes;
@@ -26,7 +26,7 @@ public interface CtiLinkEnterpriseAreaService {
      */
     @POST
     @Path("create")
-    CtiLinkApiResult<EnterpriseArea> createEnterpriseArea(EnterpriseArea enterpriseArea);
+    ApiResult<EnterpriseArea> createEnterpriseArea(EnterpriseArea enterpriseArea);
 
     /**
      * 地区组根据根据企业编号enterpriseId和地区id删除地区
@@ -35,7 +35,7 @@ public interface CtiLinkEnterpriseAreaService {
      */
     @POST
     @Path("delete")
-    CtiLinkApiResult deleteEnterpriseArea(EnterpriseArea enterpriseArea);
+    ApiResult deleteEnterpriseArea(EnterpriseArea enterpriseArea);
 
     /**
      * 地区组根据企业编号enterpriseId和地区组id获取地区列表
@@ -44,6 +44,6 @@ public interface CtiLinkEnterpriseAreaService {
      */
     @POST
     @Path("list")
-    CtiLinkApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea);
+    ApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea);
 
 }

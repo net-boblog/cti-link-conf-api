@@ -32,14 +32,20 @@ public class RouterUtil {
             case Const.ROUTER_CLID_CALL_TYPE_IB_RIGHT:
                 routersetId = enterpriseRouter.getIbRouterRight();
                 break;
-            case Const.ROUTER_CLID_CALL_TYPE_OB_LEFT:
-                routersetId = enterpriseRouter.getObRouterLeft();
+            case Const.ROUTER_CLID_CALL_TYPE_PREVIEW_OB_LEFT:
+                routersetId = enterpriseRouter.getObPreviewRouterLeft();
                 break;
-            case Const.ROUTER_CLID_CALL_TYPE_OB_RIGHT:
-                routersetId = enterpriseRouter.getObRouterRight();
+            case Const.ROUTER_CLID_CALL_TYPE_PREVIEW_OB_RIGHT:
+                routersetId = enterpriseRouter.getIbRouterRight();
+                break;
+            case Const.ROUTER_CLID_CALL_TYPE_PREDICTIVE_OB_LEFT:
+                routersetId = enterpriseRouter.getObPredictiveRouterLeft();
+                break;
+            case Const.ROUTER_CLID_CALL_TYPE_PREDICTIVE_OB_RIGHT:
+                routersetId = enterpriseRouter.getIbRouterRight();
                 break;
             default:
-                routersetId = enterpriseRouter.getObRouterLeft();
+                routersetId = enterpriseRouter.getObPreviewRouterLeft();
         }
         router = getRouter(routersetId, caller);
 
@@ -82,7 +88,7 @@ public class RouterUtil {
             List<Gateway> gatewayList = ContextUtil.getBean(RedisService.class)
                     .getList(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY, Gateway.class);
             for (Gateway gw : gatewayList) {
-                if (gw.getId() == router.getId()) {
+                if (gw.getId().equals(router.getId())) {
                     if (caller.getTelType() == Const.TEL_TYPE_MOBILE) {
                         gw.setPrefix(gw.getPrefix() + caller.getAreaCode());
                     }

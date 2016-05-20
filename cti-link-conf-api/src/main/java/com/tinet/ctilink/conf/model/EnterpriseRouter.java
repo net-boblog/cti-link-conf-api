@@ -16,9 +16,9 @@ public class EnterpriseRouter implements Serializable {
 
     private Integer ibRouterRight;
 
-    private Integer obRouterLeft;
+    private Integer obPreviewRouterLeft;
 
-    private Integer obRouterRight;
+    private Integer obPredictiveRouterLeft;
 
     private Date createTime;
 
@@ -46,20 +46,20 @@ public class EnterpriseRouter implements Serializable {
         this.ibRouterRight = ibRouterRight;
     }
 
-    public Integer getObRouterLeft() {
-        return obRouterLeft;
+    public Integer getObPreviewRouterLeft() {
+        return obPreviewRouterLeft;
     }
 
-    public void setObRouterLeft(Integer obRouterLeft) {
-        this.obRouterLeft = obRouterLeft;
+    public void setObPreviewRouterLeft(Integer obPreviewRouterLeft) {
+        this.obPreviewRouterLeft = obPreviewRouterLeft;
     }
 
-    public Integer getObRouterRight() {
-        return obRouterRight;
+    public Integer getObPredictiveRouterLeft() {
+        return obPredictiveRouterLeft;
     }
 
-    public void setObRouterRight(Integer obRouterRight) {
-        this.obRouterRight = obRouterRight;
+    public void setObPredictiveRouterLeft(Integer obPredictiveRouterLeft) {
+        this.obPredictiveRouterLeft = obPredictiveRouterLeft;
     }
 
     public Date getCreateTime() {

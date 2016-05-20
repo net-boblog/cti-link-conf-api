@@ -7,6 +7,7 @@ import com.tinet.ctilink.conf.entity.Caller;
 import com.tinet.ctilink.conf.model.AreaCode;
 import com.tinet.ctilink.conf.model.Gateway;
 import com.tinet.ctilink.conf.model.SystemSetting;
+import com.tinet.ctilink.inc.SystemSettingConst;
 import com.tinet.ctilink.util.ContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -114,7 +115,7 @@ public class AreaCodeUtil {
                     }
                     if(find == false){
                         SystemSetting systemSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
-                                , Const.SYSTEM_SETTING_NAME_DEFAULT_AREA_CODE), SystemSetting.class);
+                                , SystemSettingConst.SYSTEM_SETTING_NAME_DEFAULT_AREA_CODE), SystemSetting.class);
                         if (systemSetting != null) {
                             caller.setAreaCode(systemSetting.getValue());
                             caller.setCallerNumber(caller.getAreaCode() + caller.getCallerNumber());
@@ -194,7 +195,7 @@ public class AreaCodeUtil {
             RedisService redisService = ContextUtil.getBean(RedisService.class);
             String prefix = mobile.substring(0, 3);
             SystemSetting  mobileSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
-                    , Const.SYSTEM_SETTING_NAME_MOBILE_SEGMENT), SystemSetting.class);
+                    , SystemSettingConst.SYSTEM_SETTING_NAME_MOBILE_SEGMENT), SystemSetting.class);
             String[] mobileList = mobileSetting.getValue().split(",");
             for(String segment: mobileList){
                 if(segment.equals(prefix)){
@@ -202,7 +203,7 @@ public class AreaCodeUtil {
                 }
             }
             SystemSetting  unicomSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
-                    , Const.SYSTEM_SETTING_NAME_UNICOM_SEGMENT), SystemSetting.class);
+                    , SystemSettingConst.SYSTEM_SETTING_NAME_UNICOM_SEGMENT), SystemSetting.class);
             String[] unicomList = unicomSetting.getValue().split(",");
             for(String segment: unicomList){
                 if(segment.equals(prefix)){
@@ -210,7 +211,7 @@ public class AreaCodeUtil {
                 }
             }
             SystemSetting  telecomSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
-                    , Const.SYSTEM_SETTING_NAME_TELECOM_SEGMENT), SystemSetting.class);
+                    , SystemSettingConst.SYSTEM_SETTING_NAME_TELECOM_SEGMENT), SystemSetting.class);
             String[] telecomList = telecomSetting.getValue().split(",");
             for(String segment: telecomList){
                 if(segment.equals(prefix)){

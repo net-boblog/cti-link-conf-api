@@ -1,9 +1,5 @@
 package com.tinet.ctilink.conf.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.tools.javac.comp.Enter;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.model.EnterpriseClid;
@@ -13,10 +9,8 @@ import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.util.ContextUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 /**
  * @author fengwei //

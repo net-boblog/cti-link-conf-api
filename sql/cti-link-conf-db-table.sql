@@ -150,6 +150,7 @@ CREATE TABLE cti_link_router
   id serial NOT NULL, -- 流水号
   routerset_id integer NOT NULL, -- 对应路由组id
   prefix character varying, -- 号码前缀
+  type integer, --路由类型 1.普通路由 2.内部路由
   gateway_id integer NOT NULL, -- 对应网关id
   priority integer NOT NULL DEFAULT 1, -- 路由优先级 数字越小越优先
   description character varying, -- 说明
@@ -165,6 +166,7 @@ ALTER TABLE cti_link_router OWNER TO postgres;
 COMMENT ON TABLE cti_link_router IS '号码路由表';
 COMMENT ON COLUMN cti_link_router.id IS 'id标识';
 COMMENT ON COLUMN cti_link_router.prefix IS '号码前缀';
+COMMENT ON COLUMN cti_link_router.type IS '路由类型 1.普通路由 2.内部路由'
 COMMENT ON COLUMN cti_link_router.routerset_id IS '对应路由组id';
 COMMENT ON COLUMN cti_link_router.gateway_id IS '对应网关id';
 COMMENT ON COLUMN cti_link_router.priority IS '路由优先级 路由优先级 数字越小越优先';

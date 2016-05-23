@@ -15,6 +15,8 @@ public class Router implements Serializable {
     private Integer routersetId;
 
     private String prefix;
+    
+    private Integer type;
 
     private Integer gatewayId;
 
@@ -48,7 +50,15 @@ public class Router implements Serializable {
         this.prefix = prefix == null ? null : prefix.trim();
     }
 
-    public Integer getGatewayId() {
+    public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getGatewayId() {
         return gatewayId;
     }
 

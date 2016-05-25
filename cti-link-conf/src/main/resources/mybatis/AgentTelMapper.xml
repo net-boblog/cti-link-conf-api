@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.conf.model.AgentTelMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.AgentTel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="agent_id" property="agentId" jdbcType="INTEGER" />
+    <result column="cno" property="cno" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="tel_type" property="telType" jdbcType="INTEGER" />
+    <result column="area_code" property="areaCode" jdbcType="VARCHAR" />
+    <result column="is_validity" property="isValidity" jdbcType="INTEGER" />
+    <result column="is_bind" property="isBind" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, agent_id, cno, tel, tel_type, area_code, is_validity, is_bind, 
+    create_time
+  </sql>
+
+  <update id="updateIsBind" parameterType="com.tinet.ctilink.conf.model.AgentTel" >
+    update cti_link_agent_tel
+    <set >
+      is_bind = (case when tel=#{tel,jdbcType=VARCHAR} then 1 else 0 end)
+    </set>
+    where agent_id = #{agentId,jdbcType=INTEGER}
+  </update>
+</mapper>

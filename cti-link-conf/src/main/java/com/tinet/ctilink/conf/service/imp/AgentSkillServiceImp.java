@@ -140,7 +140,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
                 queueMember.setCreateTime(new Date());
                 queueMember.setQueueId(queueSkill.getQueueId());
                 queueMember.setQno(queue.getQno());
-                queueMember.setPenalty(getPenalty(queue, agentList.get(0)));
+                queueMember.setPenalty(queueMemberDao.getPenalty(agentSkill.getEnterpriseId(), queue.getId(), agentList.get(0).getId()));
                 if (agentTel != null) {
                     Caller caller;
                     if (agentTel.getTelType() == Const.TEL_TYPE_EXTEN
@@ -173,42 +173,6 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         return new ApiResult<>(agentSkill);
     }
 
-    private int getPenalty(Queue queue, Agent agent) {
-        int penalty = 0;
-        Condition condition = new Condition(QueueMember.class);
-        Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId", queue.getEnterpriseId());
-        criteria.andEqualTo("queueId", queue.getId());
-        List<QueueSkill> queueSkillList = queueSkillDao.selectByCondition(condition);
-        if (queueSkillList == null || queueSkillList.isEmpty()) {
-            return penalty;
-        }
-        if (queueSkillList.size() == 1) {
-            int skillId = queueSkillList.get(0).getSkillId();
-
-            Condition condition1 = new Condition(AgentSkill.class);
-            Condition.Criteria criteria1 = condition1.createCriteria();
-            criteria1.andEqualTo("enterpriseId", agent.getEnterpriseId());
-            criteria1.andEqualTo("agentId", agent.getId());
-            criteria1.andEqualTo("skillId", skillId);
-            List<AgentSkill> agentSkillList = selectByCondition(condition1);
-            if (agentSkillList != null && agentSkillList.size() > 0) {
-                penalty = agentSkillList.get(0).getSkillLevel();
-            }
-
-        } else {
-            Condition condition1 = new Condition(AgentSkill.class);
-            Condition.Criteria criteria1 = condition1.createCriteria();
-            criteria1.andEqualTo("enterpriseId", agent.getEnterpriseId());
-            criteria1.andEqualTo("agentId", agent.getId());
-            List<AgentSkill> agentSkillList = selectByCondition(condition1);
-            for (AgentSkill agentSkill : agentSkillList) {
-                penalty += agentSkill.getSkillLevel();
-            }
-        }
-
-        return penalty;
-    }
 
     @Override
     public ApiResult deleteAgentSkill(AgentSkill agentSkill) {
@@ -269,7 +233,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
                 queueMember.setCreateTime(new Date());
                 queueMember.setQueueId(queueSkill.getQueueId());
                 queueMember.setQno(queue.getQno());
-                queueMember.setPenalty(getPenalty(queue, agent));
+                queueMember.setPenalty(queueMemberDao.getPenalty(agentSkill.getEnterpriseId(), queue.getId(), agent.getId()));
                 if (agentTel != null) {
                     Caller caller;
                     if (agentTel.getTelType() == Const.TEL_TYPE_EXTEN

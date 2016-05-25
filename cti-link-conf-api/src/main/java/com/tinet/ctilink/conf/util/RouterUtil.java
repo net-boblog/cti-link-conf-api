@@ -92,7 +92,7 @@ public class RouterUtil {
                 .getList(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.ROUTER_ROUTERSET_ID, routersetId), Router.class);
         //找prefix
         for (Router r : routerList) {
-        	if(r.getType().equals(Const.ROUTER_TYPE_INTERNAL)){
+        	if(r.getType().equals(Const.ROUTER_TYPE_PREFIX)){
 	            if (routerTel.startsWith(r.getPrefix())) {
 	                if (router == null) {
 	                    router = r;
@@ -121,8 +121,8 @@ public class RouterUtil {
             if(gateway != null){	
 	            if (caller.getTelType() == Const.TEL_TYPE_MOBILE) {
 	            	gateway.setPrefix(gateway.getPrefix() + caller.getAreaCode());
-	                return gateway;
 	            }
+                return gateway;
     		}
         }
         return null;

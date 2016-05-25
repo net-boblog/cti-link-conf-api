@@ -45,5 +45,9 @@ public interface CtiLinkAgentService {
     @POST
     @Path("get")
     ApiResult<Agent> getAgent(Agent agent);
+
+    @POST
+    @Path("updateAgentOnline")
+    String updateAgentOnline(Integer enterpriseId, String cno, String bindTel, Integer bindType);
 }
 

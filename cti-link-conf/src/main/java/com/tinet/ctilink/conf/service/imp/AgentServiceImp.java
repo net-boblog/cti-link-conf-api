@@ -29,8 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author fengwei //
@@ -324,9 +324,129 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         return (agent.getId() == null || agent.getId() <= 0);
     }
 
+
+    /**
+     * 座席上线,修改绑定电话,添加入对应队列
+     */
+    @Override
+    public String updateAgentOnline(Integer enterpriseId, String cno, String bindTel, Integer bindType) {
+        Condition condition = new Condition(Agent.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("enterpriseId", enterpriseId);
+        criteria.andEqualTo("cno", cno);
+        List<Agent> agentList = selectByCondition(condition);
+        Agent agent = agentList.get(0);
+
+        String oldBindTel = "";
+        AgentTel agentTel = agentTelDao.getBindTel(agent.getId());
+        if (agentTel != null) {
+            oldBindTel = agentTel.getTel();
+        }
+
+        int telType;
+        if (bindType == Const.BIND_TYPE_EXTEN) {  //分机, 软电话
+            // 分机或软电话格式校验
+            if (!Pattern.compile(Const.EXTEN_TEL_VALIDATION).matcher(bindTel).find()) {
+                return "invalid tel format";
+            }
+            telType = Const.TEL_TYPE_EXTEN;
+        } else if (bindType == Const.BIND_TYPE_TEL) {  //电话号码
+            // 判断号码格式
+            if (Pattern.compile(Const.LANDLINE_VALIDATION).matcher(bindTel).find()) {
+                telType = Const.TEL_TYPE_LANDLINE;
+            } else if (Pattern.compile(Const.MOBILE_VALIDATION).matcher(bindTel).find()) {
+                telType = Const.TEL_TYPE_MOBILE;
+            } else {
+                return "invalid tel format";
+            }
+        } else {
+            return "invalid bindType";
+        }
+
+        //判断号码是否存在且被其他座席绑定
+        //查询所有有bindTel的
+        Condition condition1 = new Condition(AgentTel.class);
+        Condition.Criteria criteria1 = condition1.createCriteria();
+        criteria1.andEqualTo("enterpriseId", enterpriseId);
+        criteria1.andEqualTo("tel", bindTel);
+        List<AgentTel> agentTelList = agentTelDao.selectByCondition(condition1);
+        AgentTel bindAgentTel = null;  //座席是否已经绑定了或者已经有这个号码
+        if (agentTelList != null && !agentTelList.isEmpty()) {
+            //是否有座席绑定了bindTel
+            for (AgentTel agentTel1 : agentTelList) {
+                if (agentTel1.getIsBind() == Const.AGENT_TEL_IS_BIND_YES) {
+                    if (!agentTel1.getAgentId().equals(agent.getId())) {
+                        return "bindTel already bind by " + agentTel1.getCno();
+                    } else {
+                        bindAgentTel = agentTel1;
+                        break;
+                    }
+                } else {
+                    if (agentTel1.getAgentId().equals(agent.getId())) {
+                        bindAgentTel = agentTel1;
+                    }
+                }
+            }
+        }
+
+        //没找到bindAgentTel
+        if (bindAgentTel == null) {
+            bindAgentTel = new AgentTel();
+            bindAgentTel.setEnterpriseId(enterpriseId);
+            bindAgentTel.setAgentId(agent.getId());
+            bindAgentTel.setCno(agent.getCno());
+            bindAgentTel.setTel(bindTel);
+            bindAgentTel.setTelType(telType);
+        }
+        bindAgentTel.setIsBind(Const.AGENT_TEL_IS_BIND_YES);
+
+        //先保存
+        if (bindAgentTel.getId() == null) {
+            agentTelDao.insertSelective(bindAgentTel);
+        }
+        //更新座席电话绑定情况
+        agentTelDao.updateAgentTelBind(bindAgentTel);
+
+        //更新queueMember
+        if (!bindTel.equals(oldBindTel) || bindType == Const.BIND_TYPE_EXTEN) {
+            queueMemberDao.updateByAgent(agent, bindTel, telType);
+        }
+
+        //删除之前绑定的分机或软电话
+        Condition condition2 = new Condition(AgentTel.class);
+        Condition.Criteria criteria2 = condition2.createCriteria();
+        criteria2.andEqualTo("enterpriseId", enterpriseId);
+        criteria2.andEqualTo("agentId",  agent.getId());
+        criteria2.andEqualTo("isBind",  Const.AGENT_TEL_IS_BIND_NO);
+        criteria2.andEqualTo("telType",  Const.TEL_TYPE_EXTEN);
+        agentTelDao.deleteByCondition(condition2);
+
+        setRefreshCacheMethod("updateCache", agent);
+        return "success";
+    }
+
     //cache
     public void setCache(Agent agent) {
         redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(agent), agent);
+    }
+
+    public void updateCache(Agent agent) {
+        //agent_tel
+        //座席电话，第一个是绑定的电话
+        Condition condition = new Condition(AgentTel.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("enterpriseId", agent.getEnterpriseId());
+        criteria.andEqualTo("agentId", agent.getId());
+        condition.setOrderByClause("is_bind desc, id");
+        List<AgentTel> list = agentTelDao.selectByCondition(condition);
+        if (list != null && list.size() > 0) {
+            redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agent.getEnterpriseId(), agent.getCno())
+                    , list);
+        } else {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agent.getEnterpriseId(), agent.getCno()));
+        }
+
+        updateQueueMemeberCache(agent);
     }
 
     public void deleteCache(Agent agent) {
@@ -334,6 +454,57 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         redisService.delete(Const.REDIS_DB_CONF_INDEX, getKey(agent));
         //agent_tel
         redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agent.getEnterpriseId(), agent.getCno()));
+
+        updateQueueMemeberCache(agent);
+    }
+
+    private void updateQueueMemeberCache(Agent agent) {
+        Condition condition1 = new Condition(QueueMember.class);
+        Condition.Criteria criteria1 = condition1.createCriteria();
+        criteria1.andEqualTo("enterpriseId", agent.getEnterpriseId());
+        criteria1.andEqualTo("cno", agent.getCno());
+        List<QueueMember> queueMemberList = queueMemberDao.selectByCondition(condition1);
+
+        Set<Integer> queueIdSet = new HashSet<>();
+        Set<String> qnoCnoDbKeySet = new HashSet<>();
+        if (queueMemberList != null && queueMemberList.size() > 0) {
+            redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_CNO
+                    , agent.getEnterpriseId(), agent.getCno()), queueMemberList);
+            for (QueueMember queueMember : queueMemberList) {
+                String key = String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO_CNO, agent.getEnterpriseId(), queueMember.getQno(), queueMember.getCno());
+                redisService.set(Const.REDIS_DB_CONF_INDEX, key, queueMember);
+                qnoCnoDbKeySet.add(key);
+                queueIdSet.add(queueMember.getQueueId());
+            }
+        } else {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_CNO
+                    , agent.getEnterpriseId(), agent.getCno()));
+        }
+
+        Set<String> qnoCnoExistKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
+                , String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO_CNO, agent.getEnterpriseId(), "*", agent.getCno()));
+        qnoCnoExistKeySet.removeAll(qnoCnoDbKeySet);
+        if (qnoCnoExistKeySet.size() > 0) {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, qnoCnoExistKeySet);
+        }
+
+        if (queueIdSet.size() > 0) {
+            Iterator<Integer> iterator = queueIdSet.iterator();
+            while (iterator.hasNext()) {
+                int queueId = iterator.next();
+                Condition condition2 = new Condition(QueueMember.class);
+                Condition.Criteria criteria2 = condition2.createCriteria();
+                criteria2.andEqualTo("enterpriseId", agent.getEnterpriseId());
+                criteria2.andEqualTo("queueId", queueId);
+                List<QueueMember> list = queueMemberDao.selectByCondition(condition2);
+                if (list != null &&list.size() > 0) {
+                    redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, agent.getEnterpriseId(), queueId), list);
+                } else {
+                    redisService.delete(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, agent.getEnterpriseId(), queueId));
+                }
+            }
+        }
+
     }
 
     private String getKey(Agent agent) {

@@ -69,7 +69,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
         if (agentTel.getIsBind() == Const.AGENT_TEL_IS_BIND_YES) {
 
             //将座席的其他号码全部设置为未绑定
-            boolean r = agentTelDao.updateAgentTelBind(agentTel.getAgentId(), agentTel.getTel());
+            boolean r = agentTelDao.updateAgentTelBind(agentTel);
 
             //更新queue_memeber里面的tel ?
         }
@@ -138,7 +138,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
             dbAgentTel.setIsBind(Const.AGENT_TEL_IS_BIND_YES);
             updateByPrimaryKey(dbAgentTel);
 
-            agentTelDao.updateAgentTelBind(agentTel.getAgentId(), agentTel.getTel());
+            agentTelDao.updateAgentTelBind(agentTel);
 
             //queue_memeber?
         } else {

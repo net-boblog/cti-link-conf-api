@@ -55,6 +55,8 @@ public class ClidUtil {
                             , String.format(CacheKey.ENTERPRISE_HOTLINE_ENTERPRISE_ID, enterpriseId), EnterpriseHotline.class);
                     if (enterpriseHotlineList != null && enterpriseHotlineList.size() > 0) {
                         clid = enterpriseHotlineList.get(0).getNumberTrunk();
+                        Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_NUMBER_TRUNK, clid), Trunk.class);
+                        clid = trunk.getAreaCode() + clid;
                     }
 
                 } else if (clidType == 2) {// 外显客户号码
@@ -93,17 +95,72 @@ public class ClidUtil {
                         clid = enterpriseHotline.getHotline();
                     }
                 }
-
-                List<Trunk> trunkList = redisService.getList(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_ENTERPRISE_ID, enterpriseId), Trunk.class);
-                for (Trunk trunk : trunkList) {
-                    if (trunk.getNumberTrunk().equals(clid)) {
-                        clid = trunk.getAreaCode() + clid;
-                        break;
-                    }
-                }
                 return clid;
             }
         }
         return null;
+    }
+    
+    public static boolean isClidValid(int enterpriseId, int routerClidCallType, String customerNumber, String clid) {
+        RedisService redisService = ContextUtil.getBean(RedisService.class);
+        EnterpriseClid enterpriseClid = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.ENTERPRISE_CLID_ENTERPRISE_ID
+                , enterpriseId), EnterpriseClid.class);
+
+        int clidType = 0;
+        String clidNumber = "";
+        if (enterpriseClid != null) {
+            switch (routerClidCallType) {
+                case Const.ROUTER_CLID_CALL_TYPE_IB_RIGHT:// 1呼入
+                    clidType = enterpriseClid.getIbClidRightType();
+                    clidNumber = enterpriseClid.getIbClidRightNumber();
+                    break;
+                case Const.ROUTER_CLID_CALL_TYPE_PREVIEW_OB_LEFT:// 2预览外呼客户侧*
+                    clidType = enterpriseClid.getObPreviewClidLeftType();
+                    clidNumber = enterpriseClid.getObPreviewClidLeftNumber();
+                    break;
+                case Const.ROUTER_CLID_CALL_TYPE_PREVIEW_OB_RIGHT:// 3预览外呼座席侧
+                    clidType = enterpriseClid.getObPreviewClidRightType();
+                    clidNumber = enterpriseClid.getObPreviewClidRightNumber();
+                    break;
+                case Const.ROUTER_CLID_CALL_TYPE_PREDICTIVE_OB_LEFT://// 4预测外呼客户侧
+                    clidType = enterpriseClid.getObPredictiveClidLeftType();
+                    clidNumber = enterpriseClid.getObPredictiveClidLeftNumber();
+                    break;
+                case Const.ROUTER_CLID_CALL_TYPE_PREDICTIVE_OB_RIGHT:// 5预测外呼座席侧
+                    clidType = enterpriseClid.getObPredictiveClidRightType();
+                    clidNumber = enterpriseClid.getObPredictiveClidRightNumber();
+                    break;
+            }
+            if (clidType == 1) {// 外显中继号码，选取主热线号码对应的中继号码
+            	Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX
+                        , String.format(CacheKey.TRUNK_NUMBER_TRUNK, clid), Trunk.class);
+                if (trunk != null) {
+                    return true;
+                }
+
+            } else if (clidType == 2) {// 外显客户号码
+                if (customerNumber.equals(clid)){
+                	return true;
+                }
+            } else if (clidType == 3) {// 外显固定号码
+                if (StringUtils.isNotEmpty(clidNumber)) {
+                    String[] clidList = clidNumber.split(",");
+                    for(String c: clidList){
+                    	if(c.equals(clid)){
+                    		return true;
+                    	}
+                    }
+                }
+            } else if (clidType == 4) { // 外显热线号码
+                List<EnterpriseHotline> enterpriseHotlineList = redisService.getList(Const.REDIS_DB_CONF_INDEX
+                        , String.format(CacheKey.ENTERPRISE_HOTLINE_ENTERPRISE_ID, enterpriseId), EnterpriseHotline.class);
+                for(EnterpriseHotline hotline :enterpriseHotlineList){
+                	if(hotline.getHotline().equals(clid)){
+                		return true;
+                	}
+                }
+            }
+        }
+        return false;
     }
 }

@@ -52,10 +52,10 @@ public class ClidUtil {
             if (clidType != 0) {
                 String clid = "";
                 if (clidType == 1) {// 外显中继号码，选取主热线号码对应的中继号码
-                	if(StringUtils.isNotEmpty(clidNumber)){
+                	if(StringUtils.isEmpty(clidNumber)){
 	                    Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_ENTERPRISE_ID_FIRST, enterpriseId), Trunk.class);
 	                    if(trunk != null){
-	                    	clid = trunk.getAreaCode() + clid;
+	                    	clid = trunk.getAreaCode() + trunk.getNumberTrunk();
 	                    }
                 	}else{
                 		clid = clidNumber;

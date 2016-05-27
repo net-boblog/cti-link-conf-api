@@ -2,6 +2,7 @@ package com.tinet.ctilink.conf.util;
 
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
+import com.tinet.ctilink.conf.entity.Caller;
 import com.tinet.ctilink.conf.model.EnterpriseClid;
 import com.tinet.ctilink.conf.model.EnterpriseHotline;
 import com.tinet.ctilink.conf.model.Trunk;
@@ -51,13 +52,14 @@ public class ClidUtil {
             if (clidType != 0) {
                 String clid = "";
                 if (clidType == 1) {// 外显中继号码，选取主热线号码对应的中继号码
-                    List<EnterpriseHotline> enterpriseHotlineList = redisService.getList(Const.REDIS_DB_CONF_INDEX
-                            , String.format(CacheKey.ENTERPRISE_HOTLINE_ENTERPRISE_ID, enterpriseId), EnterpriseHotline.class);
-                    if (enterpriseHotlineList != null && enterpriseHotlineList.size() > 0) {
-                        clid = enterpriseHotlineList.get(0).getNumberTrunk();
-                        Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_NUMBER_TRUNK, clid), Trunk.class);
-                        clid = trunk.getAreaCode() + clid;
-                    }
+                	if(StringUtils.isNotEmpty(clidNumber)){
+	                    Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_ENTERPRISE_ID_FIRST, enterpriseId), Trunk.class);
+	                    if(trunk != null){
+	                    	clid = trunk.getAreaCode() + clid;
+	                    }
+                	}else{
+                		clid = clidNumber;
+                	}
 
                 } else if (clidType == 2) {// 外显客户号码
                     if (customerNumber.equals(Const.UNKNOWN_NUMBER)) {
@@ -132,11 +134,14 @@ public class ClidUtil {
                     break;
             }
             if (clidType == 1) {// 外显中继号码，选取主热线号码对应的中继号码
-            	Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX
-                        , String.format(CacheKey.TRUNK_NUMBER_TRUNK, clid), Trunk.class);
-                if (trunk != null) {
-                    return true;
-                }
+            	Caller caller = AreaCodeUtil.updateGetAreaCode(clid, "");
+            	if(caller != null){
+	            	Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX
+	                        , String.format(CacheKey.TRUNK_NUMBER_TRUNK, caller.getRealNumber()), Trunk.class);
+	                if (trunk != null && trunk.getAreaCode().equals(caller.getAreaCode())) {
+	                    return true;
+	                }
+            	}
 
             } else if (clidType == 2) {// 外显客户号码
                 if (customerNumber.equals(clid)){

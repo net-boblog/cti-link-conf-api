@@ -1,5 +1,6 @@
 package com.tinet.ctilink.conf.service.v1;
 
+import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.RestrictTel;
 import com.tinet.ctilink.conf.request.RestrictTelRequest;
@@ -32,5 +33,5 @@ public interface CtiLinkRestrictTelService {
 
     @POST
     @Path("list")
-    ApiResult listRestrictTel(RestrictTelRequest restrictTelRequest);
+    ApiResult<PageInfo<RestrictTel>> listRestrictTel(RestrictTelRequest restrictTelRequest);
 }

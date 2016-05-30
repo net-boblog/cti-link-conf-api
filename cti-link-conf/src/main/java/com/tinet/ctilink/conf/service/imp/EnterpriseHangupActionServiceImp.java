@@ -39,137 +39,137 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
 
     @Override
     public ApiResult<EnterpriseHangupAction> createEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if( ! entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编码不正确");
+        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编码不正确");
 
         ApiResult<EnterpriseHangupAction> result = validateEnterpriseHangupAction(enterpriseHangupAction);
-        if(result != null)
+        if (result != null)
             return result;
 
         enterpriseHangupAction.setCreateTime(new Date());
 
         int success = insertSelective(enterpriseHangupAction);
-        if(success == 1){
-            setRefreshCacheMethod("setCache",enterpriseHangupAction);
+        if (success == 1) {
+            setRefreshCacheMethod("setCache", enterpriseHangupAction);
             return new ApiResult<>(enterpriseHangupAction);
         }
-        logger.error("EnterpriseHangupActionServiceImp.createEnterpriseHangupAction error refresh cache fail "+ enterpriseHangupAction +
-        "success=" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"添加失败");
+        logger.error("EnterpriseHangupActionServiceImp.createEnterpriseHangupAction error refresh cache fail " + enterpriseHangupAction +
+                "success=" + success);
+        return new ApiResult<>(ApiResult.FAIL_RESULT, "添加失败");
     }
 
     @Override
     public ApiResult deleteEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if( ! entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
-        if(enterpriseHangupAction.getId()==null || enterpriseHangupAction.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"id不正确");
+        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
+        if (enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
+            return new ApiResult(ApiResult.FAIL_RESULT, "id不正确");
 
         Condition condition = new Condition(EnterpriseHangupAction.class);
         Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId",enterpriseHangupAction.getEnterpriseId());
-        criteria.andEqualTo("id",enterpriseHangupAction.getId());
+        criteria.andEqualTo("enterpriseId", enterpriseHangupAction.getEnterpriseId());
+        criteria.andEqualTo("id", enterpriseHangupAction.getId());
 
         int success = deleteByCondition(condition);
-        if(success == 1){
-            setRefreshCacheMethod("deleteCache",enterpriseHangupAction);
+        if (success == 1) {
+            setRefreshCacheMethod("deleteCache", enterpriseHangupAction);
             return new ApiResult(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
         }
-        logger.error("EnterpriseHangupActionServiceImp.deleteEnterpriseHangupAction error "+ enterpriseHangupAction +
-        "success=" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        logger.error("EnterpriseHangupActionServiceImp.deleteEnterpriseHangupAction error " + enterpriseHangupAction +
+                "success=" + success);
+        return new ApiResult(ApiResult.FAIL_RESULT, "删除失败");
     }
 
     @Override
     public ApiResult<EnterpriseHangupAction> updateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if( ! entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
-        if (enterpriseHangupAction.getId()==null || enterpriseHangupAction.getId()<=0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"id不正确");
+        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
+        if (enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "id不正确");
 
         ApiResult<EnterpriseHangupAction> result = validateEnterpriseHangupAction(enterpriseHangupAction);
-        if(result != null)
+        if (result != null)
             return result;
 
         EnterpriseHangupAction enterpriseHangupAction1 = selectByPrimaryKey(enterpriseHangupAction.getId());
-        if( ! enterpriseHangupAction.getEnterpriseId().equals(enterpriseHangupAction1.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号和推送id不匹配");
+        if (!enterpriseHangupAction.getEnterpriseId().equals(enterpriseHangupAction1.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号和推送id不匹配");
 
         enterpriseHangupAction.setCreateTime(enterpriseHangupAction1.getCreateTime());
 
         int success = updateByPrimaryKey(enterpriseHangupAction);
-        if(success == 1){
-            setRefreshCacheMethod("setCache",enterpriseHangupAction);
+        if (success == 1) {
+            setRefreshCacheMethod("setCache", enterpriseHangupAction);
             return new ApiResult<>(enterpriseHangupAction);
         }
         logger.error("EnterpriserHangupAction.updateEnterpriseHangupAction error " + enterpriseHangupAction + "success="
-        + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"更新失败");
+                + success);
+        return new ApiResult<>(ApiResult.FAIL_RESULT, "更新失败");
     }
 
     @Override
     public ApiResult<List<EnterpriseHangupAction>> listEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if( ! entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
-        if(enterpriseHangupAction.getType() == null || enterpriseHangupAction.getType() <= 0 )
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送类型不能为空");
+        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
+        if (enterpriseHangupAction.getType() == null || enterpriseHangupAction.getType() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "推送类型不能为空");
 
         Condition condition = new Condition(EnterpriseHangupAction.class);
         Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId",enterpriseHangupAction.getEnterpriseId());
-        criteria.andEqualTo("type",enterpriseHangupAction.getType());
+        criteria.andEqualTo("enterpriseId", enterpriseHangupAction.getEnterpriseId());
+        criteria.andEqualTo("type", enterpriseHangupAction.getType());
         List<EnterpriseHangupAction> enterpriseHangupActionList = selectByCondition(condition);
 
-        if(enterpriseHangupActionList != null && enterpriseHangupActionList.size() > 0)
+        if (enterpriseHangupActionList != null && enterpriseHangupActionList.size() > 0)
             return new ApiResult<>(enterpriseHangupActionList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取推送设置列表失败");
+        return new ApiResult<>(ApiResult.FAIL_RESULT, "获取推送设置列表失败");
     }
 
     @Override
     public ApiResult<EnterpriseHangupAction> getEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if( ! entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
-        if(enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送设置id不正确");
+        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
+        if (enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "推送设置id不正确");
 
         Condition condition = new Condition(EnterpriseHangupAction.class);
         Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId",enterpriseHangupAction.getEnterpriseId());
-        criteria.andEqualTo("id",enterpriseHangupAction.getId());
+        criteria.andEqualTo("enterpriseId", enterpriseHangupAction.getEnterpriseId());
+        criteria.andEqualTo("id", enterpriseHangupAction.getId());
         List<EnterpriseHangupAction> enterpriseHangupActionList = selectByCondition(condition);
 
-        if(enterpriseHangupActionList != null && enterpriseHangupActionList.size() <= 0)
+        if (enterpriseHangupActionList != null && enterpriseHangupActionList.size() <= 0)
             return new ApiResult<>(enterpriseHangupAction);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取推送信息失败");
+        return new ApiResult<>(ApiResult.FAIL_RESULT, "获取推送信息失败");
     }
 
     protected String getKey(EnterpriseHangupAction enterpriseHangupAction) {
-        return String.format(CacheKey.ENTERPRISE_HANGUP_ACTION_ENTERPRISE_ID_TYPE,enterpriseHangupAction.getEnterpriseId(),enterpriseHangupAction.getType());
+        return String.format(CacheKey.ENTERPRISE_HANGUP_ACTION_ENTERPRISE_ID_TYPE, enterpriseHangupAction.getEnterpriseId(), enterpriseHangupAction.getType());
     }
 
-    public void setCache(EnterpriseHangupAction enterpriseHangupAction){
-        redisService.set(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseHangupAction),enterpriseHangupAction);
+    public void setCache(EnterpriseHangupAction enterpriseHangupAction) {
+        redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(enterpriseHangupAction), enterpriseHangupAction);
     }
 
-    public void deleteCache(EnterpriseHangupAction enterpriseHangupAction){
-        redisService.delete(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseHangupAction));
+    public void deleteCache(EnterpriseHangupAction enterpriseHangupAction) {
+        redisService.delete(Const.REDIS_DB_CONF_INDEX, getKey(enterpriseHangupAction));
     }
 
-    private void setRefreshCacheMethod(String methodName,EnterpriseHangupAction enterpriseHangupAction){
-        try{
-            Method method = this.getClass().getMethod(methodName,EnterpriseHangupAction.class);
-            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method,this,enterpriseHangupAction);
+    private void setRefreshCacheMethod(String methodName, EnterpriseHangupAction enterpriseHangupAction) {
+        try {
+            Method method = this.getClass().getMethod(methodName, EnterpriseHangupAction.class);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseHangupAction);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
-        }catch (Exception e){
-            logger.error("EnterpriseHangupActionServiceImp.setRefreshCacheMethod error refresh cache fail, class=" + this.getClass().getName(),e);
+        } catch (Exception e) {
+            logger.error("EnterpriseHangupActionServiceImp.setRefreshCacheMethod error refresh cache fail, class=" + this.getClass().getName(), e);
         }
     }
 
-    private <T> ApiResult<T> validateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction){
-        if(StringUtils.isEmpty(enterpriseHangupAction.getUrl()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送地址不能为空");
+    private <T> ApiResult<T> validateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
+        if (StringUtils.isEmpty(enterpriseHangupAction.getUrl()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "推送地址不能为空");
 
-        if( ! StringUtils.isEmpty(enterpriseHangupAction.getParamName())){
+        if (!StringUtils.isEmpty(enterpriseHangupAction.getParamName())) {
             byte[] nameByte;
             String[] name = enterpriseHangupAction.getParamName().split(",");
             String[] base64Name = new String[name.length];
@@ -183,13 +183,13 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
                     base64Name[i] = base64Encoder.encode(nameByte);
             }
             paramName = base64Name[0];
-            for(int i=1; i<base64Name.length;i++)
-                if( ! base64Name[i].isEmpty())
-                    paramName +=","+base64Name[i];
+            for (int i = 1; i < base64Name.length; i++)
+                if (!base64Name[i].isEmpty())
+                    paramName += "," + base64Name[i];
             enterpriseHangupAction.setParamName(paramName);
         }
 
-        if( ! enterpriseHangupAction.getParamVariable().isEmpty()){
+        if (!enterpriseHangupAction.getParamVariable().isEmpty()) {
             byte[] variableByte;
             String[] variable = enterpriseHangupAction.getParamVariable().split(",");
             String[] base64Variable = new String[variable.length];
@@ -203,28 +203,28 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
             }
 
             paramVariable = base64Variable[0];
-            for(int i=1; i<base64Variable.length;i++)
-                paramVariable +=","+base64Variable[i];
+            for (int i = 1; i < base64Variable.length; i++)
+                paramVariable += "," + base64Variable[i];
 
             String[] paramName = enterpriseHangupAction.getParamName().split(",");
-            if(paramName.length != base64Variable.length)
-                return new ApiResult<>(ApiResult.FAIL_RESULT,"推送参数和值不匹配");
+            if (paramName.length != base64Variable.length)
+                return new ApiResult<>(ApiResult.FAIL_RESULT, "推送参数和值不匹配");
             enterpriseHangupAction.setParamVariable(paramVariable);
         }
 
-        if(enterpriseHangupAction.getTimeout()>30 || enterpriseHangupAction.getTimeout()<0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"超时时间不能大于30");
-        if(enterpriseHangupAction.getRetry() == null || enterpriseHangupAction.getRetry() < 0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"请选择重试次数");
-        if(enterpriseHangupAction.getType() == null || !(enterpriseHangupAction.getType()==1
-                || enterpriseHangupAction.getType()==2 || enterpriseHangupAction.getType()==3
-                || enterpriseHangupAction.getType()==4 || enterpriseHangupAction.getType()==5
-                || enterpriseHangupAction.getType()==6 || enterpriseHangupAction.getType()==7
-                || enterpriseHangupAction.getType()==8 || enterpriseHangupAction.getType()==9))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送类型：1.呼入来电推送2.呼入呼转响铃推送3.呼入呼转接通推送4.呼入挂机推送" +
+        if (enterpriseHangupAction.getTimeout() > 30 || enterpriseHangupAction.getTimeout() < 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "超时时间不能大于30");
+        if (enterpriseHangupAction.getRetry() == null || enterpriseHangupAction.getRetry() < 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "请选择重试次数");
+        if (enterpriseHangupAction.getType() == null || !(enterpriseHangupAction.getType() == 1
+                || enterpriseHangupAction.getType() == 2 || enterpriseHangupAction.getType() == 3
+                || enterpriseHangupAction.getType() == 4 || enterpriseHangupAction.getType() == 5
+                || enterpriseHangupAction.getType() == 6 || enterpriseHangupAction.getType() == 7
+                || enterpriseHangupAction.getType() == 8 || enterpriseHangupAction.getType() == 9))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "推送类型：1.呼入来电推送2.呼入呼转响铃推送3.呼入呼转接通推送4.呼入挂机推送" +
                     "5.外呼响铃推送6.外呼呼转响铃推送7.外呼接通推送8.外呼挂机推送9.按键推送");
-        if(enterpriseHangupAction.getMethod() == null || !(enterpriseHangupAction.getMethod()==1 || enterpriseHangupAction.getMethod()==2))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"推送方法：1.POST 2.GET");
+        if (enterpriseHangupAction.getMethod() == null || !(enterpriseHangupAction.getMethod() == 1 || enterpriseHangupAction.getMethod() == 2))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "推送方法：1.POST 2.GET");
 
         return null;
 

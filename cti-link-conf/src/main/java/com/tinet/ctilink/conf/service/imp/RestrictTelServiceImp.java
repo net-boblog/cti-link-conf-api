@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static javafx.scene.input.KeyCode.T;
-
 /**
  * @author huangbin
  * @date 2016/4/28.
@@ -88,7 +86,7 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
     }
 
     @Override
-    public ApiResult<PageInfo> listRestrictTel(RestrictTelRequest restrictTelRequest) {
+    public ApiResult<PageInfo<RestrictTel>> listRestrictTel(RestrictTelRequest restrictTelRequest) {
         if( ! entityDao.validateEntity(restrictTelRequest.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
@@ -121,15 +119,15 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
         if(restrictTelRequest.getTel() != null )
             criteria.andEqualTo("tel", restrictTelRequest.getTel());
         if(restrictTelRequest.getOffset() < 0 )
-            return  new ApiResult(ApiResult.FAIL_RESULT,"偏移位置错误");
+            return  new ApiResult<>(ApiResult.FAIL_RESULT,"偏移位置错误");
         if(restrictTelRequest.getLimit() > 500)
-            return new ApiResult(ApiResult.FAIL_RESULT,"查询条数不能大于500");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"查询条数不能大于500");
 
         PageHelper.startPage(restrictTelRequest.getOffset(), restrictTelRequest.getLimit());
         List<RestrictTel> restrictTelList = selectByCondition(condition);
         if (restrictTelList ==null || restrictTelList.size() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT,"获取列表失败");
-        PageInfo page = new PageInfo(restrictTelList);
+        PageInfo<RestrictTel> page = new PageInfo<>(restrictTelList);
        return  new ApiResult<>(page);
 
     }

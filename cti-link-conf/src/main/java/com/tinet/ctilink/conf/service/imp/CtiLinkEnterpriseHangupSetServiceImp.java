@@ -1,8 +1,11 @@
 package com.tinet.ctilink.conf.service.imp;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
+import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseHangupSet;
@@ -18,32 +21,34 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
+
 /**
- * Created by nope-J on 2016/5/4.
+ * @author huangbin
+ * @date 2016/5/4.
  */
+
+@Service
 public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<EnterpriseHangupSet> implements CtiLinkEnterpriseHangupSetService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private EntityDao entityDao;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult<EnterpriseHangupSet> createEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
-        if(enterpriseHangupSet.getEnterpriseId() == null || enterpriseHangupSet.getEnterpriseId() <= 0)
+        if( ! entityDao.validateEntity(enterpriseHangupSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
-        if(enterpriseHangupSet.getType() == null || !(enterpriseHangupSet.getType()==0 || enterpriseHangupSet.getType()==1))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型：1.呼入 2。外呼");
-        if(enterpriseHangupSet.getVariableName().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量名称不能为空");
-        if(enterpriseHangupSet.getVariableValue().isEmpty())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量值不能为空");
-        if(enterpriseHangupSet.getVariableValueType() == null || !(enterpriseHangupSet.getVariableValueType()==0 || enterpriseHangupSet.getVariableValueType()==1))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量类型为：0.表达式 1.字符串");
-        if(enterpriseHangupSet.getSort() == null || enterpriseHangupSet.getSort() < 1)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"排序，从 1 开始");
-        enterpriseHangupSet.setCreateTime(new Date());
-        int success = insertSelective(enterpriseHangupSet);
 
+        ApiResult<EnterpriseHangupSet> result = validateEnterpriseHangupSet(enterpriseHangupSet);
+        if(result != null)
+            return result;
+
+        enterpriseHangupSet.setCreateTime(new Date());
+
+        int success = insertSelective(enterpriseHangupSet);
         if(success == 1){
             setRefreshCacheMethod("setCache",enterpriseHangupSet);
             return new ApiResult<>(enterpriseHangupSet);
@@ -54,8 +59,9 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
 
     @Override
     public ApiResult deleteEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
-        if(enterpriseHangupSet.getEnterpriseId() == null || enterpriseHangupSet.getEnterpriseId() <= 0)
+        if( ! entityDao.validateEntity(enterpriseHangupSet.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+
         if(enterpriseHangupSet.getId() == null || enterpriseHangupSet.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT,"推送id不正确");
 
@@ -64,10 +70,14 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
         criteria.andEqualTo("enterpriseId",enterpriseHangupSet.getEnterpriseId());
         criteria.andEqualTo("id",enterpriseHangupSet.getId());
 
-        int success = deleteByCondition(condition);
+        EnterpriseHangupSet enterpriseHangupSet1 = null;
+        List<EnterpriseHangupSet> enterpriseHangupSetList = selectByCondition(condition);
+        if(enterpriseHangupSetList != null && enterpriseHangupSetList.size() > 0)
+            enterpriseHangupSet1 = enterpriseHangupSetList.get(0);
 
+        int success = deleteByCondition(condition);
         if(success == 1){
-            setRefreshCacheMethod("deleteCache",enterpriseHangupSet);
+            setRefreshCacheMethod("deleteCache",enterpriseHangupSet1);
             return new ApiResult(ApiResult.SUCCESS_RESULT,ApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("CtiLinkEnterpriseHangupSetServiceImp.deleteEnterpriseHangupSet error "+ enterpriseHangupSet +"success=" + success);
@@ -76,7 +86,7 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
 
     @Override
     public ApiResult<List<EnterpriseHangupSet>> listEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
-        if(enterpriseHangupSet.getEnterpriseId() == null || enterpriseHangupSet.getEnterpriseId() <= 0)
+        if( ! entityDao.validateEntity(enterpriseHangupSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         Condition condition = new Condition(EnterpriseHangupSet.class);
@@ -110,5 +120,20 @@ public class CtiLinkEnterpriseHangupSetServiceImp extends BaseService<Enterprise
         }catch(Exception e){
             logger.error("CtiLinkEnterpriseHangupSetServiceImp.setRefreshCacheMethod error refresh cache fail class=" + this.getClass().getName(),e);
         }
+    }
+
+    private <T> ApiResult<T> validateEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet){
+        if(enterpriseHangupSet.getType() == null || !(enterpriseHangupSet.getType()==0 || enterpriseHangupSet.getType()==1))
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型：1.呼入 2。外呼");
+        if(StringUtils.isEmpty(enterpriseHangupSet.getVariableName()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量名称不能为空");
+        if(StringUtils.isEmpty(enterpriseHangupSet.getVariableValue()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量值不能为空");
+        if(enterpriseHangupSet.getVariableValueType() == null || !(enterpriseHangupSet.getVariableValueType()==0 || enterpriseHangupSet.getVariableValueType()==1))
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"变量类型为：0.表达式 1.字符串");
+        if(enterpriseHangupSet.getSort() == null || enterpriseHangupSet.getSort() < 1)
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"排序，从 1 开始");
+
+        return null;
     }
 }

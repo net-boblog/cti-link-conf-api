@@ -11,7 +11,6 @@ import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseArea;
 import com.tinet.ctilink.conf.model.EnterpriseAreaGroup;
-import com.tinet.ctilink.conf.model.Entity;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseAreaService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
@@ -46,9 +45,9 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
     private EnterpriseAreaGroupDao enterpriseAreaGroupDao;
 
     @Override
-    public ApiResult createEnterpriseArea(EnterpriseArea enterpriseArea) {
+    public ApiResult<EnterpriseArea> createEnterpriseArea(EnterpriseArea enterpriseArea) {
         if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         ApiResult<EnterpriseArea> result = validateEnterpriseArea(enterpriseArea);
         if(result != null)
@@ -59,11 +58,11 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
         int success = insertSelective(enterpriseArea);
         if(success==1) {
             setRefreshCacheMethod("setCache",enterpriseArea);
-            return new ApiResult(enterpriseArea);
+            return new ApiResult<>(enterpriseArea);
         }
 
         logger.error("EnterpriseAreaServiceImp.createEnterpriseArea error " + enterpriseArea + "sueccess" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"增加失败");
+        return new ApiResult<>(ApiResult.FAIL_RESULT,"增加失败");
     }
 
     @Override
@@ -97,9 +96,9 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
     @Override
     public ApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea) {
         if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业id不能为空");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业id不能为空");
         if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组id不能为空");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id不能为空");
         Condition groupCondition = new Condition(EnterpriseAreaGroup.class);
         Condition.Criteria groupCriteria = groupCondition.createCriteria();
         groupCriteria.andEqualTo("id",enterpriseArea.getId());
@@ -117,7 +116,7 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
         if(enterpriseAreaList != null && enterpriseAreaList.size() > 0)
             return new ApiResult<>(enterpriseAreaList);
-        return new ApiResult(ApiResult.FAIL_RESULT,"获取地区列表失败");
+        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取地区列表失败");
     }
 
     protected String getKey(EnterpriseArea enterpriseArea) {
@@ -146,7 +145,7 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
     private <T> ApiResult<T> validateEnterpriseArea(EnterpriseArea enterpriseArea){
         if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组号不正确");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组号不正确");
         Condition condition = new Condition(EnterpriseAreaGroup.class);
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("id",enterpriseArea.getId());
@@ -157,16 +156,16 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
             return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
 
         if(StringUtils.isEmpty(enterpriseArea.getAreaCode()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区区号不能为空");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区区号不能为空");
         Pattern pattern = Pattern.compile(Const.AREA_CODE_VALIDATION);
         Matcher matcher = pattern.matcher(enterpriseArea.getAreaCode().trim());
         if ( ! matcher.matches())
             return new ApiResult<>(ApiResult.FAIL_RESULT,"地区区号不正确");
 
         if(StringUtils.isEmpty(enterpriseArea.getProvince()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"省份不能为空");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"省份不能为空");
         if(StringUtils.isEmpty(enterpriseArea.getCity()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"城市不能为空");
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"城市不能为空");
 
         return null;
     }

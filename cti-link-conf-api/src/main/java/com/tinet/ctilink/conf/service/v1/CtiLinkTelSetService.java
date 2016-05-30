@@ -36,5 +36,5 @@ public interface CtiLinkTelSetService {
 
     @POST
     @Path("get")
-    ApiResult getTelSetByIdAndEnterpriseId(TelSet telSet);
+    ApiResult getTelSet(TelSet telSet);
 }

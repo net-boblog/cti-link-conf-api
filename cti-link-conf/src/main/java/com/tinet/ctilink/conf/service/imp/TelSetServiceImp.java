@@ -131,10 +131,10 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
         criteria.andEqualTo("enterpriseId", telSetListRequest.getEnterpriseId());
 
         //可选项
-        if ( ! StringUtils.isEmpty(ctiLinkTelSetListRequest.getTsno()))
-            criteria.andEqualTo("tsno", ctiLinkTelSetListRequest.getTsno());
-        if( ! StringUtils.isEmpty(ctiLinkTelSetListRequest.getSetName()))
-            criteria.andEqualTo("setName", ctiLinkTelSetListRequest.getSetName());
+        if ( ! StringUtils.isEmpty(telSetListRequest.getTsno()))
+            criteria.andEqualTo("tsno", telSetListRequest.getTsno());
+        if( ! StringUtils.isEmpty(telSetListRequest.getSetName()))
+            criteria.andEqualTo("setName", telSetListRequest.getSetName());
 
         PageHelper.startPage(telSetListRequest.getOffset(), telSetListRequest.getLimit());
         List<TelSet> telSetList = selectByCondition(condition);
@@ -145,7 +145,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
     }
 
     @Override
-    public ApiResult getTelSet(TelSet telSet) {
+    public ApiResult<TelSet> getTelSet(TelSet telSet) {
         if (telSet.getId() == null || telSet.getId() < 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "电话组id不正确");
         if ( ! entityDao.validateEntity(telSet.getEnterpriseId()))

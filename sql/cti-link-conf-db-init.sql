@@ -88,3 +88,7 @@ insert into cti_link_system_setting(name,value,property)values('curl_again','0',
 
 insert into cti_link_system_setting(name,value,property)values('ib_call_remember_time','86400','呼入来电记忆持续秒数，默认1天');
 insert into cti_link_system_setting(name,value,property)values('ob_call_remember_time','604800','外呼来电记忆持续秒数，默认1天');
+
+-- control api访问频度, value个数, property时间单位, second, minute, hour, day
+insert into cti_link_system_setting(name,value,property)values('control_api_max_request_count','600000','minute');
+insert into cti_link_system_setting(name,value,property)values('control_api_white_ip_list','*.*.*.*','control api ip白名单, 多个逗号分隔');

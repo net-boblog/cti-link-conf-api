@@ -1,12 +1,17 @@
 package com.tinet.ctilink.conf.service.imp;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.dao.EnterpriseAreaGroupDao;
+import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseArea;
+import com.tinet.ctilink.conf.model.EnterpriseAreaGroup;
+import com.tinet.ctilink.conf.model.Entity;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseAreaService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.service.BaseService;
@@ -18,6 +23,8 @@ import tk.mybatis.mapper.entity.Condition;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author huangbin //
@@ -30,20 +37,23 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    private EntityDao entityDao;
+
+    @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private EnterpriseAreaGroupDao enterpriseAreaGroupDao;
 
     @Override
     public ApiResult createEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if(enterpriseArea.getEnterpriseId()==null || enterpriseArea.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
-        if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组号不正确");
-        if(enterpriseArea.getAreaCode().isEmpty())
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区区号不能为空");
-        if(enterpriseArea.getProvince().isEmpty())
-            return new ApiResult(ApiResult.FAIL_RESULT,"省份不能为空");
-        if(enterpriseArea.getCity().isEmpty())
-            return new ApiResult(ApiResult.FAIL_RESULT,"城市不能为空");
+
+        ApiResult<EnterpriseArea> result = validateEnterpriseArea(enterpriseArea);
+        if(result != null)
+            return result;
+
         enterpriseArea.setCreateTime(new Date());
 
         int success = insertSelective(enterpriseArea);
@@ -58,8 +68,9 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
     @Override
     public ApiResult deleteEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if(enterpriseArea.getEnterpriseId()==null || enterpriseArea.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+
         if(enterpriseArea.getId()==null || enterpriseArea.getId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"地区组地区id不能为空");
 
@@ -67,10 +78,15 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
         criteria.andEqualTo("id",enterpriseArea.getId());
-        int success = deleteByCondition(enterpriseArea);
 
+        EnterpriseArea enterpriseArea1 = null;
+        List<EnterpriseArea> enterpriseAreaList = selectByCondition(condition);
+        if(enterpriseAreaList != null && enterpriseAreaList.size() > 0)
+            enterpriseArea1 = enterpriseAreaList.get(0);
+
+        int success = deleteByCondition(condition);
         if(success==1) {
-            setRefreshCacheMethod("deleteCache",enterpriseArea);
+            setRefreshCacheMethod("deleteCache",enterpriseArea1);
             return new ApiResult(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("EnterpriseAreaServiceImp.deleteEnterpriseArea.deleteEnterpriseArea error " + enterpriseArea + "success" + success);
@@ -80,10 +96,18 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
     @Override
     public ApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if(enterpriseArea.getEnterpriseId()==null || enterpriseArea.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业id不能为空");
         if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"地区组id不能为空");
+        Condition groupCondition = new Condition(EnterpriseAreaGroup.class);
+        Condition.Criteria groupCriteria = groupCondition.createCriteria();
+        groupCriteria.andEqualTo("id",enterpriseArea.getId());
+        groupCriteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
+        groupCondition.setTableName("cti_link_enterprise_area_group");
+        List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupDao.selectByCondition(groupCondition);
+        if (enterpriseAreaGroupList ==null || enterpriseAreaGroupList.size() <=0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
 
         Condition condition = new Condition(EnterpriseArea.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -118,5 +142,32 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
             logger.error("EnterpriseAreaServiceImp setRefreshMethod error refresh cache fail class=" +
                     this.getClass().getName());
         }
+    }
+
+    private <T> ApiResult<T> validateEnterpriseArea(EnterpriseArea enterpriseArea){
+        if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
+            return new ApiResult(ApiResult.FAIL_RESULT,"地区组号不正确");
+        Condition condition = new Condition(EnterpriseAreaGroup.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("id",enterpriseArea.getId());
+        criteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
+        condition.setTableName("cti_link_enterprise_area_group");
+        List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupDao.selectByCondition(condition);
+        if (enterpriseAreaGroupList ==null || enterpriseAreaGroupList.size() <=0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
+
+        if(StringUtils.isEmpty(enterpriseArea.getAreaCode()))
+            return new ApiResult(ApiResult.FAIL_RESULT,"地区区号不能为空");
+        Pattern pattern = Pattern.compile(Const.AREA_CODE_VALIDATION);
+        Matcher matcher = pattern.matcher(enterpriseArea.getAreaCode().trim());
+        if ( ! matcher.matches())
+            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区区号不正确");
+
+        if(StringUtils.isEmpty(enterpriseArea.getProvince()))
+            return new ApiResult(ApiResult.FAIL_RESULT,"省份不能为空");
+        if(StringUtils.isEmpty(enterpriseArea.getCity()))
+            return new ApiResult(ApiResult.FAIL_RESULT,"城市不能为空");
+
+        return null;
     }
 }

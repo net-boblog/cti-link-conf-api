@@ -1,10 +1,12 @@
 package com.tinet.ctilink.conf.service.imp;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.dao.EnterpriseAreaDao;
+import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseArea;
@@ -20,7 +22,9 @@ import tk.mybatis.mapper.entity.Condition;
 
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author huangbin
@@ -33,6 +37,9 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    private EntityDao entityDao;
+
+    @Autowired
     private RedisService redisService;
 
     @Autowired
@@ -40,17 +47,16 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
 
     @Override
     public ApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
-        if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
-        if(enterpriseAreaGroup.getGroupName()==null || "".equals(enterpriseAreaGroup.getGroupName().trim()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区名称不为空");
-        if(enterpriseAreaGroup.getGroupType() != null){
-            if(!(enterpriseAreaGroup.getGroupType()==1 || enterpriseAreaGroup.getGroupType()==2))
-                return new ApiResult(ApiResult.FAIL_RESULT,"地区组类型：1 地区组，2 其他地区");
-        }
-        enterpriseAreaGroup.setCreateTime(new Date());
-        int success = insertSelective(enterpriseAreaGroup);
 
+        ApiResult<EnterpriseAreaGroup> result = validateEnterpriseAreaGroup(enterpriseAreaGroup);
+        if(result != null)
+            return result;
+
+        enterpriseAreaGroup.setCreateTime(new Date());
+
+        int success = insertSelective(enterpriseAreaGroup);
         if(success==1) {
             setRefreshCacheMethod("setCache",enterpriseAreaGroup);
             return new ApiResult<>(enterpriseAreaGroup);
@@ -61,7 +67,7 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
 
     @Override
     public ApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
-        if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
         if(enterpriseAreaGroup.getId()==null || enterpriseAreaGroup.getId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"地区组id不能为空");
@@ -79,10 +85,15 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId",enterpriseAreaGroup.getEnterpriseId());
         criteria.andEqualTo("id",enterpriseAreaGroup.getId());
-        int success = deleteByCondition(condition);
 
+        EnterpriseAreaGroup enterpriseAreaGroup1 = null;
+        List<EnterpriseAreaGroup> enterpriseAreaGroupList = selectByCondition(condition);
+        if (enterpriseAreaGroupList != null && enterpriseAreaGroupList.size() > 0)
+            enterpriseAreaGroup1 = enterpriseAreaGroupList.get(0);
+
+        int success = deleteByCondition(condition);
         if(success==1) {
-            setRefreshCacheMethod("deleteCache",enterpriseAreaGroup);
+            setRefreshCacheMethod("deleteCache",enterpriseAreaGroup1);
             return new ApiResult<>(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("EnterpriseAreaGroupServiceImp.deleteEnterpriseAreaGroup error " + enterpriseAreaGroup + "success=" + success);
@@ -92,21 +103,21 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
     @Override
     public ApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
 
-        if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
         if(enterpriseAreaGroup.getId()==null || enterpriseAreaGroup.getId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"地区组id不能为空");
-        if(enterpriseAreaGroup.getGroupName().isEmpty())
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区名称不能为空");
-        if(enterpriseAreaGroup.getGroupType()!=null && !(enterpriseAreaGroup.getGroupType()==1 || enterpriseAreaGroup.getGroupType()==2))
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组类型为：1 地区组，2 其他地区");
+
+        ApiResult<EnterpriseAreaGroup> result = validateEnterpriseAreaGroup(enterpriseAreaGroup);
+        if(result != null)
+            return result;
 
         EnterpriseAreaGroup eag = selectByPrimaryKey(enterpriseAreaGroup);
         if(!(enterpriseAreaGroup.getEnterpriseId().equals(eag.getEnterpriseId())))
             return new ApiResult(ApiResult.FAIL_RESULT,"地区组id和企业编号不匹配");
         enterpriseAreaGroup.setCreateTime(eag.getCreateTime());
-        int success = updateByPrimaryKey(enterpriseAreaGroup);
 
+        int success = updateByPrimaryKey(enterpriseAreaGroup);
         if(success==1) {
             setRefreshCacheMethod("setCache",enterpriseAreaGroup);
             return new ApiResult<>(enterpriseAreaGroup);
@@ -117,14 +128,14 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
 
     @Override
     public ApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
-        if(enterpriseAreaGroup.getEnterpriseId()==null || enterpriseAreaGroup.getEnterpriseId()<=0)
+        if( ! entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
 
         Condition condition = new Condition(EnterpriseAreaGroup.class);
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId",enterpriseAreaGroup.getEnterpriseId());
-        List<EnterpriseAreaGroup> enterpriseAreaGroupList = selectByCondition(condition);
 
+        List<EnterpriseAreaGroup> enterpriseAreaGroupList = selectByCondition(condition);
         if(enterpriseAreaGroupList!=null && enterpriseAreaGroupList.size()>0)
             return new ApiResult<>(enterpriseAreaGroupList);
         return new ApiResult<>(ApiResult.FAIL_RESULT,"获取地区组列表失败");
@@ -140,8 +151,8 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
 
     public void deleteCache(EnterpriseAreaGroup enterpriseAreaGroup){
         redisService.delete(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseAreaGroup));
-        redisService.delete(Const.REDIS_DB_CONF_INDEX,String.format(CacheKey.ENTERPRISE_AREA_ENTERPRISE_ID_GROUP_ID_AREA_CODE,
-                enterpriseAreaGroup.getEnterpriseId(),enterpriseAreaGroup.getId(),"*"));
+        Set<String> keys = redisService.scan(Const.REDIS_DB_CONF_INDEX,String.format(CacheKey.ENTERPRISE_AREA_ENTERPRISE_ID_GROUP_ID_AREA_CODE,enterpriseAreaGroup.getEnterpriseId(),enterpriseAreaGroup.getId(),"*"));
+        redisService.delete(Const.REDIS_DB_CONF_INDEX,keys);
     }
 
     private void setRefreshCacheMethod(String methodName,EnterpriseAreaGroup enterpriseAreaGroup){
@@ -154,5 +165,15 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
             +this.getClass().getName());
         }
         }
+
+    private <T> ApiResult<T> validateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup){
+        if(StringUtils.isEmpty(enterpriseAreaGroup.getGroupName()))
+            return new ApiResult(ApiResult.FAIL_RESULT,"地区名称不为空");
+        if(enterpriseAreaGroup.getGroupType() == null || !(enterpriseAreaGroup.getGroupType()==1 || enterpriseAreaGroup.getGroupType()==2)){
+            return new ApiResult(ApiResult.FAIL_RESULT,"地区组类型：1 地区组，2 其他地区");
+        }
+
+        return null;
+    }
 
 }

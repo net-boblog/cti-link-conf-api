@@ -3,10 +3,11 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_sip_media_server")
-public class SipMediaServer {
+public class SipMediaServer implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;
@@ -17,7 +18,7 @@ public class SipMediaServer {
 
     private Integer groupId;
 
-    private String name;
+    private Integer sipId;
 
     private String ipAddr;
 
@@ -65,12 +66,12 @@ public class SipMediaServer {
         this.groupId = groupId;
     }
 
-    public String getName() {
-        return name;
+    public Integer getSipId() {
+        return sipId;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setSipId(Integer sipId) {
+        this.sipId = sipId;
     }
 
     public String getIpAddr() {

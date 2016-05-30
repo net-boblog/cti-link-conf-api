@@ -3,10 +3,11 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_enterprise_ivr")
-public class EnterpriseIvr {
+public class EnterpriseIvr implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;
@@ -24,8 +25,6 @@ public class EnterpriseIvr {
     private Integer action;
 
     private String property;
-
-    private String anchor;
 
     private Date createTime;
 
@@ -91,14 +90,6 @@ public class EnterpriseIvr {
 
     public void setProperty(String property) {
         this.property = property == null ? null : property.trim();
-    }
-
-    public String getAnchor() {
-        return anchor;
-    }
-
-    public void setAnchor(String anchor) {
-        this.anchor = anchor == null ? null : anchor.trim();
     }
 
     public Date getCreateTime() {

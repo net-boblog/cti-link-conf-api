@@ -85,3 +85,6 @@ insert into cti_link_system_setting(name,value,property) values('telecom_segment
 insert into cti_link_system_setting(name,value,property) values('mobile_segment','134,135,136,137,138,139,150,151,152,157,158,159,182,187,188,147',''); -- 移动手机号码段
 
 insert into cti_link_system_setting(name,value,property)values('curl_again','0','失败curl重新推送开关 0关闭 1开启');
+
+insert into cti_link_system_setting(name,value,property)values('ib_call_remember_time','86400','呼入来电记忆持续秒数，默认1天');
+insert into cti_link_system_setting(name,value,property)values('ob_call_remember_time','604800','外呼来电记忆持续秒数，默认1天');

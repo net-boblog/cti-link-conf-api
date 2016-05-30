@@ -3,10 +3,11 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_enterprise_clid")
-public class EnterpriseClid {
+public class EnterpriseClid implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;
@@ -17,13 +18,21 @@ public class EnterpriseClid {
 
     private String ibClidRightNumber;
 
-    private Integer obClidLeftType;
+    private Integer obPreviewClidLeftType;
 
-    private String obClidLeftNumber;
+    private String obPreviewClidLeftNumber;
 
-    private Integer obClidRightType;
+    private Integer obPreviewClidRightType;
 
-    private String obClidRightNumber;
+    private String obPreviewClidRightNumber;
+
+    private Integer obPredictiveClidLeftType;
+
+    private String obPredictiveClidLeftNumber;
+
+    private Integer obPredictiveClidRightType;
+
+    private String obPredictiveClidRightNumber;
 
     private Date createTime;
 
@@ -59,36 +68,68 @@ public class EnterpriseClid {
         this.ibClidRightNumber = ibClidRightNumber == null ? null : ibClidRightNumber.trim();
     }
 
-    public Integer getObClidLeftType() {
-        return obClidLeftType;
+    public Integer getObPreviewClidLeftType() {
+        return obPreviewClidLeftType;
     }
 
-    public void setObClidLeftType(Integer obClidLeftType) {
-        this.obClidLeftType = obClidLeftType;
+    public void setObPreviewClidLeftType(Integer obPreviewClidLeftType) {
+        this.obPreviewClidLeftType = obPreviewClidLeftType;
     }
 
-    public String getObClidLeftNumber() {
-        return obClidLeftNumber;
+    public String getObPreviewClidLeftNumber() {
+        return obPreviewClidLeftNumber;
     }
 
-    public void setObClidLeftNumber(String obClidLeftNumber) {
-        this.obClidLeftNumber = obClidLeftNumber == null ? null : obClidLeftNumber.trim();
+    public void setObPreviewClidLeftNumber(String obPreviewClidLeftNumber) {
+        this.obPreviewClidLeftNumber = obPreviewClidLeftNumber == null ? null : obPreviewClidLeftNumber.trim();
     }
 
-    public Integer getObClidRightType() {
-        return obClidRightType;
+    public Integer getObPreviewClidRightType() {
+        return obPreviewClidRightType;
     }
 
-    public void setObClidRightType(Integer obClidRightType) {
-        this.obClidRightType = obClidRightType;
+    public void setObPreviewClidRightType(Integer obPreviewClidRightType) {
+        this.obPreviewClidRightType = obPreviewClidRightType;
     }
 
-    public String getObClidRightNumber() {
-        return obClidRightNumber;
+    public String getObPreviewClidRightNumber() {
+        return obPreviewClidRightNumber;
     }
 
-    public void setObClidRightNumber(String obClidRightNumber) {
-        this.obClidRightNumber = obClidRightNumber == null ? null : obClidRightNumber.trim();
+    public void setObPreviewClidRightNumber(String obPreviewClidRightNumber) {
+        this.obPreviewClidRightNumber = obPreviewClidRightNumber == null ? null : obPreviewClidRightNumber.trim();
+    }
+
+    public Integer getObPredictiveClidLeftType() {
+        return obPredictiveClidLeftType;
+    }
+
+    public void setObPredictiveClidLeftType(Integer obPredictiveClidLeftType) {
+        this.obPredictiveClidLeftType = obPredictiveClidLeftType;
+    }
+
+    public String getObPredictiveClidLeftNumber() {
+        return obPredictiveClidLeftNumber;
+    }
+
+    public void setObPredictiveClidLeftNumber(String obPredictiveClidLeftNumber) {
+        this.obPredictiveClidLeftNumber = obPredictiveClidLeftNumber == null ? null : obPredictiveClidLeftNumber.trim();
+    }
+
+    public Integer getObPredictiveClidRightType() {
+        return obPredictiveClidRightType;
+    }
+
+    public void setObPredictiveClidRightType(Integer obPredictiveClidRightType) {
+        this.obPredictiveClidRightType = obPredictiveClidRightType;
+    }
+
+    public String getObPredictiveClidRightNumber() {
+        return obPredictiveClidRightNumber;
+    }
+
+    public void setObPredictiveClidRightNumber(String obPredictiveClidRightNumber) {
+        this.obPredictiveClidRightNumber = obPredictiveClidRightNumber == null ? null : obPredictiveClidRightNumber.trim();
     }
 
     public Date getCreateTime() {

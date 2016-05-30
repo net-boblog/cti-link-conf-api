@@ -25,12 +25,12 @@ public class GatewayCacheService extends AbstractCacheService<Gateway> {
         redisService.set(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY, gatewayList);
         Set<String> dbKeySet = new HashSet<>();
         for (Gateway gateway : gatewayList) {
-            redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.GATEWAY_NAME
-                    , gateway.getName()), gateway);
-            dbKeySet.add(String.format(CacheKey.GATEWAY_NAME, gateway.getName()));
+            redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.GATEWAY_ID
+                    , gateway.getId()), gateway);
+            dbKeySet.add(String.format(CacheKey.GATEWAY_ID, gateway.getId()));
         }
 
-        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY_NAME + ".*");
+        Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY_ID + ".*");
         existKeySet.removeAll(dbKeySet);
         if (existKeySet.size() > 0) {
             redisService.delete(Const.REDIS_DB_CONF_INDEX, existKeySet);

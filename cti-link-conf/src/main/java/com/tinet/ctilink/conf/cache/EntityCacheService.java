@@ -39,6 +39,7 @@ public class EntityCacheService extends AbstractCacheService<Entity> {
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
                 , String.format(CacheKey.ENTITY_ENTERPRISE_ID.replaceFirst("%d", "%s"), "*"));
         existKeySet.removeAll(dbKeySet);
+        existKeySet.remove(CacheKey.ENTITY_ENTERPRISE_ACTIVE);
         if (existKeySet.size() > 0) {
             redisService.delete(Const.REDIS_DB_CONF_INDEX, existKeySet);
         }

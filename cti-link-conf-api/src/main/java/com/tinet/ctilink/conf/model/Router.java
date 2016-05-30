@@ -3,10 +3,11 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "cti_link_router")
-public class Router {
+public class Router implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;
@@ -14,6 +15,8 @@ public class Router {
     private Integer routersetId;
 
     private String prefix;
+    
+    private Integer type;
 
     private Integer gatewayId;
 
@@ -47,7 +50,15 @@ public class Router {
         this.prefix = prefix == null ? null : prefix.trim();
     }
 
-    public Integer getGatewayId() {
+    public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getGatewayId() {
         return gatewayId;
     }
 

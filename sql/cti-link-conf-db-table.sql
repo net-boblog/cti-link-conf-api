@@ -29,7 +29,7 @@ CREATE TABLE cti_link_sip_media_server
   instance_id character varying, -- 实例唯一id
   mac character varying, -- 实例mac地址
   group_id integer NOT NULL, -- sip media server组id
-  name character varying, -- 名字 唯一
+  sip_id integer NOT NULL, --  sip id, 唯一
   ip_addr character varying, -- IP地址
   external_ip_addr character varying, -- 实例公网ip地址
   port integer DEFAULT 5060, -- sip信令端口
@@ -48,7 +48,7 @@ COMMENT ON COLUMN cti_link_sip_media_server.id IS 'id标识';
 COMMENT ON COLUMN cti_link_sip_media_server.instance_id IS '实例唯一id';
 COMMENT ON COLUMN cti_link_sip_media_server.mac IS '实例mac地址';
 COMMENT ON COLUMN cti_link_sip_media_server.group_id IS 'sip media server组id';
-COMMENT ON COLUMN cti_link_sip_media_server.name IS '名字 唯一';
+COMMENT ON COLUMN cti_link_sip_media_server.sip_id IS 'sip id, 唯一';
 COMMENT ON COLUMN cti_link_sip_media_server.ip_addr IS 'IP地址';
 COMMENT ON COLUMN cti_link_sip_media_server.external_ip_addr IS '实例公网ip地址';
 COMMENT ON COLUMN cti_link_sip_media_server.port IS 'sip信令端口';
@@ -150,6 +150,7 @@ CREATE TABLE cti_link_router
   id serial NOT NULL, -- 流水号
   routerset_id integer NOT NULL, -- 对应路由组id
   prefix character varying, -- 号码前缀
+  type integer, --路由类型 1.普通路由 2.内部路由
   gateway_id integer NOT NULL, -- 对应网关id
   priority integer NOT NULL DEFAULT 1, -- 路由优先级 数字越小越优先
   description character varying, -- 说明
@@ -165,6 +166,7 @@ ALTER TABLE cti_link_router OWNER TO postgres;
 COMMENT ON TABLE cti_link_router IS '号码路由表';
 COMMENT ON COLUMN cti_link_router.id IS 'id标识';
 COMMENT ON COLUMN cti_link_router.prefix IS '号码前缀';
+COMMENT ON COLUMN cti_link_router.type IS '路由类型 1.普通路由 2.内部路由'
 COMMENT ON COLUMN cti_link_router.routerset_id IS '对应路由组id';
 COMMENT ON COLUMN cti_link_router.gateway_id IS '对应网关id';
 COMMENT ON COLUMN cti_link_router.priority IS '路由优先级 路由优先级 数字越小越优先';
@@ -408,17 +410,17 @@ CREATE TABLE cti_link_enterprise_router
   id serial NOT NULL,
   enterprise_id integer NOT NULL, -- 企业id
   ib_router_right integer NOT NULL, -- 呼入呼转
-  ob_router_left integer NOT NULL, -- 外呼
-  ob_router_right integer NOT NULL, -- 外呼呼转
+  ob_preview_router_left integer NOT NULL, -- 预览外呼路由:呼叫客户（网上400呼叫客户，主叫外呼呼叫客户）
+  ob_predictive_router_left integer NOT NULL, -- 预测外呼路由:呼叫客户
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_enterprise_router_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_enterprise_router_enterprise_id_fkey FOREIGN KEY (enterprise_id)
       REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE,
   CONSTRAINT cti_link_enterprise_router_ib_router_right_fkey FOREIGN KEY (ib_router_right)
       REFERENCES cti_link_routerset (id) MATCH SIMPLE,
-  CONSTRAINT cti_link_enterprise_router_ob_preview_router_left_fkey FOREIGN KEY (ob_router_left)
+  CONSTRAINT cti_link_enterprise_router_ob_preview_router_left_fkey FOREIGN KEY (ob_preview_router_left)
       REFERENCES cti_link_routerset (id) MATCH SIMPLE,
-  CONSTRAINT cti_link_enterprise_router_ob_predictive_router_left_fkey FOREIGN KEY (ob_router_right)
+  CONSTRAINT cti_link_enterprise_router_ob_predictive_router_left_fkey FOREIGN KEY (ob_predictive_router_left)
       REFERENCES cti_link_routerset (id) MATCH SIMPLE
 )
 WITHOUT OIDS;
@@ -427,8 +429,8 @@ COMMENT ON TABLE cti_link_enterprise_router IS '企业路由选择表';
 COMMENT ON COLUMN cti_link_enterprise_router.id IS 'id标识';
 COMMENT ON COLUMN cti_link_enterprise_router.enterprise_id IS '企业id';
 COMMENT ON COLUMN cti_link_enterprise_router.ib_router_right IS '呼入呼转';
-COMMENT ON COLUMN cti_link_enterprise_router.ob_router_left IS '外呼';
-COMMENT ON COLUMN cti_link_enterprise_router.ob_router_right IS '外呼呼转';
+COMMENT ON COLUMN cti_link_enterprise_router.ob_preview_router_left IS '预览外呼路由:呼叫客户（网上400呼叫客户，主叫外呼呼叫客户）';
+COMMENT ON COLUMN cti_link_enterprise_router.ob_predictive_router_left IS '预测外呼路由:呼叫客户';
 COMMENT ON COLUMN cti_link_enterprise_router.create_time IS '记录创建时间';
 
 
@@ -437,12 +439,16 @@ CREATE TABLE cti_link_enterprise_clid
 (
   id serial NOT NULL,
   enterprise_id integer NOT NULL, -- 企业id
-  ib_clid_right_type integer NOT NULL, -- 呼入透传号码类型 1:中继 2:客户 3:固定 4:按运营商分
-  ib_clid_right_number character varying, -- ib_clid_right_type=1/3时的号码 多个号码以逗号分隔 ib_clid_right_type=4时号码格式：01087120766|unicom,01059222999|telecom,01087120777|mobile
-  ob_clid_left_type integer NOT NULL, -- 外呼透传号码类型 1:中继 2:座席号码 3:固定
-  ob_clid_left_number character varying, -- ob_preview_clid_left_type=1/3时的号码 多个号码以逗号分隔
-  ob_clid_right_type integer NOT NULL, -- 外呼呼转透传号码类型 1:中继 2:客户 3:固定
-  ob_clid_right_number character varying, -- ob_preview_clid_right_type=1/3时的号码 多个号码以逗号分隔
+  ib_clid_right_type integer NOT NULL, -- 呼入透传号码类型 1:中继 2:客户 3:固定
+  ib_clid_right_number character varying, -- ib_clid_right_type=1/3时的号码 多个号码以逗号分隔
+  ob_preview_clid_left_type integer NOT NULL, -- 预览外呼客户侧透传号码类型 1:中继 2:座席号码 3:固定
+  ob_preview_clid_left_number character varying, -- ob_preview_clid_left_type=1/3时的号码 多个号码以逗号分隔
+  ob_preview_clid_right_type integer NOT NULL, -- 预览外呼座席侧透传号码类型 1:中继 2:客户 3:固定
+  ob_preview_clid_right_number character varying, -- ob_preview_clid_right_type=1/3时的号码 多个号码以逗号分隔
+  ob_predictive_clid_left_type integer NOT NULL, -- 预测外呼客户侧透传号码类型 1:中继 3:固定
+  ob_predictive_clid_left_number character varying, -- ob_predictive_clid_left_type=1/3时的号码 多个号码以逗号分隔
+  ob_predictive_clid_right_type integer NOT NULL, -- 预测外呼座席侧透传号码类型 1:中继 2:客户 3:固定
+  ob_predictive_clid_right_number character varying, -- ob_predictive_clid_right_type=1/3时的号码 多个号码以逗号分隔
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_enterprise_clid_pkey PRIMARY KEY (id),
   CONSTRAINT cti_link_enterprise_clid_enterprise_id_fkey FOREIGN KEY (enterprise_id)
@@ -455,10 +461,14 @@ COMMENT ON COLUMN cti_link_enterprise_clid.id IS 'id标识';
 COMMENT ON COLUMN cti_link_enterprise_clid.enterprise_id IS '企业id';
 COMMENT ON COLUMN cti_link_enterprise_clid.ib_clid_right_type IS '呼入透传号码类型 1:中继 2:客户 3:固定 4:热线号码';
 COMMENT ON COLUMN cti_link_enterprise_clid.ib_clid_right_number IS 'ib_clid_right_type=1/3时的号码 多个号码以逗号分隔';
-COMMENT ON COLUMN cti_link_enterprise_clid.ob_clid_left_type IS '外呼透传号码类型 1:中继 2:座席号码 3:固定 4:按运营商分';
-COMMENT ON COLUMN cti_link_enterprise_clid.ob_clid_left_number IS 'ob_clid_left_type=1/3时的号码 多个号码以逗号分隔  ib_clid_right_type=4时号码格式：01087120766|unicom,01059222999|telecom,01087120777|mobile';
-COMMENT ON COLUMN cti_link_enterprise_clid.ob_clid_right_type IS '外呼呼转透传号码类型 1:中继 2:客户 3:固定 4:按运营商分';
-COMMENT ON COLUMN cti_link_enterprise_clid.ob_clid_right_number IS 'ob__clid_right_type=1/3时的号码 多个号码以逗号分隔  ob__clid_right_type=4时号码格式：01087120766|unicom,01059222999|telecom,01087120777|mobile';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_preview_clid_left_type IS '预览外呼客户侧透传号码类型 1:中继 2:座席号码 3:固定';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_preview_clid_left_number IS 'ob_preview_clid_left_type=1/3时的号码 多个号码以逗号分隔';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_preview_clid_right_type IS '预览外呼座席侧透传号码类型 1:中继 2:客户 3:固定';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_preview_clid_right_number IS 'ob_preview_clid_right_type=1/3时的号码 多个号码以逗号分隔';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_predictive_clid_left_type IS '预测外呼客户侧透传号码类型 1:中继 2:客户 3:固定';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_predictive_clid_left_number IS ' ob_predictive_clid_left_type=3时的号码 多个号码以逗号分隔呼叫时随机使用';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_predictive_clid_right_type IS '预测外呼座席侧透传号码类型 1:中继 2:客户 3:固定';
+COMMENT ON COLUMN cti_link_enterprise_clid.ob_predictive_clid_right_number IS 'ob_predictive_clid_right_type=1/3时的号码 多个号码以逗号分隔';
 COMMENT ON COLUMN cti_link_enterprise_clid.create_time IS '记录创建时间';
 
 
@@ -601,7 +611,6 @@ CREATE TABLE cti_link_enterprise_ivr
   parent_id integer DEFAULT 0, -- 父节点id
   action integer, -- 动作类型
   property character varying, -- 属性值
-  anchor character varying, -- 锚点属性值
   create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
   CONSTRAINT cti_link_enterprise_ivr_pkey PRIMARY KEY (id ),
   CONSTRAINT cti_link_enterprise_ivr_enterprise_id_fkey FOREIGN KEY (enterprise_id)
@@ -626,7 +635,6 @@ COMMENT ON COLUMN cti_link_enterprise_ivr.path_name IS '节点名称';
 COMMENT ON COLUMN cti_link_enterprise_ivr.parent_id IS '父节点id';
 COMMENT ON COLUMN cti_link_enterprise_ivr.action IS '动作类型';
 COMMENT ON COLUMN cti_link_enterprise_ivr.property IS '属性值';
-COMMENT ON COLUMN cti_link_enterprise_ivr.anchor IS '锚点属性值';
 COMMENT ON COLUMN cti_link_enterprise_ivr.create_time IS '记录创建时间';
 
 
@@ -638,6 +646,52 @@ CREATE INDEX cti_link_enterprise_ivr_ivr_id_idex
   ON cti_link_enterprise_ivr
   USING btree
   (ivr_id );
+
+-- Table: cti_link_enterprise_ivr_anchor
+
+-- DROP TABLE cti_link_enterprise_ivr_anchor;
+
+CREATE TABLE cti_link_enterprise_ivr_anchor
+(
+  id serial NOT NULL, -- id标识
+  ivr_id integer NOT NULL, -- 所属ivr_id
+  enterprise_id integer NOT NULL, -- 企业id
+  path character varying, -- 节点
+  event character varying, -- 锚点产生的事件
+  data character varying, -- 事件所带属性值,直接在dialplan中翻译完成 json格式 {callType:"${callType}"}
+  create_time timestamp with time zone DEFAULT now(), -- 记录创建时间
+  CONSTRAINT cti_link_enterprise_ivr_anchor_pkey PRIMARY KEY (id ),
+  CONSTRAINT cti_link_enterprise_ivr_anchor_enterprise_id_fkey FOREIGN KEY (enterprise_id)
+      REFERENCES cti_link_entity (enterprise_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cti_link_enterprise_ivr_anchor_ivr_id_fkey FOREIGN KEY (ivr_id)
+      REFERENCES cti_link_ivr_profile (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cti_link_enterprise_ivr_anchor
+  OWNER TO postgres;
+COMMENT ON TABLE cti_link_enterprise_ivr_anchor
+  IS 'IVR详表';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.id IS 'id标识';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.ivr_id IS '所属ivr_id';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.enterprise_id IS '企业id';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.path IS '节点';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.event IS '==锚点产生的事件';
+COMMENT ON COLUMN cti_link_enterprise_ivr_anchor.data IS '事件所带属性值,直接在dialplan中翻译完成 json格式 {callType:"${callType}"}';
+COMMENT ON COLUMN cti_link_enterprise_ivr.create_time IS '记录创建时间';
+
+
+-- Index: cti_link_enterprise_ivr_anchor_ivr_id_path_idex
+
+-- DROP INDEX cti_link_enterprise_ivr_anchor_ivr_id_path_idex;
+
+CREATE INDEX cti_link_enterprise_ivr_anchor_ivr_id_path_idex
+  ON cti_link_enterprise_ivr_anchor
+  USING btree
+  (ivr_id, path);
 
 -- Table: cti_link_enterprise_time
 

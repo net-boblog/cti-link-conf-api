@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.v1;
 
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.model.TelSet;
-import com.tinet.ctilink.conf.request.CtiLinkTelSetListRequest;
+import com.tinet.ctilink.conf.request.TelSetListRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -32,7 +32,7 @@ public interface CtiLinkTelSetService {
 
     @POST
     @Path("list")
-    ApiResult listTelSet(CtiLinkTelSetListRequest ctiLinkTelSetListRequest);
+    ApiResult listTelSet(TelSetListRequest telSetListRequest);
 
     @POST
     @Path("get")

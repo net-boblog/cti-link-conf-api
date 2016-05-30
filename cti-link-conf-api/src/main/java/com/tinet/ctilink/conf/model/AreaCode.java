@@ -3,9 +3,10 @@ package com.tinet.ctilink.conf.model;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Table(name = "cti_link_area_code")
-public class AreaCode {
+public class AreaCode implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     private Integer id;

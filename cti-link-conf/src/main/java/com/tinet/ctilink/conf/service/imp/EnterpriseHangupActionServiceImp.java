@@ -15,14 +15,12 @@ import com.tinet.ctilink.service.BaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.misc.BASE64Encoder;
 import tk.mybatis.mapper.entity.Condition;
-import sun.misc.*;
 
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
-
-import static javafx.scene.input.KeyCode.T;
 
 /**
  * @author huangbin
@@ -71,11 +69,6 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId",enterpriseHangupAction.getEnterpriseId());
         criteria.andEqualTo("id",enterpriseHangupAction.getId());
-
-        EnterpriseHangupAction enterpriseHangupAction1 = null;
-        List<EnterpriseHangupAction> enterpriseHangupActionList = selectByCondition(condition);
-        if( enterpriseHangupActionList != null && enterpriseHangupActionList.size() > 0 )
-            enterpriseHangupAction1 = enterpriseHangupActionList.get(0);
 
         int success = deleteByCondition(condition);
         if(success == 1){

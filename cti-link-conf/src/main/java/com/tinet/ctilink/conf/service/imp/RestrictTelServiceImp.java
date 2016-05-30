@@ -88,11 +88,11 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
     }
 
     @Override
-    public ApiResult<PageInfo> listRestrictTel(CtiLinkRestrictTelRequest ctiLinkRestrictTelRequest) {
-        if( ! entityDao.validateEntity(ctiLinkRestrictTelRequest.getEnterpriseId()))
+    public ApiResult<PageInfo> listRestrictTel(RestrictTelRequest restrictTelRequest) {
+        if( ! entityDao.validateEntity(restrictTelRequest.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
-        if(ctiLinkRestrictTelRequest.getType() == null || !(ctiLinkRestrictTelRequest.getType() == 1 || ctiLinkRestrictTelRequest.getType() == 2))
+        if(restrictTelRequest.getType() == null || !(restrictTelRequest.getType() == 1 || restrictTelRequest.getType() == 2))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"呼叫类型为：1.呼入 2.外呼");
 
         Condition condition = new Condition(RestrictTel.class);
@@ -108,14 +108,14 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
         }
 
         //可选项
-        if(ctiLinkRestrictTelRequest.getTel() != null ) {
+        if(restrictTelRequest.getTel() != null ) {
             Pattern pattern1 = Pattern.compile(Const.TEL_VALIDATION);
-            Matcher matcher1 = pattern1.matcher(ctiLinkRestrictTelRequest.getTel().trim());
+            Matcher matcher1 = pattern1.matcher(restrictTelRequest.getTel().trim());
             Pattern pattern2 = Pattern.compile(Const.AREA_CODE_VALIDATION);
-            Matcher matcher2 = pattern2.matcher(ctiLinkRestrictTelRequest.getTel().trim());
+            Matcher matcher2 = pattern2.matcher(restrictTelRequest.getTel().trim());
             if ( ! (matcher1.matches() || matcher2.matches()))
                 return new ApiResult<>(ApiResult.FAIL_RESULT,"号码不正确");
-            criteria.andEqualTo("tel", ctiLinkRestrictTelRequest.getTel());
+            criteria.andEqualTo("tel", restrictTelRequest.getTel());
         }
 
         if(restrictTelRequest.getTel() != null )

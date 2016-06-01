@@ -29,12 +29,12 @@ public class AgentCacheService extends AbstractCacheService<Agent> {
     @Override
     public boolean reloadCache() {
         List<Entity> list = entityMapper.list();
-        if (list == null || list.isEmpty()) {
-            return true;
-        }
         Set<String> dbKeySet = new HashSet<>();
-        for (Entity entity : list) {
-            reloadCache(entity.getEnterpriseId(), dbKeySet);
+        //如果所有企业都销户, 确保还能删除key
+        if (list != null) {
+            for (Entity entity : list) {
+                reloadCache(entity.getEnterpriseId(), dbKeySet);
+            }
         }
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
                 , String.format(CacheKey.AGENT_ENTERPRISE_ID, "*"));

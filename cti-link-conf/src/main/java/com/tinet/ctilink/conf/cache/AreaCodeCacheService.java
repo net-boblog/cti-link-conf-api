@@ -23,7 +23,7 @@ public class AreaCodeCacheService extends AbstractCacheService<AreaCode> {
 
     @Override
     public boolean reloadCache() {
-        //判断是否已经有缓存
+        //判断是否已经有缓存, 只有第一次才全部加载
         AreaCode ac = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX, "010")
                 , AreaCode.class);
         if (ac != null) {

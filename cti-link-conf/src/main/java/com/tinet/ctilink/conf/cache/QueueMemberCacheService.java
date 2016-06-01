@@ -28,15 +28,13 @@ public class QueueMemberCacheService extends AbstractCacheService<QueueMember> {
     @Override
     public boolean reloadCache() {
         List<Entity> list = entityMapper.list();
-        if (list == null || list.isEmpty()) {
-            return true;
-        }
         Set<String> qnoDbKeySet = new HashSet<>();
         Set<String> qnoCnoDbKeySet = new HashSet<>();
         Set<String> cnoDbKeySet = new HashSet<>();
-
-        for (Entity entity : list) {
-            loadCache(entity.getEnterpriseId(), qnoDbKeySet, qnoCnoDbKeySet, cnoDbKeySet);
+        if (list != null) {
+            for (Entity entity : list) {
+                loadCache(entity.getEnterpriseId(), qnoDbKeySet, qnoCnoDbKeySet, cnoDbKeySet);
+            }
         }
 
         Set<String> qnoExistKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX

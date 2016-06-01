@@ -4,11 +4,11 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.QueueMemberDao;
-import com.tinet.ctilink.conf.dao.QueueSkillDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.QueueMemberMapper;
+import com.tinet.ctilink.conf.mapper.QueueSkillMapper;
 import com.tinet.ctilink.conf.model.QueueMember;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Queue;
@@ -34,13 +34,13 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private QueueMemberDao queueMemberDao;
+    private QueueMemberMapper queueMemberMapper;
 
     @Autowired
-    private QueueSkillDao queueSkillDao;
+    private QueueSkillMapper queueSkillMapper;
 
     @Autowired
     private RedisService redisService;
@@ -48,7 +48,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
     @Override
     public ApiResult<Queue> createQueue(Queue queue) {
         //参数验证
-        if (!entityDao.validateEntity(queue.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queue.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //validate
@@ -73,7 +73,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
     @Override
     public ApiResult deleteQueue(Queue queue) {
         //参数验证
-        if (!entityDao.validateEntity(queue.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queue.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -85,13 +85,13 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
         Condition.Criteria qmCriteria = qmCondition.createCriteria();
         qmCriteria.andEqualTo("enterpriseId", queue.getEnterpriseId());
         qmCriteria.andEqualTo("queueId", queue.getId());
-        queueMemberDao.deleteByCondition(qmCondition);
+        queueMemberMapper.deleteByCondition(qmCondition);
         //删除队列技能 queue_skill
         Condition qsCondition = new Condition(Queue.class);
         Condition.Criteria qsCriteria = qsCondition.createCriteria();
         qsCriteria.andEqualTo("enterpriseId", queue.getEnterpriseId());
         qsCriteria.andEqualTo("queueId", queue.getId());
-        queueSkillDao.deleteByCondition(qsCondition);
+        queueSkillMapper.deleteByCondition(qsCondition);
 
         int count = deleteByPrimaryKey(queue.getId());
 
@@ -103,7 +103,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
     @Override
     public ApiResult<Queue> updateQueue(Queue queue) {
         //参数验证
-        if (!entityDao.validateEntity(queue.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queue.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -136,7 +136,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
     @Override
     public ApiResult<List<Queue>> listQueue(Queue queue) {
         //参数验证
-        if (!entityDao.validateEntity(queue.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queue.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -151,7 +151,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
     @Override
     public ApiResult<Queue> getQueue(Queue queue) {
         //参数验证
-        if (!entityDao.validateEntity(queue.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queue.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (queue.getId() == null || queue.getId() <= 0) {
@@ -281,7 +281,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
             Condition.Criteria criteria = condition.createCriteria();
             criteria.andEqualTo("enterpriseId", queueMember.getEnterpriseId());
             criteria.andEqualTo("agentId", queueMember.getAgentId());
-            List<QueueMember> list = queueMemberDao.selectByCondition(condition);
+            List<QueueMember> list = queueMemberMapper.selectByCondition(condition);
             if (list != null &&list.size() > 0) {
                 redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_CNO, queue.getEnterpriseId(), cno), list);
             } else {
@@ -300,7 +300,7 @@ public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueS
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, queue);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("AgentServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
+            logger.error("QueueServiceImp.setRefreshCacheMethod error, cache refresh fail, " +
                     "class=" + this.getClass().getName(), e);
         }
     }

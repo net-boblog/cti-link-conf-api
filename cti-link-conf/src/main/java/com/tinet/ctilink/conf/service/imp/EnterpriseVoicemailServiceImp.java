@@ -5,7 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseVoicemail;
@@ -33,14 +33,14 @@ public class EnterpriseVoicemailServiceImp extends BaseService<EnterpriseVoicema
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult<EnterpriseVoicemail> createEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail) {
-        if( ! entityDao.validateEntity(enterpriseVoicemail.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseVoicemail.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         ApiResult<EnterpriseVoicemail> result = validateEnterpriseVoicemail(enterpriseVoicemail);
@@ -60,7 +60,7 @@ public class EnterpriseVoicemailServiceImp extends BaseService<EnterpriseVoicema
 
     @Override
     public ApiResult deleteEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail) {
-        if( ! entityDao.validateEntity(enterpriseVoicemail.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseVoicemail.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
         if(enterpriseVoicemail.getId()==null || enterpriseVoicemail.getId()<=0)
             return new ApiResult(ApiResult.FAIL_RESULT,"留言箱id不正确");
@@ -81,7 +81,7 @@ public class EnterpriseVoicemailServiceImp extends BaseService<EnterpriseVoicema
 
     @Override
     public ApiResult<EnterpriseVoicemail> updateEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail) {
-        if( ! entityDao.validateEntity(enterpriseVoicemail.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseVoicemail.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         ApiResult<EnterpriseVoicemail> result = validateEnterpriseVoicemail(enterpriseVoicemail);
@@ -104,7 +104,7 @@ public class EnterpriseVoicemailServiceImp extends BaseService<EnterpriseVoicema
 
     @Override
     public ApiResult<List<EnterpriseVoicemail>> listEnterpriseVoicemail(EnterpriseVoicemail enterpriseVoicemail) {
-        if( ! entityDao.validateEntity(enterpriseVoicemail.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseVoicemail.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         Condition condition = new Condition(EnterpriseVoicemail.class);

@@ -135,6 +135,7 @@
             <tx:method name="create*"/>
             <tx:method name="update*"/>
             <tx:method name="delete*"/>
+            <tx:method name="batch*"/>
         </tx:attributes>
     </tx:advice>
 

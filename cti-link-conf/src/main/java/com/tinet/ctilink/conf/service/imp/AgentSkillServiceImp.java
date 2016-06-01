@@ -2,9 +2,9 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.*;
+import com.tinet.ctilink.conf.mapper.*;
 import com.tinet.ctilink.conf.model.*;
-import com.tinet.ctilink.conf.service.v1.CtiLInkAgentSkillService;
+import com.tinet.ctilink.conf.service.v1.CtiLinkAgentSkillService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.entity.Caller;
 import com.tinet.ctilink.conf.util.AreaCodeUtil;
@@ -24,35 +24,35 @@ import java.util.List;
  * @date 16/4/19 17:47
  */
 @Service
-public class AgentSkillServiceImp extends BaseService<AgentSkill> implements CtiLInkAgentSkillService {
+public class AgentSkillServiceImp extends BaseService<AgentSkill> implements CtiLinkAgentSkillService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private AgentDao agentDao;
+    private AgentMapper agentMapper;
 
     @Autowired
-    private AgentTelDao agentTelDao;
+    private AgentTelMapper agentTelMapper;
 
     @Autowired
-    private SkillDao skillDao;
+    private SkillMapper skillMapper;
 
     @Autowired
-    private QueueSkillDao queueSkillDao;
+    private QueueSkillMapper queueSkillMapper;
 
     @Autowired
-    private QueueMemberDao queueMemberDao;
+    private QueueMemberServiceImp queueMemberService;
 
     @Autowired
-    private QueueDao queueDao;
+    private QueueMapper queueMapper;
 
     @Override
     public ApiResult<AgentSkill> createAgentSkill(AgentSkill agentSkill) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agentSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentSkill.getAgentId() == null || agentSkill.getAgentId() <= 0) {
@@ -71,7 +71,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         Condition.Criteria agentCriteria = agentCondition.createCriteria();
         agentCriteria.andEqualTo("enterpriseId", agentSkill.getEnterpriseId());
         agentCriteria.andEqualTo("id", agentSkill.getAgentId());
-        List<Agent> agentList = agentDao.selectByCondition(agentCondition);
+        List<Agent> agentList = agentMapper.selectByCondition(agentCondition);
         if (agentList == null || agentList.size() <= 0) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[agentId]不正确，座席不存在");
         }
@@ -80,7 +80,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         Condition.Criteria skillCriteria = skillCondition.createCriteria();
         skillCriteria.andEqualTo("enterpriseId", agentSkill.getEnterpriseId());
         skillCriteria.andEqualTo("id", agentSkill.getSkillId());
-        int count = skillDao.selectCountByCondition(skillCondition);
+        int count = skillMapper.selectCountByCondition(skillCondition);
         if (count != 1) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[skillId]不正确，座席不存在");
         }
@@ -109,13 +109,13 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         criteria1.andEqualTo("enterpriseId", agentSkill.getEnterpriseId());
         criteria1.andEqualTo("skillId", agentSkill.getSkillId());
         criteria1.andGreaterThanOrEqualTo("skillLevel", agentSkill.getSkillLevel());
-        List<QueueSkill> queueSkillList = queueSkillDao.selectByCondition(condition1);
+        List<QueueSkill> queueSkillList = queueSkillMapper.selectByCondition(condition1);
 
         Condition condition2 = new Condition(QueueMember.class);
         Condition.Criteria criteria2 = condition2.createCriteria();
         criteria2.andEqualTo("enterpriseId", agentSkill.getEnterpriseId());
         criteria2.andEqualTo("agentId", agentSkill.getAgentId());
-        List<QueueMember> queueMemberList = queueMemberDao.selectByCondition(condition2);
+        List<QueueMember> queueMemberList = queueMemberService.selectByCondition(condition2);
         List<QueueSkill> insertQueueSkillList = new ArrayList<>();
         for (QueueSkill queueSkill : queueSkillList) {
             boolean flag = true;
@@ -131,8 +131,8 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         }
         if (insertQueueSkillList.size() > 0) {
             for (QueueSkill queueSkill : insertQueueSkillList) {
-                AgentTel agentTel = agentTelDao.getBindTel(agentSkill.getAgentId());
-                Queue queue = queueDao.selectByPrimaryKey(queueSkill.getQueueId());
+                AgentTel agentTel = agentTelMapper.getBindTel(agentSkill.getAgentId());
+                Queue queue = queueMapper.selectByPrimaryKey(queueSkill.getQueueId());
                 QueueMember queueMember = new QueueMember();
                 queueMember.setEnterpriseId(agentSkill.getEnterpriseId());
                 queueMember.setAgentId(agentSkill.getAgentId());
@@ -140,7 +140,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
                 queueMember.setCreateTime(new Date());
                 queueMember.setQueueId(queueSkill.getQueueId());
                 queueMember.setQno(queue.getQno());
-                queueMember.setPenalty(queueMemberDao.getPenalty(agentSkill.getEnterpriseId(), queue.getId(), agentList.get(0).getId()));
+                queueMember.setPenalty(queueMemberService.getPenalty(agentSkill.getEnterpriseId(), queue.getId(), agentList.get(0).getId()));
                 if (agentTel != null) {
                     Caller caller;
                     if (agentTel.getTelType() == Const.TEL_TYPE_EXTEN
@@ -166,7 +166,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
                     queueMember.setInterface("");
                 }
 
-                queueMemberDao.insertSelective(queueMember);
+                queueMemberService.insertSelective(queueMember);
             }
         }
 
@@ -177,7 +177,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
     @Override
     public ApiResult deleteAgentSkill(AgentSkill agentSkill) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agentSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //TODO 座席在线
@@ -194,7 +194,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         }
 
 
-        Agent agent = agentDao.selectByPrimaryKey(agentSkill.getAgentId());
+        Agent agent = agentMapper.selectByPrimaryKey(agentSkill.getAgentId());
         //TODO 提出来, 减少SQL操作？
         //新增或更新queue_member
         Condition condition1 = new Condition(QueueSkill.class);
@@ -202,13 +202,13 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         criteria1.andEqualTo("enterpriseId", agentSkill.getEnterpriseId());
         criteria1.andEqualTo("skillId", agentSkill.getSkillId());
         criteria1.andGreaterThanOrEqualTo("skillLevel", agentSkill.getSkillLevel());
-        List<QueueSkill> queueSkillList = queueSkillDao.selectByCondition(condition1);
+        List<QueueSkill> queueSkillList = queueSkillMapper.selectByCondition(condition1);
 
         Condition condition2 = new Condition(QueueMember.class);
         Condition.Criteria criteria2 = condition2.createCriteria();
         criteria2.andEqualTo("enterpriseId", agentSkill.getEnterpriseId());
         criteria2.andEqualTo("agentId", agentSkill.getAgentId());
-        List<QueueMember> queueMemberList = queueMemberDao.selectByCondition(condition2);
+        List<QueueMember> queueMemberList = queueMemberService.selectByCondition(condition2);
         List<QueueSkill> insertQueueSkillList = new ArrayList<>();
         for (QueueSkill queueSkill : queueSkillList) {
             boolean flag = true;
@@ -224,8 +224,8 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
         }
         if (insertQueueSkillList.size() > 0) {
             for (QueueSkill queueSkill : insertQueueSkillList) {
-                AgentTel agentTel = agentTelDao.getBindTel(agentSkill.getAgentId());
-                Queue queue = queueDao.selectByPrimaryKey(queueSkill.getQueueId());
+                AgentTel agentTel = agentTelMapper.getBindTel(agentSkill.getAgentId());
+                Queue queue = queueMapper.selectByPrimaryKey(queueSkill.getQueueId());
                 QueueMember queueMember = new QueueMember();
                 queueMember.setEnterpriseId(agentSkill.getEnterpriseId());
                 queueMember.setAgentId(agentSkill.getAgentId());
@@ -233,7 +233,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
                 queueMember.setCreateTime(new Date());
                 queueMember.setQueueId(queueSkill.getQueueId());
                 queueMember.setQno(queue.getQno());
-                queueMember.setPenalty(queueMemberDao.getPenalty(agentSkill.getEnterpriseId(), queue.getId(), agent.getId()));
+                queueMember.setPenalty(queueMemberService.getPenalty(agentSkill.getEnterpriseId(), queue.getId(), agent.getId()));
                 if (agentTel != null) {
                     Caller caller;
                     if (agentTel.getTelType() == Const.TEL_TYPE_EXTEN
@@ -259,7 +259,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
                     queueMember.setInterface("");
                 }
 
-                queueMemberDao.insertSelective(queueMember);
+                queueMemberService.insertSelective(queueMember);
             }
         }
 
@@ -269,7 +269,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
     @Override
     public ApiResult<AgentSkill> updateAgentSkill(AgentSkill agentSkill) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agentSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentSkill.getId() == null || agentSkill.getId() <= 0) {
@@ -302,7 +302,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
     @Override
     public ApiResult<List<AgentSkill>> listAgentSkill(AgentSkill agentSkill) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agentSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentSkill.getAgentId() == null || agentSkill.getAgentId() <= 0) {

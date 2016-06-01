@@ -4,11 +4,11 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseTimeDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.IvrProfileDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.EnterpriseTimeMapper;
+import com.tinet.ctilink.conf.mapper.IvrProfileMapper;
 import com.tinet.ctilink.conf.model.EnterpriseIvrRouter;
 import com.tinet.ctilink.conf.model.EnterpriseTime;
 import com.tinet.ctilink.conf.model.IvrProfile;
@@ -36,20 +36,20 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Autowired
-    private IvrProfileDao ivrProfileDao;
+    private IvrProfileMapper ivrProfileMapper;
 
     @Autowired
-    private EnterpriseTimeDao enterpriseTimeDao;
+    private EnterpriseTimeMapper enterpriseTimeMapper;
 
     @Override
     public ApiResult<EnterpriseIvrRouter> createEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
-        if (!entityDao.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         ApiResult<EnterpriseIvrRouter> result = validateEnterpriseIvrRouter(enterpriseIvrRouter);
@@ -70,7 +70,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
 
     @Override
     public ApiResult deleteEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
-        if (!entityDao.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (enterpriseIvrRouter.getId() == null || enterpriseIvrRouter.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "呼入路由id不正确");
@@ -95,7 +95,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
         if (enterpriseIvrRouter.getId() == null || enterpriseIvrRouter.getId() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "呼入路由id不正确");
 
-        if (!entityDao.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业id不正确");
 
         ApiResult<EnterpriseIvrRouter> result = validateEnterpriseIvrRouter(enterpriseIvrRouter);
@@ -119,7 +119,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
 
     @Override
     public ApiResult<List<EnterpriseIvrRouter>> listEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
-        if (!entityDao.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         Condition condition = new Condition(EnterpriseIvrRouter.class);
@@ -134,7 +134,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
 
     @Override
     public ApiResult<EnterpriseIvrRouter> getEnterpriseIvrRouter(EnterpriseIvrRouter enterpriseIvrRouter) {
-        if (!entityDao.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseIvrRouter.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (enterpriseIvrRouter.getId() == null || enterpriseIvrRouter.getId() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "呼入路由id不正确");
@@ -189,7 +189,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
             Condition.Criteria ivrProfileCriteria = ivrProfileCondition.createCriteria();
             ivrProfileCriteria.andEqualTo("id", Integer.parseInt(enterpriseIvrRouter.getRouterProperty()));
             ivrProfileCondition.setTableName("cti_link_ivr_profile");
-            List<IvrProfile> ivrProfileList = ivrProfileDao.selectByCondition(ivrProfileCondition);
+            List<IvrProfile> ivrProfileList = ivrProfileMapper.selectByCondition(ivrProfileCondition);
             if (ivrProfileList == null || ivrProfileList.size() <= 0)
                 return new ApiResult<>(ApiResult.FAIL_RESULT, "语音导航id不正确");
         }
@@ -223,7 +223,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
                 timeCriteria.andEqualTo("id", Integer.parseInt(timeId[i]));
                 timeCriteria.andEqualTo("enterpriseId", enterpriseIvrRouter.getEnterpriseId());
                 timeCondition.setTableName("cti_link_enterprise_time");
-                List<EnterpriseTime> enterpriseTimeList = enterpriseTimeDao.selectByCondition(timeCondition);
+                List<EnterpriseTime> enterpriseTimeList = enterpriseTimeMapper.selectByCondition(timeCondition);
                 if (enterpriseTimeList == null || enterpriseTimeList.size() <= 0)
                     return new ApiResult<>(ApiResult.FAIL_RESULT, "时间条件id不正确");
             }

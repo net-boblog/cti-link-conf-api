@@ -4,10 +4,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseInvestigationDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.EnterpriseInvestigationMapper;
 import com.tinet.ctilink.conf.model.EnterpriseInvestigation;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseInvestigationService;
 import com.tinet.ctilink.inc.Const;
@@ -33,10 +33,10 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private EnterpriseInvestigationDao enterpriseInvestigationDao;
+    private EnterpriseInvestigationMapper enterpriseInvestigationMapper;
 
     @Autowired
     private RedisService redisService;
@@ -44,7 +44,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
     @Override
     public ApiResult<EnterpriseInvestigation> createEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         enterpriseInvestigation.setId(null);
@@ -105,7 +105,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
     public ApiResult deleteEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //删除一条要把子节点也删除了
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -121,7 +121,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
-        int count = enterpriseInvestigationDao.deleteEnterpriseInvestigation(enterpriseInvestigation.getId());
+        int count = enterpriseInvestigationMapper.deleteRecursive(enterpriseInvestigation.getId());
 
         if (count <= 0) {
             logger.error("EnterpriseInvestigationServiceImp.deleteEnterpriseInvestigation error, " + enterpriseInvestigation + ", count=" + count);
@@ -134,7 +134,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
     @Override
     public ApiResult<EnterpriseInvestigation> updateEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseInvestigation.getId() == null
@@ -176,7 +176,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
     @Override
     public ApiResult<List<EnterpriseInvestigation>> listEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         Condition condition = new Condition(EnterpriseInvestigation.class);
@@ -191,7 +191,7 @@ public class EnterpriseInvestigationServiceImp extends BaseService<EnterpriseInv
     @Override
     public ApiResult<EnterpriseInvestigation> getEnterpriseInvestigation(EnterpriseInvestigation enterpriseInvestigation) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseInvestigation.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 

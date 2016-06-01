@@ -4,11 +4,11 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.IvrProfileDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.EnterpriseIvrMapper;
+import com.tinet.ctilink.conf.mapper.IvrProfileMapper;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.IvrProfile;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseIvrService;
@@ -35,13 +35,13 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private EnterpriseIvrDao enterpriseIvrDao;
+    private EnterpriseIvrMapper enterpriseIvrMapper;
 
     @Autowired
-    private IvrProfileDao ivrProfileDao;
+    private IvrProfileMapper ivrProfileMapper;
 
     @Autowired
     private RedisService redisService;
@@ -49,7 +49,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
     @Override
     public ApiResult<EnterpriseIvr> createEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseIvr.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -71,7 +71,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
     @Override
     public ApiResult deleteEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseIvr.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseIvr.getId() == null
@@ -86,7 +86,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
 
-        int count = enterpriseIvrDao.deleteEnterpriseIvr(enterpriseIvr.getId());
+        int count = enterpriseIvrMapper.deleteRecursive(enterpriseIvr.getId());
 
         if (count <= 0) {
             logger.error("EnterpriseIvrServiceImp.deleteEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
@@ -99,7 +99,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
     @Override
     public ApiResult<EnterpriseIvr> updateEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseIvr.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -128,7 +128,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
     @Override
     public ApiResult<List<EnterpriseIvr>> listEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseIvr.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseIvr.getIvrId() == null || enterpriseIvr.getIvrId() <= 0) {
@@ -146,7 +146,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
     @Override
     public ApiResult<EnterpriseIvr> getEnterpriseIvr(EnterpriseIvr enterpriseIvr) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseIvr.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseIvr.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseIvr.getId() == null || enterpriseIvr.getId() <= 0) {
@@ -216,7 +216,7 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
             }
         }
         //判断ivrId是否存在
-        IvrProfile ivrProfile = ivrProfileDao.selectByPrimaryKey(enterpriseIvr.getIvrId());
+        IvrProfile ivrProfile = ivrProfileMapper.selectByPrimaryKey(enterpriseIvr.getIvrId());
         if (ivrProfile == null || !enterpriseIvr.getEnterpriseId().equals(ivrProfile.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[ivrId]不正确");
         }

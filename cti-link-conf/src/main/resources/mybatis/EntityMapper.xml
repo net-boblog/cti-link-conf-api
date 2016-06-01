@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.conf.mapper.EntityMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.Entity" >
+    <id column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR" />
+    <result column="entity_type" property="entityType" jdbcType="INTEGER" />
+    <result column="area_code" property="areaCode" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    enterprise_id, enterprise_name, entity_type, area_code, status, create_time
+  </sql>
+
+  <select id="list" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from cti_link_entity
+    where status != 4
+  </select>
+
+  <select id="validateEntity" resultType="BOOLEAN" parameterType="java.lang.Integer" >
+    SELECT count(enterprise_id)
+    FROM cti_link_entity
+    WHERE  status != 4 AND enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+  </select>
+</mapper>

@@ -4,11 +4,11 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.dao.AgentDao;
-import com.tinet.ctilink.conf.dao.AgentTelDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.AgentMapper;
+import com.tinet.ctilink.conf.mapper.AgentTelMapper;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Agent;
 import com.tinet.ctilink.conf.model.AgentTel;
@@ -34,13 +34,13 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private AgentTelDao agentTelDao;
+    private AgentTelMapper agentTelMapper;
 
     @Autowired
-    private AgentDao agentDao;
+    private AgentMapper agentMapper;
 
     @Autowired
     private RedisService redisService;
@@ -48,7 +48,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
     @Override
     public ApiResult<AgentTel> createAgentTel(AgentTel agentTel) {
         //如果新增的是绑定电话(isBind=1)，需要判断座席是否在线，在线的话，不能新增绑定电话，如果不在线，需要把其他绑定电话设置为isBind=0
-        if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentTel.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -69,7 +69,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
         if (agentTel.getIsBind() == Const.AGENT_TEL_IS_BIND_YES) {
 
             //将座席的其他号码全部设置为未绑定
-            boolean r = agentTelDao.updateAgentTelBind(agentTel);
+            boolean r = agentTelMapper.updateBind(agentTel);
 
             //更新queue_memeber里面的tel ?
         }
@@ -82,7 +82,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
     @Override
     public ApiResult deleteAgentTel(AgentTel agentTel) {
         //删除前, 需要先解绑
-        if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentTel.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentTel.getId() == null || agentTel.getId() <= 0) {
@@ -111,7 +111,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
     @Override
     public ApiResult<AgentTel> updateAgentTel(AgentTel agentTel) {
         //绑定, 解绑. 解绑前, 需要下下线
-        if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentTel.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentTel.getId() == null || agentTel.getId() <= 0) {
@@ -138,7 +138,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
             dbAgentTel.setIsBind(Const.AGENT_TEL_IS_BIND_YES);
             updateByPrimaryKey(dbAgentTel);
 
-            agentTelDao.updateAgentTelBind(agentTel);
+            agentTelMapper.updateBind(agentTel);
 
             //queue_memeber?
         } else {
@@ -155,7 +155,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
 
     @Override
     public ApiResult<List<AgentTel>> listAgentTel(AgentTel agentTel) {
-        if (!entityDao.validateEntity(agentTel.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agentTel.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agentTel.getAgentId() == null || agentTel.getAgentId() <= 0) {
@@ -252,7 +252,7 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
     //cache
     public void setCache(AgentTel agentTel) {
         //座席
-        Agent agent = agentDao.selectByPrimaryKey(agentTel.getAgentId());
+        Agent agent = agentMapper.selectByPrimaryKey(agentTel.getAgentId());
         //座席电话，第一个是绑定的电话
         Condition condition = new Condition(AgentTel.class);
         Condition.Criteria criteria = condition.createCriteria();

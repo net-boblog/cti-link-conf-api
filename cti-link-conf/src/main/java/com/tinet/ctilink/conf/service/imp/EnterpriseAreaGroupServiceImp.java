@@ -5,11 +5,9 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseAreaDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
-import com.tinet.ctilink.conf.model.EnterpriseArea;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.model.EnterpriseAreaGroup;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseAreaGroupService;
 import com.tinet.ctilink.inc.Const;
@@ -36,17 +34,14 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
-    @Autowired
-    private EnterpriseAreaDao enterpriseAreaDao;
-
     @Override
     public ApiResult<EnterpriseAreaGroup> createEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
-        if (!entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不能为空");
 
         ApiResult<EnterpriseAreaGroup> result = validateEnterpriseAreaGroup(enterpriseAreaGroup);
@@ -66,7 +61,7 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
 
     @Override
     public ApiResult deleteEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
-        if (!entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不能为空");
         if (enterpriseAreaGroup.getId() == null || enterpriseAreaGroup.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "地区组id不能为空");
@@ -101,7 +96,7 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
     @Override
     public ApiResult<EnterpriseAreaGroup> updateEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
 
-        if (!entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不能为空");
         if (enterpriseAreaGroup.getId() == null || enterpriseAreaGroup.getId() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "地区组id不能为空");
@@ -126,7 +121,7 @@ public class EnterpriseAreaGroupServiceImp extends BaseService<EnterpriseAreaGro
 
     @Override
     public ApiResult<List<EnterpriseAreaGroup>> listEnterpriseAreaGroup(EnterpriseAreaGroup enterpriseAreaGroup) {
-        if (!entityDao.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseAreaGroup.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不能为空");
 
         Condition condition = new Condition(EnterpriseAreaGroup.class);

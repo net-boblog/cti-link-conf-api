@@ -2,9 +2,9 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
-import com.tinet.ctilink.conf.dao.EnterpriseMohVoiceDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
+import com.tinet.ctilink.conf.mapper.EnterpriseIvrMapper;
+import com.tinet.ctilink.conf.mapper.EnterpriseMohVoiceMapper;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.EnterpriseMohVoice;
 import com.tinet.ctilink.conf.model.EnterpriseVoice;
@@ -40,13 +40,13 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private EnterpriseMohVoiceDao enterpriseMohVoiceDao;
+    private EnterpriseMohVoiceMapper enterpriseMohVoiceMapper;
 
     @Autowired
-    private EnterpriseIvrDao enterpriseIvrDao;
+    private EnterpriseIvrMapper enterpriseIvrMapper;
 
     //http接口
     @Override
@@ -63,7 +63,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
             }
         }
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseId)) {
+        if (!entityMapper.validateEntity(enterpriseId)) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         inputParts = uploadForm.get("voiceName");
@@ -151,7 +151,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
     @Override
     public ApiResult<EnterpriseVoice> createEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseVoice.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (StringUtils.isEmpty(enterpriseVoice.getVoiceName())) {
@@ -199,7 +199,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
     @Override
     public ApiResult deleteEnterpriseVoice(EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseVoice.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseVoice.getId() == null || enterpriseVoice.getId() <= 0) {
@@ -236,7 +236,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
     @Override
     public ApiResult<EnterpriseVoice> updateEnterpriseVoice(File file, EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseVoice.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (enterpriseVoice.getId() == null || enterpriseVoice.getId() <= 0) {
@@ -295,7 +295,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
     @Override
     public ApiResult<List<EnterpriseVoice>> listEnterpriseVoice(EnterpriseVoice enterpriseVoice) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseVoice.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseVoice.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         Condition condition = new Condition(EnterpriseMohVoice.class);
@@ -311,7 +311,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("enterpriseId", enterpriseId);
         criteria.andEqualTo("voiceId", voiceId);
-        int count = enterpriseMohVoiceDao.selectCountByCondition(condition);
+        int count = enterpriseMohVoiceMapper.selectCountByCondition(condition);
 
         return count > 0;
     }
@@ -326,7 +326,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
         actionList.add(Const.ENTERPRISE_IVR_OP_ACTION_READ);
         actionList.add(Const.ENTERPRISE_IVR_OP_ACTION_DIAL);
         criteria.andIn("action", actionList);
-        List<EnterpriseIvr> list = enterpriseIvrDao.selectByCondition(condition);
+        List<EnterpriseIvr> list = enterpriseIvrMapper.selectByCondition(condition);
         if (list != null && list.size() > 0) {
             String path = enterpriseVoice.getPath().substring(0, enterpriseVoice.getPath().lastIndexOf("."));
             for (EnterpriseIvr enterpriseIvr : list) {

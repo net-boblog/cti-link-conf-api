@@ -5,7 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseHangupAction;
@@ -32,14 +32,14 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult<EnterpriseHangupAction> createEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseHangupAction.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编码不正确");
 
         ApiResult<EnterpriseHangupAction> result = validateEnterpriseHangupAction(enterpriseHangupAction);
@@ -60,7 +60,7 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
 
     @Override
     public ApiResult deleteEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseHangupAction.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "id不正确");
@@ -82,7 +82,7 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
 
     @Override
     public ApiResult<EnterpriseHangupAction> updateEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseHangupAction.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "id不正确");
@@ -109,7 +109,7 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
 
     @Override
     public ApiResult<List<EnterpriseHangupAction>> listEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseHangupAction.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (enterpriseHangupAction.getType() == null || enterpriseHangupAction.getType() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "推送类型不能为空");
@@ -127,7 +127,7 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
 
     @Override
     public ApiResult<EnterpriseHangupAction> getEnterpriseHangupAction(EnterpriseHangupAction enterpriseHangupAction) {
-        if (!entityDao.validateEntity(enterpriseHangupAction.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseHangupAction.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (enterpriseHangupAction.getId() == null || enterpriseHangupAction.getId() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "推送设置id不正确");

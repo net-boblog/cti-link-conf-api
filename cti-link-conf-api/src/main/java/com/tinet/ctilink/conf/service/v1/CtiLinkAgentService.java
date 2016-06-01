@@ -11,6 +11,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author fengwei //
@@ -29,6 +30,10 @@ public interface CtiLinkAgentService {
     @POST
     @Path("create")
     ApiResult<Agent> createAgent(Agent agent);
+
+    @POST
+    @Path("batchCreate")
+    ApiResult batchCreateAgent(List<Agent> agentList);
 
     @POST
     @Path("delete")

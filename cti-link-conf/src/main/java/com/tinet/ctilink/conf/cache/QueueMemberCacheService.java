@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.cache;
 
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.model.Entity;
 import com.tinet.ctilink.conf.model.QueueMember;
 import com.tinet.ctilink.inc.Const;
@@ -18,15 +18,16 @@ import java.util.*;
  */
 @Component
 public class QueueMemberCacheService extends AbstractCacheService<QueueMember> {
+
     @Autowired
     private RedisService redisService;
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Override
     public boolean reloadCache() {
-        List<Entity> list = entityDao.list();
+        List<Entity> list = entityMapper.list();
         if (list == null || list.isEmpty()) {
             return true;
         }
@@ -35,7 +36,7 @@ public class QueueMemberCacheService extends AbstractCacheService<QueueMember> {
         Set<String> cnoDbKeySet = new HashSet<>();
 
         for (Entity entity : list) {
-            reloadCache(entity.getEnterpriseId(), qnoDbKeySet, qnoCnoDbKeySet, cnoDbKeySet);
+            loadCache(entity.getEnterpriseId(), qnoDbKeySet, qnoCnoDbKeySet, cnoDbKeySet);
         }
 
         Set<String> qnoExistKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
@@ -61,8 +62,37 @@ public class QueueMemberCacheService extends AbstractCacheService<QueueMember> {
         return true;
     }
 
+    public boolean reloadCache(Integer enterpriseId) {
+        Set<String> qnoDbKeySet = new HashSet<>();
+        Set<String> qnoCnoDbKeySet = new HashSet<>();
+        Set<String> cnoDbKeySet = new HashSet<>();
+        loadCache(enterpriseId, qnoDbKeySet, qnoCnoDbKeySet, cnoDbKeySet);
 
-    public boolean reloadCache(Integer enterpriseId, Set<String> qnoDbKeySet, Set<String> qnoCnoDbKeySet
+        Set<String> qnoExistKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
+                , String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, enterpriseId, "*"));
+        qnoExistKeySet.removeAll(qnoDbKeySet);
+        if (qnoExistKeySet.size() > 0) {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, qnoExistKeySet);
+        }
+
+        Set<String> qnoCnoExistKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
+                , String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO_CNO, enterpriseId, "*", "*"));
+        qnoCnoExistKeySet.removeAll(qnoCnoDbKeySet);
+        if (qnoCnoExistKeySet.size() > 0) {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, qnoCnoExistKeySet);
+        }
+
+        Set<String> cnoExistKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
+                , String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_CNO, enterpriseId, "*"));
+        cnoExistKeySet.removeAll(cnoDbKeySet);
+        if (cnoExistKeySet.size() > 0) {
+            redisService.delete(Const.REDIS_DB_CONF_INDEX, cnoExistKeySet);
+        }
+
+        return true;
+    }
+
+    private boolean loadCache(Integer enterpriseId, Set<String> qnoDbKeySet, Set<String> qnoCnoDbKeySet
             , Set<String> cnoDbKeySet) {
         Condition condition = new Condition(QueueMember.class);
         Condition.Criteria criteria = condition.createCriteria();

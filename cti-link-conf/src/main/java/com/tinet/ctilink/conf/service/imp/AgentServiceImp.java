@@ -7,12 +7,11 @@ import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
-import com.tinet.ctilink.conf.dao.AgentSkillDao;
-import com.tinet.ctilink.conf.dao.AgentTelDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.QueueMemberDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.AgentSkillMapper;
+import com.tinet.ctilink.conf.mapper.AgentTelMapper;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.service.v1.CtiLinkAgentService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Agent;
@@ -42,16 +41,16 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private AgentSkillDao agentSkillDao;
+    private AgentSkillMapper agentSkillMapper;
 
     @Autowired
-    private AgentTelDao agentTelDao;
+    private AgentTelMapper agentTelMapper;
 
     @Autowired
-    private QueueMemberDao queueMemberDao;
+    private QueueMemberServiceImp queueMemberService;
 
     @Autowired
     private RedisService redisService;
@@ -59,7 +58,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
     @Override
     public ApiResult<Agent> createAgent(Agent agent) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agent.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agent.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //校验参数
@@ -80,10 +79,16 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         }
     }
 
+    //批量新增座席
+    @Override
+    public ApiResult batchCreateAgent(List<Agent> agentList) {
+        return null;
+    }
+
     @Override
     public ApiResult deleteAgent(Agent agent) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agent.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agent.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agent.getId() == null || agent.getId() <= 0) {
@@ -97,19 +102,19 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         Condition.Criteria qmCriteria = qmCondition.createCriteria();
         qmCriteria.andEqualTo("agentId", agent.getId());
         qmCondition.setTableName("cti_link_queue_member");
-        queueMemberDao.deleteByCondition(qmCondition);
+        queueMemberService.deleteByCondition(qmCondition);
 
         Condition atCondition = new Condition(AgentTel.class);
         Condition.Criteria atCriteria = atCondition.createCriteria();
         atCriteria.andEqualTo("agentId", agent.getId());
         atCondition.setTableName("cti_link_agent_tel");
-        agentTelDao.deleteByCondition(atCondition);
+        agentTelMapper.deleteByCondition(atCondition);
 
         Condition asCondition = new Condition(AgentSkill.class);
         Condition.Criteria asCriteria = asCondition.createCriteria();
         asCriteria.andEqualTo("agentId", agent.getId());
         asCondition.setTableName("cti_link_agent_skill");
-        agentSkillDao.deleteByCondition(asCondition);
+        agentSkillMapper.deleteByCondition(asCondition);
 
         Condition condition = new Condition(Agent.class);
         Condition.Criteria criteria = condition.createCriteria();
@@ -128,19 +133,19 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
     @Override
     public ApiResult<Agent> updateAgent(Agent agent) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agent.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agent.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agent.getId() == null || agent.getId() <= 0) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
         }
+        //判断在不在线?
 
         //校验参数
         ApiResult<Agent> result = validateAgent(agent);
         if (result != null) {
             return result;
         }
-        //TODO 座席在线不能更新?
 
         Agent dbAgent = selectByPrimaryKey(agent.getId());
         if (dbAgent == null || !agent.getEnterpriseId().equals(dbAgent.getEnterpriseId())) {
@@ -162,7 +167,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
     @Override
     public ApiResult<PageInfo<Agent>> listAgent(AgentListRequest request) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(request.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(request.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (request.getLimit() <= 0 || request.getLimit() > 500) {
@@ -214,7 +219,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
     @Override
     public ApiResult<Agent> getAgent(Agent agent) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(agent.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(agent.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (agent.getId() == null || agent.getId() <= 0) {
@@ -338,7 +343,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         Agent agent = agentList.get(0);
 
         String oldBindTel = "";
-        AgentTel agentTel = agentTelDao.getBindTel(agent.getId());
+        AgentTel agentTel = agentTelMapper.getBindTel(agent.getId());
         if (agentTel != null) {
             oldBindTel = agentTel.getTel();
         }
@@ -369,7 +374,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         Condition.Criteria criteria1 = condition1.createCriteria();
         criteria1.andEqualTo("enterpriseId", enterpriseId);
         criteria1.andEqualTo("tel", bindTel);
-        List<AgentTel> agentTelList = agentTelDao.selectByCondition(condition1);
+        List<AgentTel> agentTelList = agentTelMapper.selectByCondition(condition1);
         AgentTel bindAgentTel = null;  //座席是否已经绑定了或者已经有这个号码
         if (agentTelList != null && !agentTelList.isEmpty()) {
             //是否有座席绑定了bindTel
@@ -402,14 +407,14 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
 
         //先保存
         if (bindAgentTel.getId() == null) {
-            agentTelDao.insertSelective(bindAgentTel);
+            agentTelMapper.insertSelective(bindAgentTel);
         }
         //更新座席电话绑定情况
-        agentTelDao.updateAgentTelBind(bindAgentTel);
+        agentTelMapper.updateBind(bindAgentTel);
 
         //更新queueMember
         if (!bindTel.equals(oldBindTel) || bindType == Const.BIND_TYPE_EXTEN) {
-            queueMemberDao.updateByAgent(agent, bindTel, telType);
+            queueMemberService.updateByAgent(agent, bindTel, telType);
         }
 
         //删除之前绑定的分机或软电话
@@ -419,7 +424,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         criteria2.andEqualTo("agentId",  agent.getId());
         criteria2.andEqualTo("isBind",  Const.AGENT_TEL_IS_BIND_NO);
         criteria2.andEqualTo("telType",  Const.TEL_TYPE_EXTEN);
-        agentTelDao.deleteByCondition(condition2);
+        agentTelMapper.deleteByCondition(condition2);
 
         setRefreshCacheMethod("updateCache", agent);
         return "success";
@@ -438,7 +443,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         criteria.andEqualTo("enterpriseId", agent.getEnterpriseId());
         criteria.andEqualTo("agentId", agent.getId());
         condition.setOrderByClause("is_bind desc, id");
-        List<AgentTel> list = agentTelDao.selectByCondition(condition);
+        List<AgentTel> list = agentTelMapper.selectByCondition(condition);
         if (list != null && list.size() > 0) {
             redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.AGENT_TEL_ENTERPRISE_ID_CNO, agent.getEnterpriseId(), agent.getCno())
                     , list);
@@ -463,7 +468,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         Condition.Criteria criteria1 = condition1.createCriteria();
         criteria1.andEqualTo("enterpriseId", agent.getEnterpriseId());
         criteria1.andEqualTo("cno", agent.getCno());
-        List<QueueMember> queueMemberList = queueMemberDao.selectByCondition(condition1);
+        List<QueueMember> queueMemberList = queueMemberService.selectByCondition(condition1);
 
         Set<Integer> queueIdSet = new HashSet<>();
         Set<String> qnoCnoDbKeySet = new HashSet<>();
@@ -496,7 +501,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
                 Condition.Criteria criteria2 = condition2.createCriteria();
                 criteria2.andEqualTo("enterpriseId", agent.getEnterpriseId());
                 criteria2.andEqualTo("queueId", queueId);
-                List<QueueMember> list = queueMemberDao.selectByCondition(condition2);
+                List<QueueMember> list = queueMemberService.selectByCondition(condition2);
                 if (list != null &&list.size() > 0) {
                     redisService.set(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.QUEUE_MEMBER_ENTERPRISE_ID_QNO, agent.getEnterpriseId(), queueId), list);
                 } else {

@@ -5,10 +5,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseAreaGroupDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.EnterpriseAreaGroupMapper;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.model.EnterpriseArea;
 import com.tinet.ctilink.conf.model.EnterpriseAreaGroup;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseAreaService;
@@ -36,17 +36,17 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Autowired
-    private EnterpriseAreaGroupDao enterpriseAreaGroupDao;
+    private EnterpriseAreaGroupMapper enterpriseAreaGroupMapper;
 
     @Override
     public ApiResult<EnterpriseArea> createEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         ApiResult<EnterpriseArea> result = validateEnterpriseArea(enterpriseArea);
@@ -67,7 +67,7 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
     @Override
     public ApiResult deleteEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
 
         if(enterpriseArea.getId()==null || enterpriseArea.getId()<=0)
@@ -95,7 +95,7 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
     @Override
     public ApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if( ! entityDao.validateEntity(enterpriseArea.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业id不能为空");
         if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
             return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id不能为空");
@@ -104,7 +104,7 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
         groupCriteria.andEqualTo("id",enterpriseArea.getId());
         groupCriteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
         groupCondition.setTableName("cti_link_enterprise_area_group");
-        List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupDao.selectByCondition(groupCondition);
+        List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupMapper.selectByCondition(groupCondition);
         if (enterpriseAreaGroupList ==null || enterpriseAreaGroupList.size() <=0)
             return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
 
@@ -151,7 +151,7 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
         criteria.andEqualTo("id",enterpriseArea.getId());
         criteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
         condition.setTableName("cti_link_enterprise_area_group");
-        List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupDao.selectByCondition(condition);
+        List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupMapper.selectByCondition(condition);
         if (enterpriseAreaGroupList ==null || enterpriseAreaGroupList.size() <=0)
             return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
 

@@ -56,15 +56,15 @@ public class AreaCodeUtil {
                 String numberPrefix = number.substring(1, 8);
                 String areaCodeFromIp138 = getAreaCodeFromIp138(numberPrefix);
                 if(StringUtils.isNotEmpty(areaCodeFromIp138)){
-                    //TODO 从ip138获取的信息 存入缓存和库
-//                    List<AreaCode> areaCodeList = (List<AreaCode>) areaCodeDao.findByHqlCache("from AreaCode where prefix='" + areaCode + "'");
-//                    String city = "";
-//                    String province = "";
-//                    if(areaCodeList.size() > 0){
-//                        city = areaCodeList.get(0).getCity();
-//                        province = areaCodeList.get(0).getProvince();
-//                    }
-//                    this.saveNewAreaCode(numberPrefix, areaCode, province, city);
+                    //入缓存
+                    AreaCode newAreaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
+                            , areaCodeFromIp138), AreaCode.class);
+                    if (newAreaCode != null) {
+                        newAreaCode.setPrefix(numberPrefix);
+                        redisService.set(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX, numberPrefix)
+                                , newAreaCode);
+                    }
+
                     caller.setAreaCode(areaCodeFromIp138);
                 }
             }
@@ -79,15 +79,15 @@ public class AreaCodeUtil {
                 String numberPrefix = number.substring(0, 7);
                 String areaCodeFromIp138 = getAreaCodeFromIp138(numberPrefix);
                 if(StringUtils.isNotEmpty(areaCodeFromIp138)){
-//                    AreaCodeDao areaCodeDao = (AreaCodeDao) ContextUtil.getContext().getBean("areaCodeDao");
-//                    List<AreaCode> areaCodeList = (List<AreaCode>) areaCodeDao.findByHqlCache("from AreaCode where prefix='" + areaCode + "'");
-//                    String city = "";
-//                    String province = "";
-//                    if(areaCodeList.size() > 0){
-//                        city = areaCodeList.get(0).getCity();
-//                        province = areaCodeList.get(0).getProvince();
-//                    }
-//                    this.saveNewAreaCode(numberPrefix, areaCode, province, city);
+                    //入缓存
+                    AreaCode newAreaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
+                            , areaCodeFromIp138), AreaCode.class);
+                    if (newAreaCode != null) {
+                        newAreaCode.setPrefix(numberPrefix);
+                        redisService.set(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX, numberPrefix)
+                                , newAreaCode);
+                    }
+
                     caller.setAreaCode(areaCodeFromIp138);
                 }
             }

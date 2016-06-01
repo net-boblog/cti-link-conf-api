@@ -47,9 +47,9 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
     private RedisService redisService;
 
     @Override
-    public ApiResult createTelSetTel(TelSetTel telSetTel) {
+    public ApiResult<TelSetTel> createTelSetTel(TelSetTel telSetTel) {
         if (!entityMapper.validateEntity(telSetTel.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         ApiResult<TelSetTel> result = validateTelSetTel(telSetTel);
         if (result != null)
             return result;
@@ -92,12 +92,12 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
     }
 
     @Override
-    public ApiResult updateTelSetTel(TelSetTel telSetTel) {
+    public ApiResult<TelSetTel> updateTelSetTel(TelSetTel telSetTel) {
         if (!entityMapper.validateEntity(telSetTel.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         if (telSetTel.getSetId() == null || telSetTel.getId() <= 0)
-            return new ApiResult(ApiResult.FAIL_RESULT, "id不能为空");
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "id不能为空");
 
         ApiResult<TelSetTel> result = validateTelSetTel(telSetTel);
         if (result != null)
@@ -105,10 +105,9 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
 
         TelSetTel telSetTel1 = selectByPrimaryKey(telSetTel.getId());
         if (!telSetTel.getEnterpriseId().equals(telSetTel1.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号和id不匹配");
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号和id不匹配");
 
         telSetTel.setCreateTime(telSetTel1.getCreateTime());
-
         int success = updateByPrimaryKey(telSetTel);
         if (success == 1) {
             setRefreshCacheMethod("setCache", telSetTel);
@@ -127,7 +126,6 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
         Condition setCondition = new Condition(TelSet.class);
         Condition.Criteria setCriteria = setCondition.createCriteria();
         setCriteria.andEqualTo("id", telSetTel.getSetId());
-        setCondition.setTableName("cti_link_tel_set");
         List<TelSet> setList = telSetMapper.selectByCondition(setCondition);
         if (setList == null || setList.size() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "不存在此电话组id");
@@ -151,18 +149,22 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
     public void deleteCache(TelSetTel telSetTel) {
         List<TelSetTel> list = redisService.getList(Const.REDIS_DB_CONF_INDEX, getKey(telSetTel), TelSetTel.class);
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getId().equals(telSetTel.getId()))
+            if (list.get(i).getId().equals(telSetTel.getId())) {
                 list.remove(i);
-            break;
+                break;
+            }
         }
         redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(telSetTel), list);
     }
 
     public void setCache(TelSetTel telSetTel) {
-        List<TelSetTel> list = redisService.getList(Const.REDIS_DB_CONF_INDEX, getKey(telSetTel), TelSetTel.class);
-        if (list == null)
-            list = new ArrayList<TelSetTel>();
-        list.add(telSetTel);
+        Condition condition = new Condition(TelSetTel.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("enterpriseId", telSetTel.getEnterpriseId());
+        criteria.andEqualTo("tsno", telSetTel.getTsno());
+        condition.setOrderByClause("priority");
+
+        List<TelSetTel> list = selectByCondition(condition);
         redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(telSetTel), list);
     }
 

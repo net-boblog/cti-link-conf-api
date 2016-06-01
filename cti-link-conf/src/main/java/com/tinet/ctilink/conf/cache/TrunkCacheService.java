@@ -30,14 +30,13 @@ public class TrunkCacheService extends AbstractCacheService<Trunk> {
     @Override
     public boolean reloadCache() {
         List<Entity> list = entityMapper.list();
-        if (list == null || list.isEmpty()) {
-            return true;
-        }
         Set<String> dbKeySet = new HashSet<>();
         Set<String> dbFirstKeySet = new HashSet<>();
-        for (Entity entity : list) {
-            reloadCache(entity.getEnterpriseId(), dbKeySet);
-            dbFirstKeySet.add(String.format(CacheKey.TRUNK_ENTERPRISE_ID_FIRST, entity.getEnterpriseId()));
+        if (list != null) {
+            for (Entity entity : list) {
+                reloadCache(entity.getEnterpriseId(), dbKeySet);
+                dbFirstKeySet.add(String.format(CacheKey.TRUNK_ENTERPRISE_ID_FIRST, entity.getEnterpriseId()));
+            }
         }
 
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX

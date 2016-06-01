@@ -31,12 +31,11 @@ public class EnterpriseIvrCacheService extends AbstractCacheService<EnterpriseIv
     @Override
     public boolean reloadCache() {
         List<Entity> list = entityMapper.list();
-        if (list == null || list.isEmpty()) {
-            return true;
-        }
         Set<String> dbKeySet = new HashSet<>();
-        for (Entity entity : list) {
-            reloadCache(entity.getEnterpriseId(), dbKeySet);
+        if (list != null) {
+            for (Entity entity : list) {
+                reloadCache(entity.getEnterpriseId(), dbKeySet);
+            }
         }
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
                 , String.format(CacheKey.ENTERPRISE_IVR_ENTERPRISE_ID_IVR_ID.replaceAll("%d", "%s"), "*", "*"));

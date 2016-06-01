@@ -30,12 +30,11 @@ public class EnterpriseMohCacheService extends AbstractCacheService<EnterpriseMo
     @Override
     public boolean reloadCache() {
         List<Entity> list = entityMapper.list();
-        if (list == null || list.isEmpty()) {
-            return true;
-        }
         Set<String> dbKeySet = new HashSet<>();
-        for (Entity entity : list) {
-            reloadCache(entity.getEnterpriseId(), dbKeySet);
+        if (list != null) {
+            for (Entity entity : list) {
+                reloadCache(entity.getEnterpriseId(), dbKeySet);
+            }
         }
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
                 , String.format(CacheKey.ENTERPRISE_MOH_NAME, "*"));

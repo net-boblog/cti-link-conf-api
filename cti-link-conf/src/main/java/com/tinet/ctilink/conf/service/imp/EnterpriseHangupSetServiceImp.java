@@ -5,7 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseHangupSet;
@@ -32,14 +32,14 @@ public class EnterpriseHangupSetServiceImp extends BaseService<EnterpriseHangupS
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult<EnterpriseHangupSet> createEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
-        if( ! entityDao.validateEntity(enterpriseHangupSet.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseHangupSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         ApiResult<EnterpriseHangupSet> result = validateEnterpriseHangupSet(enterpriseHangupSet);
@@ -59,7 +59,7 @@ public class EnterpriseHangupSetServiceImp extends BaseService<EnterpriseHangupS
 
     @Override
     public ApiResult deleteEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
-        if( ! entityDao.validateEntity(enterpriseHangupSet.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseHangupSet.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         if(enterpriseHangupSet.getId() == null || enterpriseHangupSet.getId() <= 0)
@@ -86,7 +86,7 @@ public class EnterpriseHangupSetServiceImp extends BaseService<EnterpriseHangupS
 
     @Override
     public ApiResult<List<EnterpriseHangupSet>> listEnterpriseHangupSet(EnterpriseHangupSet enterpriseHangupSet) {
-        if( ! entityDao.validateEntity(enterpriseHangupSet.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(enterpriseHangupSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         Condition condition = new Condition(EnterpriseHangupSet.class);

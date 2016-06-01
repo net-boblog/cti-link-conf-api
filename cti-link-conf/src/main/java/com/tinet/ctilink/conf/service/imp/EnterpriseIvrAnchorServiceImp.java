@@ -2,8 +2,8 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
+import com.tinet.ctilink.conf.mapper.EnterpriseIvrMapper;
 import com.tinet.ctilink.conf.model.CtiLinkEnterpriseIvrAnchor;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseIvrAnchorService;
 import com.tinet.ctilink.service.BaseService;
@@ -25,15 +25,15 @@ public class EnterpriseIvrAnchorServiceImp extends BaseService<CtiLinkEnterprise
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private EnterpriseIvrDao enterpriseIvrDao;
+    private EnterpriseIvrMapper enterpriseIvrMapper;
 
     @Override
     public ApiResult<CtiLinkEnterpriseIvrAnchor> createEnterpriseIvrAnchor(CtiLinkEnterpriseIvrAnchor enterpriseIvrAnchor) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseIvrAnchor.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseIvrAnchor.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         enterpriseIvrAnchor.setId(null);

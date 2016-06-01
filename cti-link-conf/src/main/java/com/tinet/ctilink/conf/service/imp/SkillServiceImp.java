@@ -2,9 +2,9 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.AgentSkillDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.QueueSkillDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
+import com.tinet.ctilink.conf.mapper.AgentSkillMapper;
+import com.tinet.ctilink.conf.mapper.QueueSkillMapper;
 import com.tinet.ctilink.conf.model.AgentSkill;
 import com.tinet.ctilink.conf.model.QueueSkill;
 import com.tinet.ctilink.conf.model.Skill;
@@ -30,18 +30,18 @@ public class SkillServiceImp extends BaseService<Skill> implements CtiLinkSkillS
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private QueueSkillDao queueSkillDao;
+    private QueueSkillMapper queueSkillMapper;
 
     @Autowired
-    private AgentSkillDao agentSkillDao;
+    private AgentSkillMapper agentSkillMapper;
 
     @Override
     public ApiResult<Skill> createSkill(Skill skill) {
         //参数验证
-        if (!entityDao.validateEntity(skill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(skill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         ApiResult<Skill> result = validateSkill(skill);
@@ -64,7 +64,7 @@ public class SkillServiceImp extends BaseService<Skill> implements CtiLinkSkillS
 
     @Override
     public ApiResult deleteSkill(Skill skill) {
-        if (!entityDao.validateEntity(skill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(skill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //
@@ -93,7 +93,7 @@ public class SkillServiceImp extends BaseService<Skill> implements CtiLinkSkillS
 
     @Override
     public ApiResult<Skill> updateSkill(Skill skill) {
-        if (!entityDao.validateEntity(skill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(skill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (skill.getId() == null || skill.getId() <= 0) {
@@ -124,7 +124,7 @@ public class SkillServiceImp extends BaseService<Skill> implements CtiLinkSkillS
     @Override
     public ApiResult<List<Skill>> listSkill(Skill skill) {
         //校验enterpriseId
-        if (!entityDao.validateEntity(skill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(skill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
 
@@ -174,7 +174,7 @@ public class SkillServiceImp extends BaseService<Skill> implements CtiLinkSkillS
         Condition condition = new Condition(AgentSkill.class);
         Condition.Criteria criteria = condition.createCriteria();
         criteria.andEqualTo("skillId", skillId);
-        int count = agentSkillDao.selectCountByCondition(condition);
+        int count = agentSkillMapper.selectCountByCondition(condition);
         if (count > 0) {
             return true;
         }
@@ -183,7 +183,7 @@ public class SkillServiceImp extends BaseService<Skill> implements CtiLinkSkillS
         condition = new Condition(QueueSkill.class);
         criteria = condition.createCriteria();
         criteria.andEqualTo("skillId", skillId);
-        count = queueSkillDao.selectCountByCondition(condition);
+        count = queueSkillMapper.selectCountByCondition(condition);
         if (count > 0) {
             return true;
         }

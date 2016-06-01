@@ -2,7 +2,7 @@ package com.tinet.ctilink.conf.service.imp;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.model.QueueSkill;
 import com.tinet.ctilink.conf.service.v1.CtiLinkQueueSkillService;
 import com.tinet.ctilink.service.BaseService;
@@ -23,13 +23,13 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    EntityDao entityDao;
+    EntityMapper entityMapper;
 
 
     @Override
     public ApiResult<QueueSkill> createQueueSkill(QueueSkill queueSkill) {
         //参数验证
-        if (!entityDao.validateEntity(queueSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queueSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         return null;
@@ -38,7 +38,7 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
     @Override
     public ApiResult<QueueSkill> deleteQueueSkill(QueueSkill queueSkill) {
         //参数验证
-        if (!entityDao.validateEntity(queueSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queueSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (queueSkill.getId() != null || queueSkill.getId() <= 0) {
@@ -55,7 +55,7 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
     @Override
     public ApiResult<QueueSkill> updateQueueSkill(QueueSkill queueSkill) {
         //参数验证
-        if (!entityDao.validateEntity(queueSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queueSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (queueSkill.getId() != null || queueSkill.getId() <= 0) {
@@ -82,7 +82,7 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
     @Override
     public ApiResult<List<QueueSkill>> listQueueSkill(QueueSkill queueSkill) {
         //参数验证
-        if (!entityDao.validateEntity(queueSkill.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(queueSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (queueSkill.getQueueId() == null || queueSkill.getQueueId() <= 0) {

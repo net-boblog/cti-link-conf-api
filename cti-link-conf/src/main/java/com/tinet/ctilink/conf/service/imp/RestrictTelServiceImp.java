@@ -6,7 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.RestrictTel;
@@ -34,14 +34,14 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult<RestrictTel> createRestrictTel(RestrictTel restrictTel) {
-        if( ! entityDao.validateEntity(restrictTel.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(restrictTel.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         ApiResult<RestrictTel> result = validateRestrictTel(restrictTel);
@@ -61,7 +61,7 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
 
     @Override
     public ApiResult deleteRestrictTel(RestrictTel restrictTel) {
-        if( ! entityDao.validateEntity(restrictTel.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(restrictTel.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不正确");
         if(restrictTel.getId() == null || restrictTel.getId() <= 0 )
             return new ApiResult(ApiResult.FAIL_RESULT,"黑白名单id不正确");
@@ -87,7 +87,7 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
 
     @Override
     public ApiResult<PageInfo<RestrictTel>> listRestrictTel(RestrictTelRequest restrictTelRequest) {
-        if( ! entityDao.validateEntity(restrictTelRequest.getEnterpriseId()))
+        if( ! entityMapper.validateEntity(restrictTelRequest.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
 
         if(restrictTelRequest.getType() == null || !(restrictTelRequest.getType() == 1 || restrictTelRequest.getType() == 2))

@@ -7,10 +7,10 @@ import com.github.pagehelper.PageInfo;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.TelSetTelDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.TelSetTelMapper;
 import com.tinet.ctilink.conf.model.TelSet;
 import com.tinet.ctilink.conf.model.TelSetTel;
 import com.tinet.ctilink.conf.request.TelSetListRequest;
@@ -35,10 +35,10 @@ import java.util.List;
 public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelSetService {
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private TelSetTelDao telSetTelDao;
+    private TelSetTelMapper telSetTelMapper;
 
     @Autowired
     private RedisService redisService;
@@ -47,7 +47,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
 
     @Override
     public ApiResult<TelSet> createTelSet(TelSet telSet) {
-        if (!entityDao.validateEntity(telSet.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         telSet.setId(null);
         ApiResult<TelSet> result = validateTelSet(telSet);
@@ -65,7 +65,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
 
     @Override
     public ApiResult deleteTelSet(TelSet telSet) {
-        if (!entityDao.validateEntity(telSet.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSet.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (telSet.getId() == null || telSet.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "电话组id不正确");
@@ -76,7 +76,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
         telCriteria.andEqualTo("enterpriseId", telSet.getEnterpriseId());
         telCriteria.andEqualTo("setId", telSet.getId());
         telCondition.setTableName("cti_link_tel_set_tel");
-        telSetTelDao.deleteByCondition(telCondition);
+        telSetTelMapper.deleteByCondition(telCondition);
 
         //删除电话组
         Condition condition = new Condition(TelSet.class);
@@ -100,7 +100,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
 
     @Override
     public ApiResult<TelSet> updateTelSet(TelSet telSet) {
-        if (!entityDao.validateEntity(telSet.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         ApiResult<TelSet> result = validateTelSet(telSet);
         if (result != null)
@@ -146,7 +146,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
     public ApiResult<TelSet> getTelSet(TelSet telSet) {
         if (telSet.getId() == null || telSet.getId() < 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "电话组id不正确");
-        if (!entityDao.validateEntity(telSet.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSet.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         Condition condition = new Condition(TelSet.class);

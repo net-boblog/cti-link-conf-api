@@ -4,7 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.cache.CacheKey;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseSetting;
@@ -37,12 +37,12 @@ public class EnterpriseSettingServiceImp extends BaseService<EnterpriseSetting>
     private RedisService redisService;
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Override
     public ApiResult<EnterpriseSetting> createEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseSetting.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //validate
@@ -73,7 +73,7 @@ public class EnterpriseSettingServiceImp extends BaseService<EnterpriseSetting>
     @Override
     public ApiResult updateEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseSetting.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         //validate
@@ -107,7 +107,7 @@ public class EnterpriseSettingServiceImp extends BaseService<EnterpriseSetting>
     @Override
     public ApiResult<List<EnterpriseSetting>> listEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseSetting.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         ApiResult<List<EnterpriseSetting>> result = new ApiResult<>();
@@ -125,7 +125,7 @@ public class EnterpriseSettingServiceImp extends BaseService<EnterpriseSetting>
     @Override
     public ApiResult<EnterpriseSetting> getEnterpriseSetting(EnterpriseSetting enterpriseSetting) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(enterpriseSetting.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(enterpriseSetting.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         ApiResult<EnterpriseSetting> result = new ApiResult<>();

@@ -5,7 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.model.EnterpriseTime;
@@ -36,14 +36,14 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult<EnterpriseTime> createEnterpriseTime(EnterpriseTime enterpriseTime) {
-        if (!entityDao.validateEntity(enterpriseTime.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseTime.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         ApiResult<EnterpriseTime> result = validateEnterpriseTime(enterpriseTime);
@@ -61,7 +61,7 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
 
     @Override
     public ApiResult deleteEnterpriseTime(EnterpriseTime enterpriseTime) {
-        if (!entityDao.validateEntity(enterpriseTime.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseTime.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不能为空");
         if (enterpriseTime.getId() == null || enterpriseTime.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "时间条件id不能为空");
@@ -82,7 +82,7 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
 
     @Override
     public ApiResult<EnterpriseTime> updateEnterpriseTime(EnterpriseTime enterpriseTime) {
-        if (!entityDao.validateEntity(enterpriseTime.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseTime.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         ApiResult<EnterpriseTime> result = validateEnterpriseTime(enterpriseTime);
@@ -105,7 +105,7 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
 
     @Override
     public ApiResult<List<EnterpriseTime>> listEnterpriseTime(EnterpriseTime enterpriseTime) {
-        if (!entityDao.validateEntity(enterpriseTime.getEnterpriseId()))
+        if (!entityMapper.validateEntity(enterpriseTime.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         Condition condition = new Condition(EnterpriseTime.class);

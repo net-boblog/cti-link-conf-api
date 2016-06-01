@@ -5,10 +5,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EntityDao;
-import com.tinet.ctilink.conf.dao.TelSetDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.TelSetMapper;
 import com.tinet.ctilink.conf.model.TelSet;
 import com.tinet.ctilink.conf.model.TelSetTel;
 import com.tinet.ctilink.conf.service.v1.CtiLinkTelSetTelService;
@@ -38,17 +38,17 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private TelSetDao telSetDao;
+    private TelSetMapper telSetMapper;
 
     @Autowired
     private RedisService redisService;
 
     @Override
     public ApiResult createTelSetTel(TelSetTel telSetTel) {
-        if (!entityDao.validateEntity(telSetTel.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSetTel.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
         ApiResult<TelSetTel> result = validateTelSetTel(telSetTel);
         if (result != null)
@@ -67,7 +67,7 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
 
     @Override
     public ApiResult deleteTelSetTel(TelSetTel telSetTel) {
-        if (!entityDao.validateEntity(telSetTel.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSetTel.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (telSetTel.getId() == null || telSetTel.getId() <= 0)
             return new ApiResult(ApiResult.FAIL_RESULT, "电话组电话id不能为空");
@@ -93,7 +93,7 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
 
     @Override
     public ApiResult updateTelSetTel(TelSetTel telSetTel) {
-        if (!entityDao.validateEntity(telSetTel.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSetTel.getEnterpriseId()))
             return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         if (telSetTel.getSetId() == null || telSetTel.getId() <= 0)
@@ -120,7 +120,7 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
 
     @Override
     public ApiResult<List<TelSetTel>> listTelSetTel(TelSetTel telSetTel) {
-        if (!entityDao.validateEntity(telSetTel.getEnterpriseId()))
+        if (!entityMapper.validateEntity(telSetTel.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
         if (telSetTel.getSetId() == null || telSetTel.getSetId() == 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "电话组id不正确");
@@ -128,7 +128,7 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
         Condition.Criteria setCriteria = setCondition.createCriteria();
         setCriteria.andEqualTo("id", telSetTel.getSetId());
         setCondition.setTableName("cti_link_tel_set");
-        List<TelSet> setList = telSetDao.selectByCondition(setCondition);
+        List<TelSet> setList = telSetMapper.selectByCondition(setCondition);
         if (setList == null || setList.size() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "不存在此电话组id");
 
@@ -183,7 +183,7 @@ public class TelSetTelServiceImp extends BaseService<TelSetTel> implements CtiLi
         Condition setCondition = new Condition(TelSetTel.class);
         Condition.Criteria setCriteria = setCondition.createCriteria();
         setCriteria.andEqualTo("id", telSetTel.getSetId());
-        List<TelSet> setList = telSetDao.selectByCondition(setCondition);
+        List<TelSet> setList = telSetMapper.selectByCondition(setCondition);
         if (setList == null || setList.size() <= 0)
             return new ApiResult<>(ApiResult.FAIL_RESULT, "不存在此setId");
         telSetTel.setTsno(setList.get(0).getTsno());

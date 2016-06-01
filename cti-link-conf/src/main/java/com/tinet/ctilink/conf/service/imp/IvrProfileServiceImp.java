@@ -4,11 +4,11 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
-import com.tinet.ctilink.conf.dao.EnterpriseIvrDao;
-import com.tinet.ctilink.conf.dao.EnterpriseIvrRouterDao;
-import com.tinet.ctilink.conf.dao.EntityDao;
+import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
+import com.tinet.ctilink.conf.mapper.EnterpriseIvrMapper;
+import com.tinet.ctilink.conf.mapper.EnterpriseIvrRouterMapper;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.EnterpriseIvrRouter;
 import com.tinet.ctilink.conf.model.IvrProfile;
@@ -36,13 +36,13 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private EntityDao entityDao;
+    private EntityMapper entityMapper;
 
     @Autowired
-    private EnterpriseIvrDao enterpriseIvrDao;
+    private EnterpriseIvrMapper enterpriseIvrMapper;
 
     @Autowired
-    private EnterpriseIvrRouterDao enterpriseIvrRouterDao;
+    private EnterpriseIvrRouterMapper enterpriseIvrRouterMapper;
 
     @Autowired
     private RedisService redisService;
@@ -50,7 +50,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
     @Override
     public ApiResult<IvrProfile> createIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(ivrProfile.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (StringUtils.isEmpty(ivrProfile.getIvrName())) {
@@ -80,7 +80,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
     @Override
     public ApiResult deleteIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(ivrProfile.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (ivrProfile.getId() == null || ivrProfile.getId() <= 0) {
@@ -95,7 +95,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
         criteria.andEqualTo("enterpriseId", ivrProfile.getEnterpriseId());
         criteria.andEqualTo("routerType", Const.ENTERPRISE_IVR_ROUTER_TYPE_IVR);
         criteria.andEqualTo("routerProperty", String.valueOf(ivrProfile.getId()));
-        int count = enterpriseIvrRouterDao.selectCountByCondition(condition);
+        int count = enterpriseIvrRouterMapper.selectCountByCondition(condition);
         if (count > 0 ) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "语音导航正在使用中");
         }
@@ -104,7 +104,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
         Condition.Criteria eiCriteria = condition.createCriteria();
         eiCriteria.andEqualTo("enterpriseId", ivrProfile.getEnterpriseId());
         eiCriteria.andEqualTo("ivrId", ivrProfile.getId());
-        enterpriseIvrDao.deleteByCondition(eiCondition);
+        enterpriseIvrMapper.deleteByCondition(eiCondition);
 
         count = deleteByPrimaryKey(ivrProfile.getId());
         if (count != 1) {
@@ -118,7 +118,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
     @Override
     public ApiResult<IvrProfile> updateIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(ivrProfile.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (ivrProfile.getId() == null || ivrProfile.getId() <= 0) {
@@ -149,7 +149,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
     @Override
     public ApiResult<List<IvrProfile>> listIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(ivrProfile.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         List<IvrProfile> list = select(ivrProfile.getEnterpriseId());
@@ -160,7 +160,7 @@ public class IvrProfileServiceImp extends BaseService<IvrProfile> implements Cti
     @Override
     public ApiResult<IvrProfile> getIvrProfile(IvrProfile ivrProfile) {
         //验证enterpriseId
-        if (!entityDao.validateEntity(ivrProfile.getEnterpriseId())) {
+        if (!entityMapper.validateEntity(ivrProfile.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
         if (ivrProfile.getId() == null || ivrProfile.getId() <= 0) {

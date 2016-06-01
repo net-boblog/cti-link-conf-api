@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tinet.ctilink.conf.mapper.TrunkMapper" >
+  <resultMap id="BaseResultMap" type="com.tinet.ctilink.conf.model.Trunk" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER" />
+    <result column="sip_group_id" property="sipGroupId" jdbcType="INTEGER" />
+    <result column="number_trunk" property="numberTrunk" jdbcType="VARCHAR" />
+    <result column="area_code" property="areaCode" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="comment" property="comment" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, sip_group_id, number_trunk, area_code, type, comment, create_time
+  </sql>
+
+  <sql id="SipGroup_Column_List" >
+    enterprise_id, sip_group_id
+  </sql>
+
+  <select id="selectSipGroupList" resultMap="BaseResultMap" >
+    select 
+    <include refid="SipGroup_Column_List" />
+    from cti_link_trunk
+    where enterprise_id in (select enterprise_id from cti_link_entity where status!=4)
+    group by enterprise_id, sip_group_id
+    order by enterprise_id
+  </select>
+
+</mapper>

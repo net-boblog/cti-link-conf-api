@@ -168,7 +168,7 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
             AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseIvrRouter);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
         } catch (Exception e) {
-            logger.error("CtiLinkEnterpriseIvrRouterServiceImp.setRefreshCacheMethod error refresh Cache fail class = " + this.getClass().getName(), e);
+            logger.error("EnterpriseIvrRouterServiceImp.setRefreshCacheMethod error refresh Cache fail class = " + this.getClass().getName(), e);
         }
     }
 

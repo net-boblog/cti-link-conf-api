@@ -46,126 +46,126 @@ public class EnterpriseAreaServiceImp extends BaseService<EnterpriseArea> implem
 
     @Override
     public ApiResult<EnterpriseArea> createEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if( ! entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业编号不正确");
+        if (!entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号不正确");
 
         ApiResult<EnterpriseArea> result = validateEnterpriseArea(enterpriseArea);
-        if(result != null)
+        if (result != null)
             return result;
 
         enterpriseArea.setCreateTime(new Date());
 
         int success = insertSelective(enterpriseArea);
-        if(success==1) {
-            setRefreshCacheMethod("setCache",enterpriseArea);
+        if (success == 1) {
+            setRefreshCacheMethod("setCache", enterpriseArea);
             return new ApiResult<>(enterpriseArea);
         }
 
         logger.error("EnterpriseAreaServiceImp.createEnterpriseArea error " + enterpriseArea + "sueccess" + success);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"增加失败");
+        return new ApiResult<>(ApiResult.FAIL_RESULT, "增加失败");
     }
 
     @Override
     public ApiResult deleteEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if( ! entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
-            return new ApiResult(ApiResult.FAIL_RESULT,"企业编号不能为空");
+        if (!entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
+            return new ApiResult(ApiResult.FAIL_RESULT, "企业编号不能为空");
 
-        if(enterpriseArea.getId()==null || enterpriseArea.getId()<=0)
-            return new ApiResult(ApiResult.FAIL_RESULT,"地区组地区id不能为空");
+        if (enterpriseArea.getId() == null || enterpriseArea.getId() <= 0)
+            return new ApiResult(ApiResult.FAIL_RESULT, "地区组地区id不能为空");
 
         Condition condition = new Condition(EnterpriseArea.class);
         Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
-        criteria.andEqualTo("id",enterpriseArea.getId());
+        criteria.andEqualTo("enterpriseId", enterpriseArea.getEnterpriseId());
+        criteria.andEqualTo("id", enterpriseArea.getId());
 
         EnterpriseArea enterpriseArea1 = null;
         List<EnterpriseArea> enterpriseAreaList = selectByCondition(condition);
-        if(enterpriseAreaList != null && enterpriseAreaList.size() > 0)
+        if (enterpriseAreaList != null && enterpriseAreaList.size() > 0)
             enterpriseArea1 = enterpriseAreaList.get(0);
 
         int success = deleteByCondition(condition);
-        if(success==1) {
-            setRefreshCacheMethod("deleteCache",enterpriseArea1);
+        if (success == 1) {
+            setRefreshCacheMethod("deleteCache", enterpriseArea1);
             return new ApiResult(ApiResult.SUCCESS_RESULT, ApiResult.SUCCESS_DESCRIPTION);
         }
         logger.error("EnterpriseAreaServiceImp.deleteEnterpriseArea.deleteEnterpriseArea error " + enterpriseArea + "success" + success);
-        return new ApiResult(ApiResult.FAIL_RESULT,"删除失败");
+        return new ApiResult(ApiResult.FAIL_RESULT, "删除失败");
 
     }
 
     @Override
     public ApiResult<List<EnterpriseArea>> listEnterpriseArea(EnterpriseArea enterpriseArea) {
-        if( ! entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"企业id不能为空");
-        if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id不能为空");
+        if (!entityMapper.validateEntity(enterpriseArea.getEnterpriseId()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "企业id不能为空");
+        if (enterpriseArea.getGroupId() == null || enterpriseArea.getGroupId() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "地区组id不能为空");
         Condition groupCondition = new Condition(EnterpriseAreaGroup.class);
         Condition.Criteria groupCriteria = groupCondition.createCriteria();
-        groupCriteria.andEqualTo("id",enterpriseArea.getId());
-        groupCriteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
+        groupCriteria.andEqualTo("id", enterpriseArea.getId());
+        groupCriteria.andEqualTo("enterpriseId", enterpriseArea.getEnterpriseId());
         groupCondition.setTableName("cti_link_enterprise_area_group");
         List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupMapper.selectByCondition(groupCondition);
-        if (enterpriseAreaGroupList ==null || enterpriseAreaGroupList.size() <=0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
+        if (enterpriseAreaGroupList == null || enterpriseAreaGroupList.size() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "地区组id或企业编号bu正确");
 
         Condition condition = new Condition(EnterpriseArea.class);
         Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
-        criteria.andEqualTo("groupId",enterpriseArea.getGroupId());
+        criteria.andEqualTo("enterpriseId", enterpriseArea.getEnterpriseId());
+        criteria.andEqualTo("groupId", enterpriseArea.getGroupId());
         List<EnterpriseArea> enterpriseAreaList = selectByCondition(condition);
 
-        if(enterpriseAreaList != null && enterpriseAreaList.size() > 0)
+        if (enterpriseAreaList != null && enterpriseAreaList.size() > 0)
             return new ApiResult<>(enterpriseAreaList);
-        return new ApiResult<>(ApiResult.FAIL_RESULT,"获取地区列表失败");
+        return new ApiResult<>(ApiResult.FAIL_RESULT, "获取地区列表失败");
     }
 
     protected String getKey(EnterpriseArea enterpriseArea) {
-        return String.format(CacheKey.ENTERPRISE_AREA_ENTERPRISE_ID_GROUP_ID_AREA_CODE,enterpriseArea.getEnterpriseId(),
-                enterpriseArea.getGroupId(),enterpriseArea.getAreaCode());
+        return String.format(CacheKey.ENTERPRISE_AREA_ENTERPRISE_ID_GROUP_ID_AREA_CODE, enterpriseArea.getEnterpriseId(),
+                enterpriseArea.getGroupId(), enterpriseArea.getAreaCode());
     }
 
-    public void setCache(EnterpriseArea enterpriseArea){
-        redisService.set(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseArea),enterpriseArea);
+    public void setCache(EnterpriseArea enterpriseArea) {
+        redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(enterpriseArea), enterpriseArea);
     }
 
-    public void deleteCache(EnterpriseArea enterpriseArea){
-        redisService.delete(Const.REDIS_DB_CONF_INDEX,getKey(enterpriseArea));
+    public void deleteCache(EnterpriseArea enterpriseArea) {
+        redisService.delete(Const.REDIS_DB_CONF_INDEX, getKey(enterpriseArea));
     }
 
-    private void setRefreshCacheMethod(String methodName, EnterpriseArea enterpriseArea){
+    private void setRefreshCacheMethod(String methodName, EnterpriseArea enterpriseArea) {
         try {
             Method method = this.getClass().getMethod(methodName, EnterpriseArea.class);
-            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method,this,enterpriseArea);
+            AfterReturningMethod afterReturningMethod = new AfterReturningMethod(method, this, enterpriseArea);
             ProviderFilter.LOCAL_METHOD.set(afterReturningMethod);
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.error("EnterpriseAreaServiceImp setRefreshMethod error refresh cache fail class=" +
                     this.getClass().getName());
         }
     }
 
-    private <T> ApiResult<T> validateEnterpriseArea(EnterpriseArea enterpriseArea){
-        if(enterpriseArea.getGroupId()==null || enterpriseArea.getGroupId()<=0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组号不正确");
+    private <T> ApiResult<T> validateEnterpriseArea(EnterpriseArea enterpriseArea) {
+        if (enterpriseArea.getGroupId() == null || enterpriseArea.getGroupId() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "地区组号不正确");
         Condition condition = new Condition(EnterpriseAreaGroup.class);
         Condition.Criteria criteria = condition.createCriteria();
-        criteria.andEqualTo("id",enterpriseArea.getId());
-        criteria.andEqualTo("enterpriseId",enterpriseArea.getEnterpriseId());
+        criteria.andEqualTo("id", enterpriseArea.getId());
+        criteria.andEqualTo("enterpriseId", enterpriseArea.getEnterpriseId());
         condition.setTableName("cti_link_enterprise_area_group");
         List<EnterpriseAreaGroup> enterpriseAreaGroupList = enterpriseAreaGroupMapper.selectByCondition(condition);
-        if (enterpriseAreaGroupList ==null || enterpriseAreaGroupList.size() <=0)
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区组id或企业编号bu正确");
+        if (enterpriseAreaGroupList == null || enterpriseAreaGroupList.size() <= 0)
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "地区组id或企业编号bu正确");
 
-        if(StringUtils.isEmpty(enterpriseArea.getAreaCode()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区区号不能为空");
+        if (StringUtils.isEmpty(enterpriseArea.getAreaCode()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "地区区号不能为空");
         Pattern pattern = Pattern.compile(Const.AREA_CODE_VALIDATION);
         Matcher matcher = pattern.matcher(enterpriseArea.getAreaCode().trim());
-        if ( ! matcher.matches())
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"地区区号不正确");
+        if (!matcher.matches())
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "地区区号不正确");
 
-        if(StringUtils.isEmpty(enterpriseArea.getProvince()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"省份不能为空");
-        if(StringUtils.isEmpty(enterpriseArea.getCity()))
-            return new ApiResult<>(ApiResult.FAIL_RESULT,"城市不能为空");
+        if (StringUtils.isEmpty(enterpriseArea.getProvince()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "省份不能为空");
+        if (StringUtils.isEmpty(enterpriseArea.getCity()))
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "城市不能为空");
 
         return null;
     }

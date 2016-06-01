@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author huangbin //
@@ -19,7 +20,7 @@ import javax.ws.rs.core.MediaType;
 public interface CtiLinkTelSetTelService {
     @POST
     @Path("create")
-    ApiResult createTelSetTel(TelSetTel telSetTel);
+    ApiResult<TelSetTel> createTelSetTel(TelSetTel telSetTel);
 
     @POST
     @Path("delete")
@@ -27,10 +28,10 @@ public interface CtiLinkTelSetTelService {
 
     @POST
     @Path("update")
-    ApiResult updateTelSetTel(TelSetTel telSetTel);
+    ApiResult<TelSetTel> updateTelSetTel(TelSetTel telSetTel);
 
     @POST
     @Path("list")
-    ApiResult listTelSetTel(TelSetTel telSetTel);
+    ApiResult<List<TelSetTel>> listTelSetTel(TelSetTel telSetTel);
 
 }

@@ -4,11 +4,13 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.cache.CacheKey;
 import com.tinet.ctilink.cache.RedisService;
 import com.tinet.ctilink.conf.ApiResult;
+import com.tinet.ctilink.conf.mapper.EnterpriseIvrAnchorMapper;
 import com.tinet.ctilink.conf.mapper.EntityMapper;
 import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.mapper.EnterpriseIvrMapper;
 import com.tinet.ctilink.conf.mapper.IvrProfileMapper;
+import com.tinet.ctilink.conf.model.CtiLinkEnterpriseIvrAnchor;
 import com.tinet.ctilink.conf.model.EnterpriseIvr;
 import com.tinet.ctilink.conf.model.IvrProfile;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseIvrService;
@@ -39,6 +41,9 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
 
     @Autowired
     private EnterpriseIvrMapper enterpriseIvrMapper;
+
+    @Autowired
+    private EnterpriseIvrAnchorMapper enterpriseIvrAnchorMapper;
 
     @Autowired
     private IvrProfileMapper ivrProfileMapper;
@@ -85,13 +90,21 @@ public class EnterpriseIvrServiceImp extends BaseService<EnterpriseIvr> implemen
                 || !enterpriseIvr.getEnterpriseId().equals(dbEnterpriseIvr.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]或[enterpriseId]不正确");
         }
-
+        //递归删除ivr节点
         int count = enterpriseIvrMapper.deleteRecursive(enterpriseIvr.getId());
 
         if (count <= 0) {
             logger.error("EnterpriseIvrServiceImp.deleteEnterpriseIvr error, " + enterpriseIvr + ", count=" + count);
             return new ApiResult<>(ApiResult.FAIL_RESULT, "删除失败");
         }
+        //删除锚点
+        Condition condition = new Condition(CtiLinkEnterpriseIvrAnchor.class);
+        Condition.Criteria criteria = condition.createCriteria();
+        criteria.andEqualTo("enterpriseId", enterpriseIvr.getEnterpriseId());
+        criteria.andEqualTo("ivrId", enterpriseIvr.getIvrId());
+        criteria.andEqualTo("path", enterpriseIvr.getPath());
+        enterpriseIvrAnchorMapper.deleteByCondition(condition);
+
         setRefreshCacheMethod(dbEnterpriseIvr);
         return new ApiResult<>(ApiResult.SUCCESS_RESULT);
     }

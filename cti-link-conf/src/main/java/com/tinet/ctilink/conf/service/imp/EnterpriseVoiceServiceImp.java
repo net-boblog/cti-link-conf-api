@@ -59,7 +59,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
             try {
                 enterpriseId = Integer.parseInt(inputPart.getBodyAsString());
             } catch (Exception e) {
-
+                logger.error("EnterpriseVoiceServiceImp.createEnterpriseVoice error", e);
             }
         }
         //验证enterpriseId
@@ -73,7 +73,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
             try {
                 voiceName = inputPart.getBodyAsString();
             } catch (IOException e) {
-
+                logger.error("EnterpriseVoiceServiceImp.createEnterpriseVoice error", e);
             }
         }
 
@@ -88,7 +88,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
             try {
                 description = inputPart.getBodyAsString();
             } catch (IOException e) {
-
+                logger.error("EnterpriseVoiceServiceImp.createEnterpriseVoice error", e);
             }
         }
 
@@ -101,7 +101,7 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
 
                 file = inputPart.getBody(File.class, null);
             } catch (IOException e) {
-
+                logger.error("EnterpriseVoiceServiceImp.createEnterpriseVoice error", e);
             }
         }
 
@@ -116,36 +116,11 @@ public class EnterpriseVoiceServiceImp extends BaseService<EnterpriseVoice> impl
         return createEnterpriseVoice(file, enterpriseVoice);
     }
 
-
-    /**
-     * header sample
-     * {
-     * 	Content-Type=[image/png],
-     * 	Content-Disposition=[form-data; name="file"; filename="filename.extension"]
-     * }
-     **/
-    //get uploaded filename, is there a easy way in RESTEasy?
-    private String getFileName(MultivaluedMap<String, String> header) {
-
-        String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
-
-        for (String filename : contentDisposition) {
-            if ((filename.trim().startsWith("filename"))) {
-
-                String[] name = filename.split("=");
-
-                String finalFileName = name[1].trim().replaceAll("\"", "");
-                return finalFileName;
-            }
-        }
-        return "unknown";
-    }
-
     //dubbo接口调用
     /**
      *
      * @param file 支持file=null, 自助录音时
-     * @param enterpriseVoice
+     * @param enterpriseVoice 语音实体
      * @return
      */
     @Override

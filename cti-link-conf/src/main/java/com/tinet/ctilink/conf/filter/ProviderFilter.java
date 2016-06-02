@@ -27,16 +27,21 @@ public class ProviderFilter implements Filter {
                 AfterReturningMethod method = LOCAL_METHOD.get();
                 if (method != null) {
                     m = "ClassName:" + method.getObj().getClass().getName() + ", MethodName:" + method.getMethod().getName();
+                    if (logger.isInfoEnabled()) {
+                        logger.info("AfterReturningMethod invoke," + m);
+                    }
                     method.invoke();
                 }
             } catch (Exception e) {
-                logger.error("AfterReturningMethod invoke error, ", e);
+                logger.error("AfterReturningMethod invoke error,", e);
             }
 
         } finally {
             //线程可能重用, 每次调用必须remove
             if (!m.equals("")) {
-                System.out.println("AfterReturningMethod remove," + m);
+                if (logger.isInfoEnabled()) {
+                    logger.info("AfterReturningMethod remove," + m);
+                }
             }
             //待改进, 每个接口都会执行
             LOCAL_METHOD.remove();

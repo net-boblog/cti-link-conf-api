@@ -21,8 +21,14 @@
   </select>
 
   <select id="validateEntity" resultType="BOOLEAN" parameterType="java.lang.Integer" >
-    SELECT count(enterprise_id)
-    FROM cti_link_entity
-    WHERE  status != 4 AND enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+    select count(enterprise_id)
+    from cti_link_entity
+    where  status != 4 and enterprise_id = #{enterpriseId,jdbcType=INTEGER}
   </select>
+
+
+  <select id="generateEnterpriseId" resultType="INTEGER" >
+    select nextval('cti_link_enterprise_id_seq')
+  </select>
+
 </mapper>

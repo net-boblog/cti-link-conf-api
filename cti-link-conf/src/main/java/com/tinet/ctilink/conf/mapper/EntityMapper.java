@@ -18,4 +18,6 @@ public interface EntityMapper extends BaseMapper<Entity> {
     List<Entity> list();
 
     boolean validateEntity(Integer enterpriseId);
+
+    Integer generateEnterpriseId();
 }

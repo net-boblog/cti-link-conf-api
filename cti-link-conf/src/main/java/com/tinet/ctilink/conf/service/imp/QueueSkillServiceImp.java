@@ -23,8 +23,7 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    EntityMapper entityMapper;
-
+    private EntityMapper entityMapper;
 
     @Override
     public ApiResult<QueueSkill> createQueueSkill(QueueSkill queueSkill) {

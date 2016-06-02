@@ -37,7 +37,7 @@ public class EnterpriseSettingCacheService extends AbstractCacheService<Enterpri
             }
         }
         Set<String> existKeySet = redisService.scan(Const.REDIS_DB_CONF_INDEX
-                , String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID, "*"));
+                , String.format(CacheKey.ENTERPRISE_SETTING_ENTERPRISE_ID_NAME.replaceFirst("%d", "%s"), "*", "*"));
         existKeySet.removeAll(dbKeySet);
         if (existKeySet.size() > 0) {
             redisService.delete(Const.REDIS_DB_CONF_INDEX, existKeySet);

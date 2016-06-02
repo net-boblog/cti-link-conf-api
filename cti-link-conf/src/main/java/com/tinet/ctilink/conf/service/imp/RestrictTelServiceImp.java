@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
  */
 @Service
 public class RestrictTelServiceImp extends BaseService<RestrictTel> implements CtiLinkRestrictTelService {
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

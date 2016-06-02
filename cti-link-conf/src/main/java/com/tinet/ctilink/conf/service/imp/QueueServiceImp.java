@@ -31,6 +31,7 @@ import java.util.Set;
  */
 @Service
 public class QueueServiceImp extends BaseService<Queue> implements CtiLinkQueueService {
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

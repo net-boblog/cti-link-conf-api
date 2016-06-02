@@ -49,13 +49,13 @@ public class AreaCodeUtil {
             caller.setTelType(Const.TEL_TYPE_LANDLINE);
         } else if (Pattern.compile(Const.PATTERN_MOBILE_WITH_PREFIX0).matcher(number).find()) {
             AreaCode areaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
-                            , number.substring(2, 7)), AreaCode.class);
+                    , number.substring(2, 7)), AreaCode.class);
             if (areaCode != null) {
                 caller.setAreaCode(areaCode.getAreaCode());
-            }else{
+            } else {
                 String numberPrefix = number.substring(1, 8);
                 String areaCodeFromIp138 = getAreaCodeFromIp138(numberPrefix);
-                if(StringUtils.isNotEmpty(areaCodeFromIp138)){
+                if (StringUtils.isNotEmpty(areaCodeFromIp138)) {
                     //入缓存
                     AreaCode newAreaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
                             , areaCodeFromIp138), AreaCode.class);
@@ -72,13 +72,13 @@ public class AreaCodeUtil {
             caller.setTelType(Const.TEL_TYPE_MOBILE);
         } else if (Pattern.compile(Const.PATTERN_MOBILE_WITHOUT_PREFIX0).matcher(number).find()) {
             AreaCode areaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
-                            , number.substring(1, 7)), AreaCode.class);
+                    , number.substring(1, 7)), AreaCode.class);
             if (areaCode != null) {
                 caller.setAreaCode(areaCode.getAreaCode());
-            }else{
+            } else {
                 String numberPrefix = number.substring(0, 7);
                 String areaCodeFromIp138 = getAreaCodeFromIp138(numberPrefix);
-                if(StringUtils.isNotEmpty(areaCodeFromIp138)){
+                if (StringUtils.isNotEmpty(areaCodeFromIp138)) {
                     //入缓存
                     AreaCode newAreaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
                             , areaCodeFromIp138), AreaCode.class);
@@ -93,27 +93,27 @@ public class AreaCodeUtil {
             }
             caller.setCallerNumber(number);
             caller.setTelType(Const.TEL_TYPE_MOBILE);
-        }else if(Pattern.compile(Const.PATTERN_NUMBER_400).matcher(number).find()) {
+        } else if (Pattern.compile(Const.PATTERN_NUMBER_400).matcher(number).find()) {
             caller.setAreaCode("400");
             caller.setCallerNumber(number);
             caller.setTelType(Const.TEL_TYPE_LANDLINE);
-        }else if (!StringUtils.isNumeric(number)) {
+        } else if (!StringUtils.isNumeric(number)) {
             caller.setAreaCode("");
             caller.setCallerNumber(Const.UNKNOWN_NUMBER);
         } else {
-            if(number.length() >=3 ){//大于3表示没有区号的固话，给一个区号，或者95555/10086/10010/110/112/999等号码都认为是本地固话
-                if(!StringUtils.isEmpty(gateway)){
+            if (number.length() >= 3) {//大于3表示没有区号的固话，给一个区号，或者95555/10086/10010/110/112/999等号码都认为是本地固话
+                if (!StringUtils.isEmpty(gateway)) {
                     boolean find = false;
                     List<Gateway> gatewayList = redisService.getList(Const.REDIS_DB_CONF_INDEX, CacheKey.GATEWAY, Gateway.class);
-                    for(Gateway gw : gatewayList){
-                        if(gw.getIpAddr().equals(gateway)){
+                    for (Gateway gw : gatewayList) {
+                        if (gw.getIpAddr().equals(gateway)) {
                             caller.setAreaCode(gw.getAreaCode());
                             caller.setCallerNumber(caller.getAreaCode() + caller.getCallerNumber());
                             find = true;
                             break;
                         }
                     }
-                    if(find == false){
+                    if (find == false) {
                         SystemSetting systemSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
                                 , SystemSettingConst.SYSTEM_SETTING_NAME_DEFAULT_AREA_CODE), SystemSetting.class);
                         if (systemSetting != null) {
@@ -122,7 +122,7 @@ public class AreaCodeUtil {
                         }
                     }
                 }
-            }else{//分机号
+            } else {//分机号
 
 
             }
@@ -132,7 +132,7 @@ public class AreaCodeUtil {
             caller.setCity(Const.UNKNOWN_AREA);
         } else {
             AreaCode areaCode = redisService.get(Const.REDIS_DB_AREA_CODE_INDEX, String.format(CacheKey.AREA_CODE_PREFIX
-                            , caller.getAreaCode()), AreaCode.class);
+                    , caller.getAreaCode()), AreaCode.class);
             if (areaCode != null) {
                 caller.setProvince(areaCode.getProvince());
                 caller.setCity(areaCode.getCity());
@@ -143,23 +143,24 @@ public class AreaCodeUtil {
 
     /**
      * 获取电话号码前缀
+     *
      * @param tel 电话号
      * @return 此号码对应的区号
      */
-    public static String getPrefix(String tel){
+    public static String getPrefix(String tel) {
         if (Pattern.compile("^01").matcher(tel).find() || Pattern.compile("^02").matcher(tel).find()) {
             return tel.substring(0, 3);
         } else if (Pattern.compile("^0[3-9]").matcher(tel).find()) {
             return tel.substring(0, 4);
         } else if (Pattern.compile("^00").matcher(tel).find()) {
             return tel.substring(0, 2);
-        }else{
+        } else {
             return tel.substring(0, 7);
         }
     }
 
 
-    public static String getAreaCodeFromIp138(String prefix){
+    public static String getAreaCodeFromIp138(String prefix) {
         String areaCode = "";
         String ip138Url = "http://www.ip138.com:8080/search.asp";
 
@@ -190,31 +191,31 @@ public class AreaCodeUtil {
         return areaCode;
     }
 
-    public static String getSP(String mobile){
-        if(mobile != null && mobile.length() == 11) {
+    public static String getSP(String mobile) {
+        if (mobile != null && mobile.length() == 11) {
             RedisService redisService = ContextUtil.getBean(RedisService.class);
             String prefix = mobile.substring(0, 3);
-            SystemSetting  mobileSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
+            SystemSetting mobileSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
                     , SystemSettingConst.SYSTEM_SETTING_NAME_MOBILE_SEGMENT), SystemSetting.class);
             String[] mobileList = mobileSetting.getValue().split(",");
-            for(String segment: mobileList){
-                if(segment.equals(prefix)){
+            for (String segment : mobileList) {
+                if (segment.equals(prefix)) {
                     return "mobile";
                 }
             }
-            SystemSetting  unicomSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
+            SystemSetting unicomSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
                     , SystemSettingConst.SYSTEM_SETTING_NAME_UNICOM_SEGMENT), SystemSetting.class);
             String[] unicomList = unicomSetting.getValue().split(",");
-            for(String segment: unicomList){
-                if(segment.equals(prefix)){
+            for (String segment : unicomList) {
+                if (segment.equals(prefix)) {
                     return "unicom";
                 }
             }
-            SystemSetting  telecomSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
+            SystemSetting telecomSetting = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.SYSTEM_SETTING_NAME
                     , SystemSettingConst.SYSTEM_SETTING_NAME_TELECOM_SEGMENT), SystemSetting.class);
             String[] telecomList = telecomSetting.getValue().split(",");
-            for(String segment: telecomList){
-                if(segment.equals(prefix)){
+            for (String segment : telecomList) {
+                if (segment.equals(prefix)) {
                     return "telecom";
                 }
             }

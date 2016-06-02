@@ -34,6 +34,8 @@ import java.util.List;
 @Service
 public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelSetService {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private EntityMapper entityMapper;
 
@@ -42,8 +44,6 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
 
     @Autowired
     private RedisService redisService;
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public ApiResult<TelSet> createTelSet(TelSet telSet) {

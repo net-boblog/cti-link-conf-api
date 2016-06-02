@@ -50,7 +50,6 @@ public class AfterReturningMethod {
 
     public Object invoke() throws IllegalAccessException, IllegalArgumentException,
             InvocationTargetException {
-        System.out.println("AfterReturningMethod invoke, ClassName:" + obj.getClass().getName() + ", MethodName:" + method.getName());
         return method.invoke(obj, args);
     }
 }

@@ -14,17 +14,20 @@ public class EntityCreateRequest {
 
     //enterprise_hotline
     //必须有一个主热线号码
-    private List<EnterpriseHotline> enterpriseHotline;
+    private List<EnterpriseHotline> enterpriseHotlineList;
 
     //trunk
     //和enterpriseHotline一一对应
-    private List<Trunk> trunk;
+    private List<Trunk> trunkList;
 
     //enterprise_clid
     private EnterpriseClid enterpriseClid;
 
     //enterprise_router
     private EnterpriseRouter enterpriseRouter;
+
+    //enterprise_setting
+    private List<EnterpriseSetting> enterpriseSettingList;
 
 
     public Entity getEntity() {
@@ -35,20 +38,20 @@ public class EntityCreateRequest {
         this.entity = entity;
     }
 
-    public List<EnterpriseHotline> getEnterpriseHotline() {
-        return enterpriseHotline;
+    public List<EnterpriseHotline> getEnterpriseHotlineList() {
+        return enterpriseHotlineList;
     }
 
-    public void setEnterpriseHotline(List<EnterpriseHotline> enterpriseHotline) {
-        this.enterpriseHotline = enterpriseHotline;
+    public void setEnterpriseHotlineList(List<EnterpriseHotline> enterpriseHotlineList) {
+        this.enterpriseHotlineList = enterpriseHotlineList;
     }
 
-    public List<Trunk> getTrunk() {
-        return trunk;
+    public List<Trunk> getTrunkList() {
+        return trunkList;
     }
 
-    public void setTrunk(List<Trunk> trunk) {
-        this.trunk = trunk;
+    public void setTrunkList(List<Trunk> trunkList) {
+        this.trunkList = trunkList;
     }
 
     public EnterpriseClid getEnterpriseClid() {
@@ -65,5 +68,13 @@ public class EntityCreateRequest {
 
     public void setEnterpriseRouter(EnterpriseRouter enterpriseRouter) {
         this.enterpriseRouter = enterpriseRouter;
+    }
+
+    public List<EnterpriseSetting> getEnterpriseSettingList() {
+        return enterpriseSettingList;
+    }
+
+    public void setEnterpriseSettingList(List<EnterpriseSetting> enterpriseSettingList) {
+        this.enterpriseSettingList = enterpriseSettingList;
     }
 }

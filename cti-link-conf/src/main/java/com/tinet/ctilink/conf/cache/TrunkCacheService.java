@@ -56,7 +56,6 @@ public class TrunkCacheService extends AbstractCacheService<Trunk> {
         return true;
     }
 
-
     public boolean reloadCache(Integer enterpriseId, Set<String> dbKeySet) {
         Condition condition = new Condition(Trunk.class);
         Condition.Criteria criteria = condition.createCriteria();

@@ -327,7 +327,7 @@ public class EntityServiceImp extends BaseService<Entity>
 
     private boolean isExistEnterpriseHotline(String numberTrunk, List<EnterpriseHotline> enterpriseHotlineList) {
         for (EnterpriseHotline enterpriseHotline : enterpriseHotlineList) {
-            if (enterpriseHotline.equals(numberTrunk)) {
+            if (enterpriseHotline.getNumberTrunk().equals(numberTrunk)) {
                 return true;
             }
         }

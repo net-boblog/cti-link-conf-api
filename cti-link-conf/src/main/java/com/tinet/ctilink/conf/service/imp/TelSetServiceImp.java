@@ -173,9 +173,7 @@ public class TelSetServiceImp extends BaseService<TelSet> implements CtiLinkTelS
 
     public void setCache(TelSet telSet) {
         redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(telSet), telSet);
-
     }
-
 
     private void setRefreshCacheMethod(String methodName, TelSet telSet) {
         try {

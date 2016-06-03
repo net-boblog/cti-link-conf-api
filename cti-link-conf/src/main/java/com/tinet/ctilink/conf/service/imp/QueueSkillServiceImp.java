@@ -40,11 +40,10 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
         if (!entityMapper.validateEntity(queueSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
-        if (queueSkill.getId() != null || queueSkill.getId() <= 0) {
+        if (queueSkill.getId() == null || queueSkill.getId() <= 0) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         //TODO 有座席在线能删除吗?
-
 
 
         deleteByPrimaryKey(queueSkill.getId());
@@ -57,7 +56,7 @@ public class QueueSkillServiceImp extends BaseService<QueueSkill> implements Cti
         if (!entityMapper.validateEntity(queueSkill.getEnterpriseId())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[enterpriseId]不正确");
         }
-        if (queueSkill.getId() != null || queueSkill.getId() <= 0) {
+        if (queueSkill.getId() == null || queueSkill.getId() <= 0) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[id]不正确");
         }
         //TODO 有座席在线能删除吗?

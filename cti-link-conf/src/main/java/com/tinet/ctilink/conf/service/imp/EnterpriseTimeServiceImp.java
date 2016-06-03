@@ -90,7 +90,7 @@ public class EnterpriseTimeServiceImp extends BaseService<EnterpriseTime> implem
             return result;
 
         EnterpriseTime enterpriseTime1 = selectByPrimaryKey(enterpriseTime.getId());
-        if (enterpriseTime1.getEnterpriseId() != enterpriseTime.getEnterpriseId())
+        if (enterpriseTime1.getEnterpriseId().equals(enterpriseTime.getEnterpriseId()))
             return new ApiResult<>(ApiResult.FAIL_RESULT, "企业编号和id号不匹配");
         enterpriseTime.setCreateTime(enterpriseTime1.getCreateTime());
 

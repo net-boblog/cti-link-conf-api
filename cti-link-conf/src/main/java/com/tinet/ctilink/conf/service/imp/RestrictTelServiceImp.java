@@ -72,10 +72,10 @@ public class RestrictTelServiceImp extends BaseService<RestrictTel> implements C
         criteria.andEqualTo("enterpriseId", restrictTel.getEnterpriseId());
         criteria.andEqualTo("id", restrictTel.getId());
 
-        List<RestrictTel> restrictTelListt = selectByCondition(condition);
+        List<RestrictTel> restrictTelList = selectByCondition(condition);
         RestrictTel restrictTel1 = null;
-        if (restrictTelListt != null && restrictTelListt.size() > 0)
-            restrictTel1 = restrictTelListt.get(0);
+        if (restrictTelList != null && restrictTelList.size() > 0)
+            restrictTel1 = restrictTelList.get(0);
 
         int success = deleteByCondition(condition);
         if (success == 1) {

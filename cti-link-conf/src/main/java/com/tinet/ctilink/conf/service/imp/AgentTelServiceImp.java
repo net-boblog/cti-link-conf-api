@@ -212,9 +212,6 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
 
     /**
      * 号码是否被其他座席绑定
-     * @param enterpriseId
-     * @param tel
-     * @return
      */
     private boolean isAgentTelBinding(Integer enterpriseId, String tel) {
         Condition condition = new Condition(AgentTel.class);
@@ -231,10 +228,6 @@ public class AgentTelServiceImp extends BaseService<AgentTel> implements CtiLink
 
     /**
      * 座席是否已经添加了此号码
-     * @param enterpriseId
-     * @param agentId
-     * @param tel
-     * @return
      */
     private boolean isAgentTelCreated(Integer enterpriseId, Integer agentId, String tel) {
         Condition condition = new Condition(AgentTel.class);

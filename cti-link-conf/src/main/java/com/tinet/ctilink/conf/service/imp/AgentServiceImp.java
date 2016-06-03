@@ -12,6 +12,7 @@ import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.mapper.AgentSkillMapper;
 import com.tinet.ctilink.conf.mapper.AgentTelMapper;
 import com.tinet.ctilink.conf.mapper.EntityMapper;
+import com.tinet.ctilink.conf.service.QueueMemberService;
 import com.tinet.ctilink.conf.service.v1.CtiLinkAgentService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.model.Agent;
@@ -50,7 +51,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
     private AgentTelMapper agentTelMapper;
 
     @Autowired
-    private QueueMemberServiceImp queueMemberService;
+    private QueueMemberService queueMemberService;
 
     @Autowired
     private RedisService redisService;
@@ -435,6 +436,7 @@ public class AgentServiceImp extends BaseService<Agent> implements CtiLinkAgentS
         redisService.set(Const.REDIS_DB_CONF_INDEX, getKey(agent), agent);
     }
 
+    //缓存
     public void updateCache(Agent agent) {
         //agent_tel
         //座席电话，第一个是绑定的电话

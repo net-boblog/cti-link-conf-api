@@ -170,7 +170,6 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
             return new ApiResult<>(ApiResult.FAIL_RESULT, "推送地址不能为空");
 
         if (!StringUtils.isEmpty(enterpriseHangupAction.getParamName())) {
-            byte[] nameByte;
             String[] name = enterpriseHangupAction.getParamName().split(",");
             String[] base64Name = new String[name.length];
             String paramName;
@@ -178,9 +177,7 @@ public class EnterpriseHangupActionServiceImp extends BaseService<EnterpriseHang
 
             //加密
             for (int i = 0; i < name.length; i++) {
-                nameByte = name[i].getBytes();
-                if (nameByte != null)
-                    base64Name[i] = base64Encoder.encode(nameByte);
+                base64Name[i] = base64Encoder.encode(name[i].getBytes());
             }
             paramName = base64Name[0];
             for (int i = 1; i < base64Name.length; i++)

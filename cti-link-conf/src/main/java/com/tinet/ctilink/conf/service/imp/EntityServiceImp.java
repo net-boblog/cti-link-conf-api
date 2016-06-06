@@ -218,6 +218,9 @@ public class EntityServiceImp extends BaseService<Entity>
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[entity.areaCode]不正确");
         }
 
+        if (!entity.getAreaCode().matches(Const.AREA_CODE_VALIDATION)) {
+            return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[entity.areaCode]格式不正确");
+        }
         if (StringUtils.isEmpty(entity.getEnterpriseName())) {
             return new ApiResult<>(ApiResult.FAIL_RESULT, "参数[entity.enterpriseName]不正确");
         }

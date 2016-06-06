@@ -71,4 +71,14 @@ public class EnterpriseSetting implements Serializable {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
+    @Override
+    public String toString() {
+        return "EnterpriseSetting {id=" + id
+                + ", enterpriseId=" + enterpriseId
+                + ", name=" + name
+                + ", value=" + value
+                + ", property=" + property
+                + ", createTime=" + createTime + "}";
+    }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * @author fengwei //
  * @date 16/6/1 13:42
+ * QueueMember接口, 不对外
  */
 @Service
 public class QueueMemberService extends BaseService<QueueMember> {

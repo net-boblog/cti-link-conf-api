@@ -52,14 +52,14 @@ public class ClidUtil {
             if (clidType != 0) {
                 String clid = "";
                 if (clidType == 1) {// 外显中继号码，选取主热线号码对应的中继号码
-                	if(StringUtils.isEmpty(clidNumber)){
-	                    Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_ENTERPRISE_ID_FIRST, enterpriseId), Trunk.class);
-	                    if(trunk != null){
-	                    	clid = trunk.getAreaCode() + trunk.getNumberTrunk();
-	                    }
-                	}else{
-                		clid = clidNumber;
-                	}
+                    if (StringUtils.isEmpty(clidNumber)) {
+                        Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.TRUNK_ENTERPRISE_ID_FIRST, enterpriseId), Trunk.class);
+                        if (trunk != null) {
+                            clid = trunk.getAreaCode() + trunk.getNumberTrunk();
+                        }
+                    } else {
+                        clid = clidNumber;
+                    }
 
                 } else if (clidType == 2) {// 外显客户号码
                     if (customerNumber.equals(Const.UNKNOWN_NUMBER)) {
@@ -102,7 +102,7 @@ public class ClidUtil {
         }
         return null;
     }
-    
+
     public static boolean isClidValid(int enterpriseId, int routerClidCallType, String customerNumber, String clid) {
         RedisService redisService = ContextUtil.getBean(RedisService.class);
         EnterpriseClid enterpriseClid = redisService.get(Const.REDIS_DB_CONF_INDEX, String.format(CacheKey.ENTERPRISE_CLID_ENTERPRISE_ID
@@ -134,35 +134,35 @@ public class ClidUtil {
                     break;
             }
             if (clidType == 1) {// 外显中继号码，选取主热线号码对应的中继号码
-            	Caller caller = AreaCodeUtil.updateGetAreaCode(clid, "");
-            	if(caller != null){
-	            	Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX
-	                        , String.format(CacheKey.TRUNK_NUMBER_TRUNK, caller.getRealNumber()), Trunk.class);
-	                if (trunk != null && trunk.getAreaCode().equals(caller.getAreaCode())) {
-	                    return true;
-	                }
-            	}
+                Caller caller = AreaCodeUtil.updateGetAreaCode(clid, "");
+                if (caller != null) {
+                    Trunk trunk = redisService.get(Const.REDIS_DB_CONF_INDEX
+                            , String.format(CacheKey.TRUNK_NUMBER_TRUNK, caller.getRealNumber()), Trunk.class);
+                    if (trunk != null && trunk.getAreaCode().equals(caller.getAreaCode())) {
+                        return true;
+                    }
+                }
 
             } else if (clidType == 2) {// 外显客户号码
-                if (customerNumber.equals(clid)){
-                	return true;
+                if (customerNumber.equals(clid)) {
+                    return true;
                 }
             } else if (clidType == 3) {// 外显固定号码
                 if (StringUtils.isNotEmpty(clidNumber)) {
                     String[] clidList = clidNumber.split(",");
-                    for(String c: clidList){
-                    	if(c.equals(clid)){
-                    		return true;
-                    	}
+                    for (String c : clidList) {
+                        if (c.equals(clid)) {
+                            return true;
+                        }
                     }
                 }
             } else if (clidType == 4) { // 外显热线号码
                 List<EnterpriseHotline> enterpriseHotlineList = redisService.getList(Const.REDIS_DB_CONF_INDEX
                         , String.format(CacheKey.ENTERPRISE_HOTLINE_ENTERPRISE_ID, enterpriseId), EnterpriseHotline.class);
-                for(EnterpriseHotline hotline :enterpriseHotlineList){
-                	if(hotline.getHotline().equals(clid)){
-                		return true;
-                	}
+                for (EnterpriseHotline hotline : enterpriseHotlineList) {
+                    if (hotline.getHotline().equals(clid)) {
+                        return true;
+                    }
                 }
             }
         }

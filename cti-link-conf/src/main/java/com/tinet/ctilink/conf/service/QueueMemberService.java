@@ -1,4 +1,4 @@
-package com.tinet.ctilink.conf.service.imp;
+package com.tinet.ctilink.conf.service;
 
 import com.tinet.ctilink.conf.entity.Caller;
 import com.tinet.ctilink.conf.mapper.AgentSkillMapper;
@@ -17,9 +17,10 @@ import java.util.List;
 /**
  * @author fengwei //
  * @date 16/6/1 13:42
+ * QueueMember接口, 不对外
  */
 @Service
-public class QueueMemberServiceImp extends BaseService<QueueMember> {
+public class QueueMemberService extends BaseService<QueueMember> {
 
     @Autowired
     private AgentSkillMapper agentSkillMapper;

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.tinet.ctilink.conf.ApiResult;
 import com.tinet.ctilink.conf.mapper.*;
 import com.tinet.ctilink.conf.model.*;
+import com.tinet.ctilink.conf.service.QueueMemberService;
 import com.tinet.ctilink.conf.service.v1.CtiLinkAgentSkillService;
 import com.tinet.ctilink.inc.Const;
 import com.tinet.ctilink.conf.entity.Caller;
@@ -44,7 +45,7 @@ public class AgentSkillServiceImp extends BaseService<AgentSkill> implements Cti
     private QueueSkillMapper queueSkillMapper;
 
     @Autowired
-    private QueueMemberServiceImp queueMemberService;
+    private QueueMemberService queueMemberService;
 
     @Autowired
     private QueueMapper queueMapper;

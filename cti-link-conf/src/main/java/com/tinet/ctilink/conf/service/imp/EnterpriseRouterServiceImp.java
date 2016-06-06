@@ -12,6 +12,7 @@ import com.tinet.ctilink.conf.filter.AfterReturningMethod;
 import com.tinet.ctilink.conf.filter.ProviderFilter;
 import com.tinet.ctilink.conf.mapper.RoutersetMapper;
 import com.tinet.ctilink.conf.model.*;
+import com.tinet.ctilink.conf.service.QueueMemberService;
 import com.tinet.ctilink.conf.service.v1.CtiLinkEnterpriseRouterService;
 import com.tinet.ctilink.conf.util.AreaCodeUtil;
 import com.tinet.ctilink.conf.util.RouterUtil;
@@ -43,7 +44,7 @@ public class EnterpriseRouterServiceImp extends BaseService<EnterpriseRouter> im
     private RoutersetMapper routersetMapper;
 
     @Autowired
-    private QueueMemberServiceImp queueMemberService;
+    private QueueMemberService queueMemberService;
 
     @Autowired
     @Qualifier("queueMemberCacheService")

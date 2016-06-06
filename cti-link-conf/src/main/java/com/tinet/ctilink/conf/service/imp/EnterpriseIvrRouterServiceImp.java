@@ -188,7 +188,6 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
             Condition ivrProfileCondition = new Condition(IvrProfile.class);
             Condition.Criteria ivrProfileCriteria = ivrProfileCondition.createCriteria();
             ivrProfileCriteria.andEqualTo("id", Integer.parseInt(enterpriseIvrRouter.getRouterProperty()));
-            ivrProfileCondition.setTableName("cti_link_ivr_profile");
             List<IvrProfile> ivrProfileList = ivrProfileMapper.selectByCondition(ivrProfileCondition);
             if (ivrProfileList == null || ivrProfileList.size() <= 0)
                 return new ApiResult<>(ApiResult.FAIL_RESULT, "语音导航id不正确");
@@ -222,7 +221,6 @@ public class EnterpriseIvrRouterServiceImp extends BaseService<EnterpriseIvrRout
                 Condition.Criteria timeCriteria = timeCondition.createCriteria();
                 timeCriteria.andEqualTo("id", Integer.parseInt(timeId[i]));
                 timeCriteria.andEqualTo("enterpriseId", enterpriseIvrRouter.getEnterpriseId());
-                timeCondition.setTableName("cti_link_enterprise_time");
                 List<EnterpriseTime> enterpriseTimeList = enterpriseTimeMapper.selectByCondition(timeCondition);
                 if (enterpriseTimeList == null || enterpriseTimeList.size() <= 0)
                     return new ApiResult<>(ApiResult.FAIL_RESULT, "时间条件id不正确");

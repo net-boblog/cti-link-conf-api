@@ -4,6 +4,9 @@ import com.alibaba.dubbo.rpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Date;
+
 /**
  * @author fengwei //
  * @date 16/4/9 12:02
@@ -18,7 +21,7 @@ public class ProviderFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         //IP控制 + 限流
-
+        Date startTime = new Date();
         Result result = null;
         String m = "";
         try {
@@ -45,6 +48,13 @@ public class ProviderFilter implements Filter {
             }
             //待改进, 每个接口都会执行
             LOCAL_METHOD.remove();
+
+            if (logger.isInfoEnabled()) {
+                Date endTime = new Date();
+                logger.info("Conf:" + invoker.getUrl().getPath() + "." + invocation.getMethodName() + ", arguments:"
+                        + Arrays.toString(invocation.getArguments()) + ", start:" + startTime.getTime()
+                    + ", end:" + endTime.getTime() + ", " + (endTime.getTime()-startTime.getTime()) + "ms");
+            }
         }
 
         return result;
